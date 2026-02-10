@@ -1,5 +1,5 @@
 -- name: [CS] Pac-Man
--- description: The Pac has never been more back! Unless you count all those other times\n\nMade by: Zam Boni\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
+-- description: The Pac has never been more back! Unless you count all those other times\n\nModels by: Zam Boni\nMoveset by: Squishy6094\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
 
 --[[
     API Documentation for Character Select can be found below:
@@ -37,11 +37,14 @@ local E_MODEL_ZBMSPACMAN =      smlua_model_util_get_id("zbmspacman_geo")
 local E_MODEL_ZBMSPACMANR =      smlua_model_util_get_id("zbmspacman_r_geo")
 local E_MODEL_ZBBLINKY =      smlua_model_util_get_id("zbblinky_geo")
 local E_MODEL_ZBBLINKYR =      smlua_model_util_get_id("zbblinky_r_geo")
+local E_MODEL_ZBINKY =      smlua_model_util_get_id("zbinky_geo")
+local E_MODEL_ZBINKYR =      smlua_model_util_get_id("zbinky_r_geo")
 -- local E_MODEL_CHAR_STAR = smlua_model_util_get_id("custom_model_star_geo") -- Located in "actors"
 
 local TEX_ZBPACMAN_LIFE_ICON = get_texture_info("zbpm-icon") -- Located in "textures"
 local TEX_ZBMSPACMAN_LIFE_ICON = get_texture_info("zbmpm-icon")
 local TEX_ZBBLINKY_LIFE_ICON = get_texture_info("zbbl-icon")
+local TEX_ZBINKY_LIFE_ICON = get_texture_info("zbin-icon")
 -- local TEX_CHAR_STAR_ICON = get_texture_info("exclamation-icon") -- Located in "textures"
 
 -- All sound files are located in "sound" folder
@@ -153,7 +156,7 @@ local PALETTES_ZBPACMAN = {
     },
     {
         name = "Blinky",
-        [PANTS]  = "ff5f00",
+        [PANTS]  = "0D00FF",
         [SHIRT]  = "FF2100",
         [GLOVES] = "ff5f00",
         [CAP]    = "FF2100",
@@ -161,7 +164,7 @@ local PALETTES_ZBPACMAN = {
     },
     {
         name = "Pinky",
-        [PANTS]  = "ff5f00",
+        [PANTS]  = "0D00FF",
         [SHIRT]  = "FF6CFA",
         [GLOVES] = "ff5f00",
         [CAP]    = "FF6CFA",
@@ -169,7 +172,7 @@ local PALETTES_ZBPACMAN = {
     },
     {
         name = "Inky",
-        [PANTS]  = "ff5f00",
+        [PANTS]  = "0D00FF",
         [SHIRT]  = "1DC1FF",
         [GLOVES] = "ff5f00",
         [CAP]    = "1DC1FF",
@@ -177,7 +180,7 @@ local PALETTES_ZBPACMAN = {
     },
     {
         name = "Clyde",
-        [PANTS]  = "FF2100",
+        [PANTS]  = "0D00FF",
         [SHIRT]  = "ff5f00",
         [GLOVES] = "FF2100",
         [CAP]    = "ff5f00",
@@ -309,6 +312,16 @@ CT_ZBBLINKY = _G.charSelect.character_add(
     TEX_ZBBLINKY_LIFE_ICON, -- Life Icon
     1                  -- Camera Scale
 )
+CT_ZBINKY = _G.charSelect.character_add(
+    "Inky", -- Character Name
+    "You could just chase after the guy, or you could calculate the optimal path by looking two spaces in front of him then drawing a line from there to Blinky and then rotating said line 180 degrees anchored by the space in front of your target.", -- Description
+    "Zam Boni", -- Credits
+    "00D6FF",           -- Menu Color
+    E_MODEL_ZBINKY,       -- Character Model
+    CT_MARIO,           -- Override Character
+    TEX_ZBINKY_LIFE_ICON, -- Life Icon
+    1                  -- Camera Scale
+)
 
 -- Adds cap models to your character
 -- (Models do not exist in template)
@@ -317,6 +330,7 @@ CT_ZBBLINKY = _G.charSelect.character_add(
 _G.charSelect.character_add_menu_instrumental(CT_ZBPACMAN, audio_stream_load("zbpm-tune.ogg"))
 _G.charSelect.character_add_menu_instrumental(CT_ZBMSPACMAN, audio_stream_load("zbpm-tune.ogg"))
 _G.charSelect.character_add_menu_instrumental(CT_ZBBLINKY, audio_stream_load("zbpm-tune.ogg"))
+_G.charSelect.character_add_menu_instrumental(CT_ZBINKY, audio_stream_load("zbpm-tune.ogg"))
 
 -- Adds a voice to your character
 -- (Sounds do not exist in template)
@@ -326,6 +340,8 @@ _G.charSelect.character_add_voice(E_MODEL_ZBMSPACMAN, VOICETABLE_ZBPACMAN)
 _G.charSelect.character_add_voice(E_MODEL_ZBMSPACMANR, VOICETABLE_ZBPACMAN)
 _G.charSelect.character_add_voice(E_MODEL_ZBBLINKY, VOICETABLE_ZBGHOST)
 _G.charSelect.character_add_voice(E_MODEL_ZBBLINKYR, VOICETABLE_ZBGHOST)
+_G.charSelect.character_add_voice(E_MODEL_ZBINKY, VOICETABLE_ZBGHOST)
+_G.charSelect.character_add_voice(E_MODEL_ZBINKYR, VOICETABLE_ZBGHOST)
 
 _G.charSelect.character_add_animations(E_MODEL_ZBPACMAN, ANIMS_PACMAN)
 _G.charSelect.character_add_animations(E_MODEL_ZBPACMANR, ANIMS_PACMAN)
@@ -344,6 +360,8 @@ for i = 1, #PALETTES_ZBPACMAN do
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBMSPACMANR, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBBLINKY, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBBLINKYR, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
+    _G.charSelect.character_add_palette_preset(E_MODEL_ZBINKY, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
+    _G.charSelect.character_add_palette_preset(E_MODEL_ZBINKYR, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
 end
 
 -- Adds a health meter to your character
@@ -351,7 +369,8 @@ end
 -- _G.charSelect.character_add_health_meter(CT_CHAR, HEALTH_METER_CHAR)
 
 -- Adds credits to the credits menu
-_G.charSelect.credit_add(TEXT_MOD_NAME, "Zam Boni", "Pack")
+_G.charSelect.credit_add(TEXT_MOD_NAME, "Zam Boni", "Pac-Man Models")
+_G.charSelect.credit_add(TEXT_MOD_NAME, "Squishy6094", "Pac-Man Moveset")
 
 -- Update Model based on palette
 local prevPalette = 1
@@ -361,6 +380,7 @@ local function update_model()
         _G.charSelect.character_edit_costume(CT_ZBPACMAN, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBPACMAN or E_MODEL_ZBPACMANR)
         _G.charSelect.character_edit_costume(CT_ZBMSPACMAN, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBMSPACMAN or E_MODEL_ZBMSPACMANR)
         _G.charSelect.character_edit_costume(CT_ZBBLINKY, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBBLINKY or E_MODEL_ZBBLINKYR)
+        _G.charSelect.character_edit_costume(CT_ZBINKY, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBINKY or E_MODEL_ZBINKYR)
         prevPalette = palette
     end
 end
