@@ -33,10 +33,12 @@ end
 
 local E_MODEL_ZBPACMAN =      smlua_model_util_get_id("zbpacman_geo")      -- Located in "actors"
 local E_MODEL_ZBPACMANR =      smlua_model_util_get_id("zbpacman_r_geo")
-local E_MODEL_ZBPACMANM =      smlua_model_util_get_id("zbpacman_m_geo")
+local E_MODEL_ZBMSPACMAN =      smlua_model_util_get_id("zbmspacman_geo")
+local E_MODEL_ZBMSPACMANR =      smlua_model_util_get_id("zbmspacman_r_geo")
 -- local E_MODEL_CHAR_STAR = smlua_model_util_get_id("custom_model_star_geo") -- Located in "actors"
 
 local TEX_ZBPACMAN_LIFE_ICON = get_texture_info("zbpm-icon") -- Located in "textures"
+local TEX_ZBMSPACMAN_LIFE_ICON = get_texture_info("zbmpm-icon")
 -- local TEX_CHAR_STAR_ICON = get_texture_info("exclamation-icon") -- Located in "textures"
 
 -- All sound files are located in "sound" folder
@@ -233,13 +235,15 @@ CT_ZBPACMAN = _G.charSelect.character_add(
     TEX_ZBPACMAN_LIFE_ICON, -- Life Icon
     1                  -- Camera Scale
 )
-_G.charSelect.character_add_costume(
-    CT_ZBPACMAN,
-    "Ms. Pac-Man",
-    "She's as beautiful as the day we lost her.",
-    "Zam Boni",
-    "FFFF7E",
-    E_MODEL_ZBPACMANM
+CT_ZBMSPACMAN = _G.charSelect.character_add(
+    "Ms. Pac-Man", -- Character Name
+    "She's as beautiful as the day we lost her.", -- Description
+    "Zam Boni", -- Credits
+    "FFFF7E",           -- Menu Color
+    E_MODEL_ZBMSPACMAN,       -- Character Model
+    CT_MARIO,           -- Override Character
+    TEX_ZBMSPACMAN_LIFE_ICON, -- Life Icon
+    1                  -- Camera Scale
 )
 
 -- Adds cap models to your character
@@ -247,12 +251,14 @@ _G.charSelect.character_add_costume(
 -- _G.charSelect.character_add_caps(E_MODEL_CHAR, CAPTABLE_CHAR)
 
 _G.charSelect.character_add_menu_instrumental(CT_ZBPACMAN, audio_stream_load("zbpm-tune.ogg"))
+_G.charSelect.character_add_menu_instrumental(CT_ZBMSPACMAN, audio_stream_load("zbpm-tune.ogg"))
 
 -- Adds a voice to your character
 -- (Sounds do not exist in template)
 _G.charSelect.character_add_voice(E_MODEL_ZBPACMAN, VOICETABLE_ZBPACMAN)
 _G.charSelect.character_add_voice(E_MODEL_ZBPACMANR, VOICETABLE_ZBPACMAN)
-_G.charSelect.character_add_voice(E_MODEL_ZBPACMANM, VOICETABLE_ZBPACMAN)
+_G.charSelect.character_add_voice(E_MODEL_ZBMSPACMAN, VOICETABLE_ZBPACMAN)
+_G.charSelect.character_add_voice(E_MODEL_ZBMSPACMANR, VOICETABLE_ZBPACMAN)
 
 -- Adds a celebration star to your character
 -- (Models do not exist in template)
@@ -262,6 +268,8 @@ _G.charSelect.character_add_voice(E_MODEL_ZBPACMANM, VOICETABLE_ZBPACMAN)
 for i = 1, #PALETTES_ZBPACMAN do
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBPACMAN, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBPACMANR, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
+    _G.charSelect.character_add_palette_preset(E_MODEL_ZBMSPACMAN, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
+    _G.charSelect.character_add_palette_preset(E_MODEL_ZBMSPACMANR, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
 end
 
 -- Adds a health meter to your character
@@ -277,6 +285,7 @@ local function update_model()
     local palette = _G.charSelect.character_get_current_palette_number(0)
     if prevPalette ~= palette then
         _G.charSelect.character_edit_costume(CT_ZBPACMAN, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBPACMAN or E_MODEL_ZBPACMANR)
+        _G.charSelect.character_edit_costume(CT_ZBMSPACMAN, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBMSPACMAN or E_MODEL_ZBMSPACMANR)
         prevPalette = palette
     end
 end

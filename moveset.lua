@@ -342,3 +342,4 @@ local function before_pac_action(m, nextAct)
 end
 
 _G.charSelect.character_hook_moveset(CT_ZBPACMAN, HOOK_BEFORE_SET_MARIO_ACTION, before_pac_action)
+_G.charSelect.character_hook_moveset(CT_ZBMSPACMAN, HOOK_BEFORE_SET_MARIO_ACTION, before_pac_action)
