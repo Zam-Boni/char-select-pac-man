@@ -195,6 +195,14 @@ local PALETTES_ZBPACMAN = {
     },
 }
 
+local ANIMS_PACMAN = {
+    [CHAR_ANIM_GROUND_POUND] = ANIM_PAC_BUTT_BOUNCE,
+    [CHAR_ANIM_AIR_KICK] = ANIM_PAC_FLIP_KICK,
+    [CHAR_ANIM_GROUND_KICK] = ANIM_PAC_FLIP_KICK,
+    [CHAR_ANIM_RUNNING_UNUSED] = ANIM_PAC_REV_CHARGE,
+    [CHAR_ANIM_FORWARD_SPINNING] = ANIM_PAC_REV_ROLL,
+}
+
 -- All Located in "textures" folder
 -- (Textures do not exist in template)
 --[[
@@ -259,6 +267,10 @@ _G.charSelect.character_add_voice(E_MODEL_ZBPACMAN, VOICETABLE_ZBPACMAN)
 _G.charSelect.character_add_voice(E_MODEL_ZBPACMANR, VOICETABLE_ZBPACMAN)
 _G.charSelect.character_add_voice(E_MODEL_ZBMSPACMAN, VOICETABLE_ZBPACMAN)
 _G.charSelect.character_add_voice(E_MODEL_ZBMSPACMANR, VOICETABLE_ZBPACMAN)
+
+_G.charSelect.character_add_animations(E_MODEL_ZBPACMAN, ANIMS_PACMAN)
+_G.charSelect.character_add_animations(E_MODEL_ZBPACMANR, ANIMS_PACMAN)
+_G.charSelect.character_add_animations(E_MODEL_ZBPACMANM, ANIMS_PACMAN)
 
 -- Adds a celebration star to your character
 -- (Models do not exist in template)

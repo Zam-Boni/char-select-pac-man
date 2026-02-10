@@ -1,8 +1,13 @@
+SAMPLE_BOUNCE = audio_sample_load("zbpmsfx-bounce.ogg")
+SAMPLE_TAKE_OFF = audio_sample_load("zbpmsfx-takeoff.ogg")
+
 local gExtrasStates = {}
 for i = 0, MAX_PLAYERS - 1 do
     gExtrasStates[i] = {
+        revAudio = audio_stream_load("zbpmsfx-revup.ogg"),
         bounceCount = 0,
     }
+    audio_stream_set_looping(gExtrasStates[i].revAudio, true)
 end
 
 local function lerp_s16(a, b, t)
@@ -104,9 +109,6 @@ function mario_detatch_from_floor(m, e, airAction, arg)
     local velF = m.forwardVel * (1 - math.abs(prevSlope)*0.5) * (m.forwardVel < 0 and -1 or 1)
     local velAngle = coss(atan2s(velY, velF))
     if (slopeDif > 0.4 and (velAngle < slope - 0.1 or velAngle > slope + 0.1) and prevSlope < 0) or (m.pos.y > m.floorHeight + 10) then
-        djui_chat_message_create(tostring(slopeDif > 0.4))
-        djui_chat_message_create(tostring((velAngle < slope - 0.1 or velAngle > slope + 0.1) and prevSlope < 0))
-        djui_chat_message_create(tostring((m.pos.y > m.floorHeight + 10)))
         m.vel.y = velY
         m.forwardVel = velF
         e.floorSteep = nil
@@ -131,17 +133,32 @@ end
 
 local function pac_butt_bounce_gravity(m)
     if not m then return 0 end
-    m.vel.y = math.max(m.vel.y - 10, -100)
+    m.vel.y = m.vel.y - 10
 end
 
+---@param m MarioState
 local function act_pac_jump(m)
     if not m then return 0 end
+    local e = gExtrasStates[m.playerIndex]
+
+    local anim = CHAR_ANIM_SINGLE_JUMP
+    if e.bounceCount > 0 then
+        anim = CHAR_ANIM_GROUND_POUND
+        if m.actionState == 0 then
+            audio_sample_play(SAMPLE_BOUNCE, m.pos, 0.5)
+        end
+    else
+        play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAHOO);
+    end
+
+
     if m.actionState == 0 then
         set_mario_y_vel_based_on_fspeed(m, math.max(65.0, m.vel.y), 0.0)
         m.actionState = m.actionState + 1
     end
 
     if (m.input & INPUT_B_PRESSED ~= 0) then
+        e.bounceCount = 0
         return set_mario_action(m, ACT_PAC_KICK, 0);
     end
     if m.actionTimer > 5 then
@@ -152,10 +169,9 @@ local function act_pac_jump(m)
         m.actionTimer = m.actionTimer + 1
     end
 
-    play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAHOO);
-
-    pac_air_action_step(m, ACT_FREEFALL_LAND, CHAR_ANIM_SINGLE_JUMP, 0);
+    pac_air_action_step(m, ACT_FREEFALL_LAND, anim, 0);
     if (m.action == ACT_FREEFALL_LAND) then
+        e.bounceCount = 0
         queue_rumble_data_mario(m, 5, 40);
     end
     --play_flip_sounds(m, 2, 8, 20);
@@ -172,7 +188,6 @@ local function act_pac_kick(m)
     play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAHOO);
 
     pac_air_action_step(m, ACT_FREEFALL_LAND, CHAR_ANIM_AIR_KICK, 0);
-    smlua_anim_util_set_animation(m.marioObj, "PAC_FLIPKICK")
     if (m.action == ACT_FREEFALL_LAND) then
         queue_rumble_data_mario(m, 5, 40);
     end
@@ -182,14 +197,32 @@ end
 ---@param m MarioState
 local function act_pac_rev_charge(m)
     if not m then return 0 end
+    local e = gExtrasStates[m.playerIndex]
     if m.pos.y > m.floorHeight + 10 then
         return set_mario_action(m, ACT_PAC_KICK, 0)
     end
+
+    local distFromCam = m.playerIndex == 0 and 0.5 or math.clamp(500/vec3f_dist(m.pos, gLakituState.pos), 0, 0.5)
+    if m.playerIndex ~= 0 then
+        djui_chat_message_create(tostring(distFromCam))
+    end
+    if m.actionState == 0 then
+        audio_stream_play(e.revAudio, true, distFromCam)
+        m.actionState = m.actionState + 1
+    end
+    audio_stream_set_frequency(e.revAudio, 0.9 + (m.actionTimer/150))
+    audio_stream_set_volume(e.revAudio, distFromCam)
+
     perform_ground_step(m)
-    smlua_anim_util_set_animation(m.marioObj, "PAC_REVCHARGE")
+    set_character_animation(m, CHAR_ANIM_RUNNING_UNUSED)
     m.marioObj.header.gfx.animInfo.animAccel = 0x8000 * m.actionTimer
     m.vel.x = math.lerp(m.vel.x, 0, 0.3)
     m.vel.z = math.lerp(m.vel.z, 0, 0.3)
+    
+    if (m.input & INPUT_A_PRESSED ~= 0) then
+        m.vel.y = 50
+        return set_mario_action(m, ACT_PAC_KICK, 0);
+    end
 
     if m.controller.buttonDown & B_BUTTON ~= 0 then
         if m.actionTimer == 30 then
@@ -198,10 +231,18 @@ local function act_pac_rev_charge(m)
                 o.oPosZ = o.oPosZ + (random_float() * 80.0) - 40;
             end);
         end
+
+
+        if m.actionTimer < 5 then
+            m.faceAngle.y = m.intendedYaw
+        else
+            m.faceAngle.y = m.intendedYaw - approach_s32(math.s16(m.intendedYaw - m.faceAngle.y), 0, 0x100, 0x100);
+        end
     else
         if m.actionTimer < 5 then
             set_mario_action(m, ACT_IDLE, 0)
         else
+            audio_sample_play(SAMPLE_TAKE_OFF, m.pos, 0.5)
             set_mario_action(m, ACT_PAC_REV_ROLL, m.actionTimer*1.5)
         end
     end
@@ -212,7 +253,6 @@ end
 ---@param m MarioState
 local function act_pac_rev_roll(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
 
     local detach = mario_detatch_from_floor(m, gExtrasStates[m.playerIndex], ACT_PAC_REV_ROLL_AIR, m.actionTimer)
     if detach ~= 0 then
@@ -224,7 +264,7 @@ local function act_pac_rev_roll(m)
         mario_bonk_reflection(m, 0)
         m.forwardVel = m.forwardVel * 0.8
     end
-    smlua_anim_util_set_animation(m.marioObj, "PAC_REVROLL")
+    set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
 
     if m.actionState == 0 then
         if m.prevAction ~= ACT_PAC_REV_ROLL_AIR then
@@ -259,7 +299,7 @@ local function act_pac_rev_roll_air(m)
     if step == AIR_STEP_LANDED then
         set_mario_action(m, ACT_PAC_REV_ROLL, 0);
     end
-    smlua_anim_util_set_animation(m.marioObj, "PAC_REVROLL")
+    set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
 
     if m.actionState == 0 then
         m.actionTimer = m.actionArg
@@ -283,12 +323,12 @@ end
 ---@param m MarioState
 local function act_pac_butt_bounce(m)
     if not m then return 0 end
+
     if m.actionState == 0 then
         m.actionState = m.actionState + 1
     end
 
-    pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, CHAR_ANIM_BEING_GRABBED, 0);
-    smlua_anim_util_set_animation(m.marioObj, "PAC_BUTTBOUNCE")
+    pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, CHAR_ANIM_GROUND_POUND, 0);
     if (m.action == ACT_PAC_BUTT_BOUNCE_LAND) then
         queue_rumble_data_mario(m, 5, 40);
     end
@@ -300,6 +340,9 @@ end
 local function act_pac_butt_bounce_land(m)
     if not m then return 0 end
     
+    local e = gExtrasStates[m.playerIndex]
+    e.bounceCount = e.bounceCount + 1
+
     local forwardVel = m.forwardVel
     perform_ground_step(m)
     set_mario_action(m, ACT_PAC_JUMP, 1)
@@ -332,6 +375,8 @@ local overrideActs = {
 }
 
 local function before_pac_action(m, nextAct)
+    local e = gExtrasStates[m.playerIndex]
+    audio_stream_pause(e.revAudio)
     if overrideActs[nextAct] then
         if overrideActs[nextAct] ~= false then
             return set_mario_action(m, overrideActs[nextAct], 0)

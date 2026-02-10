@@ -1,4 +1,5 @@
-smlua_anim_util_register_animation('PAC_BUTTBOUNCE', 257, 0, 0, 0, 0, { 
+ANIM_PAC_BUTT_BOUNCE = "ANIM_PAC_BUTT_BOUNCE"
+smlua_anim_util_register_animation(ANIM_PAC_BUTT_BOUNCE, 257, 0, 0, 0, 0, { 
 	0, 181, 0, 0, 16383, 0, 0, 0, 0, 
 	1, 0, 3693, 0, 0, 0, 65535, 0, 65535, 
 	0, 0, 0, 65535, 0, 65535, -56, 53, -21, 
@@ -45,7 +46,8 @@ smlua_anim_util_register_animation('PAC_BUTTBOUNCE', 257, 0, 0, 0, 0, {
 
 });
 
-smlua_anim_util_register_animation('PAC_FLIPKICK', 257, 0, 0, 0, 16, { 
+ANIM_PAC_FLIP_KICK = "ANIM_PAC_FLIP_KICK"
+smlua_anim_util_register_animation(ANIM_PAC_FLIP_KICK, 257, 0, 0, 0, 16, { 
 	0, 181, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 16383, 16383, 16383, 16383, 16383, 16383, 16383, 
@@ -199,7 +201,8 @@ smlua_anim_util_register_animation('PAC_FLIPKICK', 257, 0, 0, 0, 16, {
 
 });
 
-smlua_anim_util_register_animation('PAC_REVCHARGE', 256, 0, 0, 0, 71, { 
+ANIM_PAC_REV_CHARGE = "ANIM_PAC_REV_CHARGE"
+smlua_anim_util_register_animation(ANIM_PAC_REV_CHARGE, 256, 0, 0, 0, 71, { 
 	0, 181, 181, 182, 183, 184, 185, 186, 188, 
 	189, 191, 192, 194, 195, 197, 198, 199, 200, 
 	200, 200, 200, 200, 199, 198, 197, 195, 194, 
@@ -795,7 +798,8 @@ smlua_anim_util_register_animation('PAC_REVCHARGE', 256, 0, 0, 0, 71, {
 
 });
 
-smlua_anim_util_register_animation('PAC_REVROLL', 256, 0, 0, 0, 9, { 
+ANIM_PAC_REV_ROLL = "ANIM_PAC_REV_ROLL"
+smlua_anim_util_register_animation(ANIM_PAC_REV_ROLL, 256, 0, 0, 0, 9, { 
 	0, 29, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 16383, 16383, 16383, 16383, 16383, 
 	16383, 16383, 16383, 16383, 16383, 0, 0, 0, 0, 
