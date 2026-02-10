@@ -172,6 +172,7 @@ local function act_pac_kick(m)
     play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAHOO);
 
     pac_air_action_step(m, ACT_FREEFALL_LAND, CHAR_ANIM_AIR_KICK, 0);
+    smlua_anim_util_set_animation(m.marioObj, "PAC_FLIPKICK")
     if (m.action == ACT_FREEFALL_LAND) then
         queue_rumble_data_mario(m, 5, 40);
     end
@@ -185,7 +186,7 @@ local function act_pac_rev_charge(m)
         return set_mario_action(m, ACT_PAC_KICK, 0)
     end
     perform_ground_step(m)
-    set_character_animation(m, CHAR_ANIM_RUNNING)
+    smlua_anim_util_set_animation(m.marioObj, "PAC_REVCHARGE")
     m.marioObj.header.gfx.animInfo.animAccel = 0x8000 * m.actionTimer
     m.vel.x = math.lerp(m.vel.x, 0, 0.3)
     m.vel.z = math.lerp(m.vel.z, 0, 0.3)
@@ -223,7 +224,7 @@ local function act_pac_rev_roll(m)
         mario_bonk_reflection(m, 0)
         m.forwardVel = m.forwardVel * 0.8
     end
-    set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
+    smlua_anim_util_set_animation(m.marioObj, "PAC_REVROLL")
 
     if m.actionState == 0 then
         if m.prevAction ~= ACT_PAC_REV_ROLL_AIR then
@@ -287,6 +288,7 @@ local function act_pac_butt_bounce(m)
     end
 
     pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, CHAR_ANIM_BEING_GRABBED, 0);
+    smlua_anim_util_set_animation(m.marioObj, "PAC_BUTTBOUNCE")
     if (m.action == ACT_PAC_BUTT_BOUNCE_LAND) then
         queue_rumble_data_mario(m, 5, 40);
     end
