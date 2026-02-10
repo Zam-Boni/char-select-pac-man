@@ -73,48 +73,68 @@ local function pac_air_action_step(m, landAction, animation, stepArg)
     return stepResult;
 end
 
-
 function get_mario_slope_steepness(m)
     local floor = m.floor
-    local slopeAngle = atan2s(floor.normal.z, floor.normal.x)
-    local angle = math.sqrt(floor.normal.x ^ 2 + floor.normal.z ^ 2)
-    if math.abs(math.s16(m.faceAngle.y - slopeAngle)) > 0x4000 then
-        angle = angle * -1.0
+    if not floor then return 0 end
+
+    local nx = floor.normal.x
+    local ny = floor.normal.y
+    local nz = floor.normal.z
+
+    if ny == 0 then
+        return 0
     end
-    return angle
+
+    local slopeMag = math.sqrt(nx * nx + nz * nz) / ny
+
+    local yaw = m.faceAngle.y
+    local fx = sins(yaw)
+    local fz = coss(yaw)
+
+    local dx = -nx
+    local dz = -nz
+
+    local dLen = math.sqrt(dx * dx + dz * dz)
+    if dLen == 0 then
+        return 0
+    end
+
+    dx = dx / dLen
+    dz = dz / dLen
+
+    local alignment = dx * fx + dz * fz
+
+    return slopeMag * alignment
 end
+
+
 
 ---@param m MarioState
 ---@param e table ExtraState
 function mario_detatch_from_floor(m, e, airAction, arg)
+    if not m.floor then return 0 end
     if airAction == nil then airAction = ACT_FREEFALL end
 
-    if e.floorSteep == nil then
-        e.floorSteep = get_mario_slope_steepness(m)
+    local slope = get_mario_slope_steepness(m)
+    if e.prevSlope == nil then
+        e.prevSlope = slope
+        return 0
     end
 
-    local prevSlope = e.floorSteep
-    local slope = get_mario_slope_steepness(m)
-    local slopeDif = math.abs(prevSlope - slope)
-
-    e.floorSteep = slope
-
-    -- DETACH: sudden slope change
-    local velY = m.forwardVel * -prevSlope * (m.forwardVel < 0 and -1 or 1)
-    local velF = m.forwardVel * (1 - math.abs(prevSlope)*0.5) * (m.forwardVel < 0 and -1 or 1)
-    local velAngle = coss(atan2s(velY, velF))
-    if (slopeDif > 0.4 and (velAngle < slope - 0.1 or velAngle > slope + 0.1) and prevSlope < 0) or (m.pos.y > m.floorHeight + 10) then
-        djui_chat_message_create(tostring(slopeDif > 0.4))
-        djui_chat_message_create(tostring((velAngle < slope - 0.1 or velAngle > slope + 0.1) and prevSlope < 0))
-        djui_chat_message_create(tostring((m.pos.y > m.floorHeight + 10)))
+    local slopeDif = slope - e.prevSlope
+    if (math.abs(slopeDif) > 0.35 and slope < e.prevSlope) or m.pos.y > m.floorHeight + 10 then
+        local speed = m.forwardVel
+        local velY = math.max(0, e.prevSlope) * math.abs(speed)
         m.vel.y = velY
-        m.forwardVel = velF
-        e.floorSteep = nil
+        m.forwardVel = speed
+        e.prevSlope = nil
         return set_mario_action(m, airAction, arg)
     end
 
+    e.prevSlope = slope
     return 0
 end
+
 
 local ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
 local ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
@@ -211,18 +231,17 @@ end
 ---@param m MarioState
 local function act_pac_rev_roll(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
 
     local detach = mario_detatch_from_floor(m, gExtrasStates[m.playerIndex], ACT_PAC_REV_ROLL_AIR, m.actionTimer)
-    if detach ~= 0 then
+    if detach ~= 0 then 
         return detach
     end
-
     local step = perform_ground_step(m)
     if step == AIR_STEP_HIT_WALL then
         mario_bonk_reflection(m, 0)
         m.forwardVel = m.forwardVel * 0.8
     end
+
     set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
 
     if m.actionState == 0 then
@@ -330,6 +349,8 @@ local overrideActs = {
 }
 
 local function before_pac_action(m, nextAct)
+    local e = gExtrasStates[m.playerIndex]
+    e.prevSlope = nil
     if overrideActs[nextAct] then
         if overrideActs[nextAct] ~= false then
             return set_mario_action(m, overrideActs[nextAct], 0)
