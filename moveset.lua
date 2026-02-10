@@ -259,7 +259,7 @@ local function act_pac_rev_roll_air(m)
     if step == AIR_STEP_LANDED then
         set_mario_action(m, ACT_PAC_REV_ROLL, 0);
     end
-    set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
+    smlua_anim_util_set_animation(m.marioObj, "PAC_REVROLL")
 
     if m.actionState == 0 then
         m.actionTimer = m.actionArg
