@@ -148,7 +148,7 @@ local function act_pac_jump(m)
             audio_sample_play(SAMPLE_BOUNCE, m.pos, 0.5)
         end
     else
-        play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAHOO);
+        play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAH_WAH_HOO);
     end
 
 

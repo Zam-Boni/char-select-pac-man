@@ -89,6 +89,49 @@ local VOICETABLE_ZBPACMAN = {
 	[CHAR_SOUND_MAMA_MIA] =          'zbpm-credit.ogg' -- Booted out of level
 }
 
+local VOICETABLE_ZBGHOST = {
+    [CHAR_SOUND_OKEY_DOKEY] =        'zbbl-siren.ogg', -- Starting game
+	[CHAR_SOUND_LETS_A_GO] =         'zbbl-siren.ogg', -- Starting level
+	[CHAR_SOUND_GAME_OVER] =         'zbbl-die.ogg', -- Game Overed
+	[CHAR_SOUND_PUNCH_YAH] =         'zbpm-punch1.ogg', -- Punch 1
+	[CHAR_SOUND_PUNCH_WAH] =         'zbpm-punch2.ogg', -- Punch 2
+	[CHAR_SOUND_PUNCH_HOO] =         'zbpm-kick.ogg', -- Punch 3
+	[CHAR_SOUND_YAH_WAH_HOO] =       'zbbl-siren.ogg', -- First Jump Sounds
+	[CHAR_SOUND_HOOHOO] =            'zbbl-siren2.ogg', -- Second jump sound
+	[CHAR_SOUND_YAHOO_WAHA_YIPPEE] = 'zbbl-siren4.ogg', -- Triple jump sounds
+	[CHAR_SOUND_UH] =                'zbbl-siren2.ogg', -- Soft wall bonk
+	[CHAR_SOUND_UH2] =               'zbbl-siren4.ogg', -- Quick ledge get up
+	[CHAR_SOUND_UH2_2] =             'zbbl-siren.ogg', -- Landing after long jump
+	[CHAR_SOUND_DOH] =               'zbbl-siren4.ogg', -- Hard wall bonk
+	[CHAR_SOUND_OOOF] =              'zbbl-hurt.ogg', -- Attacked in air
+	[CHAR_SOUND_OOOF2] =             'zbbl-hurt.ogg', -- Land from hard bonk
+	[CHAR_SOUND_HAHA] =              'zbpm-fruit.ogg', -- Landing triple jump
+	[CHAR_SOUND_YAHOO] =             'zbpm-longjump.ogg', -- Long jump
+	[CHAR_SOUND_DOH] =               'zbbl-siren4.ogg', -- Long jump wall bonk
+	[CHAR_SOUND_WHOA] =              'zbbl-siren4.ogg', -- Grabbing ledge
+	[CHAR_SOUND_EEUH] =              'zbpm-kick.ogg', -- Climbing over ledge
+	[CHAR_SOUND_WAAAOOOW] =          'zbbl-die.ogg', -- Falling a long distance
+	[CHAR_SOUND_TWIRL_BOUNCE] =      'zbpm-longjump.ogg', -- Bouncing off of a flower spring
+	[CHAR_SOUND_GROUND_POUND_WAH] =  'zbpm-fruit.ogg', -- Ground Pound after startup
+	[CHAR_SOUND_WAH2] =              'zbbl-hurt.ogg', -- Throwing something
+	[CHAR_SOUND_HRMM] =              'zbpm-kick.ogg', -- Lifting something
+	[CHAR_SOUND_HERE_WE_GO] =        'zbbl-siren.ogg', -- Star get
+	[CHAR_SOUND_SO_LONGA_BOWSER] =   'zbpm-hothot.ogg', -- Throwing Bowser
+--DAMAGE
+	[CHAR_SOUND_ATTACKED] =          'zbbl-hurt.ogg', -- Damaged
+	[CHAR_SOUND_PANTING] =           'zbbl-siren.ogg', -- Low health
+	[CHAR_SOUND_PANTING_COLD] =      'zbbl-siren2.ogg', -- Getting cold
+	[CHAR_SOUND_ON_FIRE] =           'zbbl-die.ogg', -- Burned
+--COUGHING (USED IN THE GAS MAZE)
+	[CHAR_SOUND_COUGHING1] =         'zbbl-hurt.ogg', -- Cough take 1
+	[CHAR_SOUND_COUGHING2] =         'zbbl-hurt.ogg', -- Cough take 2
+	[CHAR_SOUND_COUGHING3] =         'zbbl-hurt.ogg', -- Cough take 3
+--DEATH
+	[CHAR_SOUND_DYING] =             'zbbl-die.ogg', -- Dying from damage
+	[CHAR_SOUND_DROWNING] =          'zbbl-die.ogg', -- Running out of air underwater
+	[CHAR_SOUND_MAMA_MIA] =          'zbbl-siren.ogg' -- Booted out of level
+}
+
 -- All Located in "actors" folder
 -- (Models do not exist in template)
 --[[
@@ -281,6 +324,8 @@ _G.charSelect.character_add_voice(E_MODEL_ZBPACMAN, VOICETABLE_ZBPACMAN)
 _G.charSelect.character_add_voice(E_MODEL_ZBPACMANR, VOICETABLE_ZBPACMAN)
 _G.charSelect.character_add_voice(E_MODEL_ZBMSPACMAN, VOICETABLE_ZBPACMAN)
 _G.charSelect.character_add_voice(E_MODEL_ZBMSPACMANR, VOICETABLE_ZBPACMAN)
+_G.charSelect.character_add_voice(E_MODEL_ZBBLINKY, VOICETABLE_ZBGHOST)
+_G.charSelect.character_add_voice(E_MODEL_ZBBLINKYR, VOICETABLE_ZBGHOST)
 
 _G.charSelect.character_add_animations(E_MODEL_ZBPACMAN, ANIMS_PACMAN)
 _G.charSelect.character_add_animations(E_MODEL_ZBPACMANR, ANIMS_PACMAN)
