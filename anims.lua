@@ -1136,7 +1136,8 @@ smlua_anim_util_register_animation(ANIM_PAC_REV_ROLL, 256, 0, 0, 0, 10, {
 
 });
 
-smlua_anim_util_register_animation('ANIM_PAC_RUNNING', 256, 0, 0, 0, 96, { 
+ANIM_PAC_RUNNING = "ANIM_PAC_RUNNING"
+smlua_anim_util_register_animation(ANIM_PAC_RUNNING, 256, 0, 0, 0, 96, { 
 	0, 228, 228, 227, 227, 226, 225, 224, 223, 
 	221, 220, 218, 216, 214, 211, 209, 206, 204, 
 	201, 198, 195, 192, 189, 186, 183, 179, 185, 
@@ -1854,7 +1855,8 @@ smlua_anim_util_register_animation('ANIM_PAC_RUNNING', 256, 0, 0, 0, 96, {
 
 });
 
-smlua_anim_util_register_animation('ANIM_PAC_JUMP', 257, 0, 0, 0, 20, { 
+ANIM_PAC_JUMP = "ANIM_PAC_JUMP"
+smlua_anim_util_register_animation(ANIM_PAC_JUMP, 257, 0, 0, 0, 20, { 
 	0, 125, 130, 143, 158, 172, 181, 186, 190, 
 	193, 196, 198, 200, 202, 203, 204, 205, 205, 
 	205, 206, 0, 0, 0, 0, 0, 0, 0, 
@@ -2055,7 +2057,8 @@ smlua_anim_util_register_animation('ANIM_PAC_JUMP', 257, 0, 0, 0, 20, {
 
 });
 
-smlua_anim_util_register_animation('ANIM_PAC_W2_JUMP1', 257, 0, 0, 0, 4, { 
+ANIM_PAC_W2_JUMP1 = "ANIM_PAC_W2_JUMP1"
+smlua_anim_util_register_animation(ANIM_PAC_W2_JUMP1, 257, 0, 0, 0, 4, { 
 	0, 181, 0, 0, 0, 0, 0, 16383, 16383, 
 	16383, 16383, 0, 0, 0, 0, 0, 0, 0, 
 	1, 1, 1, 1, 65534, 65534, 65534, 65534, 16384, 
@@ -2125,7 +2128,8 @@ smlua_anim_util_register_animation('ANIM_PAC_W2_JUMP1', 257, 0, 0, 0, 4, {
 
 });
 
-smlua_anim_util_register_animation('ANIM_PAC_W2_JUMP2', 257, 0, 0, 0, 11, { 
+ANIM_PAC_W2_JUMP2 = "ANIM_PAC_W2_JUMP2"
+smlua_anim_util_register_animation(ANIM_PAC_W2_JUMP2, 257, 0, 0, 0, 11, { 
 	0, 181, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 16383, 16383, 16383, 
 	16383, 16383, 16383, 16383, 16383, 16383, 16383, 16383, 16383, 
@@ -2257,7 +2261,8 @@ smlua_anim_util_register_animation('ANIM_PAC_W2_JUMP2', 257, 0, 0, 0, 11, {
 
 });
 
-smlua_anim_util_register_animation('ANIM_PAC_IDLE', 257, 0, 0, 0, 30, { 
+ANIM_PAC_IDLE = "ANIM_PAC_IDLE"
+smlua_anim_util_register_animation(ANIM_PAC_IDLE, 257, 0, 0, 0, 30, { 
 	0, 181, 196, 206, 213, 217, 220, 220, 221, 
 	221, 220, 218, 216, 211, 204, 194, 181, 183, 
 	184, 185, 186, 186, 186, 186, 186, 186, 186, 
