@@ -1,6 +1,0 @@
-#include "anim_C2.inc.c"
-#include "anim_C3.inc.c"
-#include "anim_C4.inc.c"
-#include "anim_C5.inc.c"#include "anim__72.inc.c"
-#include "anim__4D.inc.c"
-#include "anim__13.inc.c"

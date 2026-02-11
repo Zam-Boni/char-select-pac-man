@@ -445,7 +445,7 @@ local function act_pac_butt_bounce(m)
         m.actionState = m.actionState + 1
     end
 
-    pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, CHAR_ANIM_GROUND_POUND, 0);
+    pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, CHAR_ANIM_START_GROUND_POUND, 0);
     if (m.action == ACT_PAC_BUTT_BOUNCE_LAND) then
         queue_rumble_data_mario(m, 5, 40);
     end
