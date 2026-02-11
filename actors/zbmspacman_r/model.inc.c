@@ -3105,6 +3105,106 @@ Gfx zbmspacman_r_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_tri_
 	gsSPEndDisplayList(),
 };
 
+Vtx zbmspacman_r_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_vtx_0[55] = {
+	{{{166, -13, -17}, 0, {-16, -16}, {0x7A, 0x09, 0x22, 0xFF}}},
+	{{{162, 14, -11}, 0, {-16, -16}, {0x7A, 0x0B, 0x22, 0xFF}}},
+	{{{153, 7, 24}, 0, {-16, -16}, {0x49, 0xF3, 0x67, 0xFF}}},
+	{{{155, -15, 21}, 0, {-16, -16}, {0x47, 0xF8, 0x69, 0xFF}}},
+	{{{101, -29, 15}, 0, {-16, -16}, {0x42, 0x97, 0x19, 0xFF}}},
+	{{{98, 10, 29}, 0, {-16, -16}, {0x4F, 0x09, 0x63, 0xFF}}},
+	{{{90, -3, 52}, 0, {-16, -16}, {0x48, 0x03, 0x69, 0xFF}}},
+	{{{84, 48, 24}, 0, {-16, -16}, {0x1A, 0x4F, 0x60, 0xFF}}},
+	{{{139, 53, 25}, 0, {-16, -16}, {0xFC, 0x13, 0x7D, 0xFF}}},
+	{{{123, 72, 21}, 0, {-16, -16}, {0xFC, 0x17, 0x7D, 0xFF}}},
+	{{{46, 49, 45}, 0, {-16, -16}, {0xF7, 0x48, 0x68, 0xFF}}},
+	{{{56, 80, 1}, 0, {-16, -16}, {0x07, 0x7D, 0xED, 0xFF}}},
+	{{{84, 60, -7}, 0, {-16, -16}, {0x02, 0x70, 0xC4, 0xFF}}},
+	{{{126, 84, -3}, 0, {-16, -16}, {0xC3, 0x67, 0x2A, 0xFF}}},
+	{{{123, 72, 21}, 0, {-16, -16}, {0xC4, 0x67, 0x2C, 0xFF}}},
+	{{{89, 18, -34}, 0, {-16, -16}, {0x07, 0x0A, 0x82, 0xFF}}},
+	{{{126, 84, -3}, 0, {-16, -16}, {0x06, 0x33, 0x8C, 0xFF}}},
+	{{{146, 59, -8}, 0, {-16, -16}, {0x17, 0x2A, 0x8A, 0xFF}}},
+	{{{33, 7, -37}, 0, {-16, -16}, {0xDF, 0xF9, 0x85, 0xFF}}},
+	{{{94, -22, -18}, 0, {-16, -16}, {0x1A, 0xA8, 0xA8, 0xFF}}},
+	{{{166, -13, -17}, 0, {-16, -16}, {0x1E, 0x07, 0x85, 0xFF}}},
+	{{{162, 14, -11}, 0, {-16, -16}, {0x27, 0x20, 0x8B, 0xFF}}},
+	{{{56, -47, -5}, 0, {-16, -16}, {0x03, 0x8A, 0xD1, 0xFF}}},
+	{{{32, -43, 0}, 0, {-16, -16}, {0x33, 0x95, 0xD3, 0xFF}}},
+	{{{45, -29, 52}, 0, {-16, -16}, {0xE7, 0xBC, 0x68, 0xFF}}},
+	{{{88, -34, 39}, 0, {-16, -16}, {0x3D, 0xA6, 0x41, 0xFF}}},
+	{{{155, -15, 21}, 0, {-16, -16}, {0x15, 0x83, 0xF6, 0xFF}}},
+	{{{166, -13, -17}, 0, {-16, -16}, {0x10, 0x82, 0xFE, 0xFF}}},
+	{{{18, 30, 41}, 0, {-16, -16}, {0xC9, 0x2E, 0x69, 0xFF}}},
+	{{{8, 58, -2}, 0, {-16, -16}, {0xAF, 0x5D, 0xE2, 0xFF}}},
+	{{{-4, 38, 0}, 0, {-16, -16}, {0xD9, 0x72, 0xD8, 0xFF}}},
+	{{{14, -1, -22}, 0, {-16, -16}, {0x04, 0x04, 0x81, 0xFF}}},
+	{{{2, -5, -33}, 0, {-16, -16}, {0xFA, 0x03, 0x81, 0xFF}}},
+	{{{24, -59, -3}, 0, {-16, -16}, {0x26, 0x8D, 0xDB, 0xFF}}},
+	{{{23, -29, 36}, 0, {-16, -16}, {0x17, 0xC5, 0x6E, 0xFF}}},
+	{{{0, 21, 37}, 0, {-16, -16}, {0x05, 0x44, 0x6B, 0xFF}}},
+	{{{-15, 23, 43}, 0, {-16, -16}, {0xD4, 0x3B, 0x67, 0xFF}}},
+	{{{15, -39, 42}, 0, {-16, -16}, {0x13, 0xBA, 0x68, 0xFF}}},
+	{{{0, -35, 32}, 0, {-16, -16}, {0xA4, 0xB8, 0x32, 0xFF}}},
+	{{{-21, 9, 33}, 0, {-16, -16}, {0x8D, 0xE6, 0x2F, 0xFF}}},
+	{{{-22, 43, -3}, 0, {-16, -16}, {0xC3, 0x68, 0xDA, 0xFF}}},
+	{{{-25, 24, 0}, 0, {-16, -16}, {0x84, 0xFB, 0xE5, 0xFF}}},
+	{{{-8, -12, -20}, 0, {-16, -16}, {0x9B, 0xD0, 0xC4, 0xFF}}},
+	{{{6, -49, 0}, 0, {-16, -16}, {0xAB, 0xA5, 0xE6, 0xFF}}},
+	{{{146, 59, -8}, 0, {-16, -16}, {0x5E, 0x4B, 0x29, 0xFF}}},
+	{{{126, 84, -3}, 0, {-16, -16}, {0x61, 0x44, 0x2E, 0xFF}}},
+	{{{123, 72, 21}, 0, {-16, -16}, {0x5D, 0x4C, 0x28, 0xFF}}},
+	{{{139, 53, 25}, 0, {-16, -16}, {0x5A, 0x53, 0x22, 0xFF}}},
+	{{{105, 17, 3}, 0, {-16, -16}, {0x77, 0x2C, 0x03, 0xFF}}},
+	{{{98, 10, 29}, 0, {-16, -16}, {0x6E, 0x30, 0x2A, 0xFF}}},
+	{{{153, 7, 24}, 0, {-16, -16}, {0x0C, 0x7B, 0x1E, 0xFF}}},
+	{{{139, 53, 25}, 0, {-16, -16}, {0x5B, 0xA8, 0x03, 0xFF}}},
+	{{{146, 59, -8}, 0, {-16, -16}, {0x59, 0xA6, 0xF5, 0xFF}}},
+	{{{89, 18, -34}, 0, {-16, -16}, {0x70, 0x25, 0xD1, 0xFF}}},
+	{{{162, 14, -11}, 0, {-16, -16}, {0x0B, 0x7D, 0x13, 0xFF}}},
+};
+
+Gfx zbmspacman_r_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_tri_0[] = {
+	gsSPVertex(zbmspacman_r_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_vtx_0 + 0, 55, 0),
+	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+	gsSP2Triangles(4, 3, 2, 0, 4, 2, 5, 0),
+	gsSP2Triangles(4, 5, 6, 0, 5, 7, 6, 0),
+	gsSP2Triangles(7, 5, 8, 0, 8, 9, 7, 0),
+	gsSP2Triangles(6, 7, 10, 0, 10, 7, 11, 0),
+	gsSP2Triangles(11, 7, 12, 0, 12, 7, 13, 0),
+	gsSP2Triangles(7, 14, 13, 0, 11, 12, 15, 0),
+	gsSP2Triangles(16, 15, 12, 0, 15, 16, 17, 0),
+	gsSP2Triangles(11, 15, 18, 0, 18, 15, 19, 0),
+	gsSP2Triangles(20, 19, 15, 0, 15, 21, 20, 0),
+	gsSP2Triangles(22, 18, 19, 0, 18, 22, 23, 0),
+	gsSP2Triangles(22, 24, 23, 0, 24, 22, 25, 0),
+	gsSP2Triangles(4, 25, 22, 0, 4, 22, 19, 0),
+	gsSP2Triangles(19, 26, 4, 0, 26, 19, 27, 0),
+	gsSP2Triangles(25, 4, 6, 0, 25, 6, 24, 0),
+	gsSP2Triangles(24, 6, 10, 0, 24, 10, 28, 0),
+	gsSP2Triangles(10, 29, 28, 0, 10, 11, 29, 0),
+	gsSP2Triangles(29, 11, 18, 0, 29, 18, 30, 0),
+	gsSP2Triangles(18, 31, 30, 0, 23, 31, 18, 0),
+	gsSP2Triangles(32, 31, 23, 0, 32, 23, 33, 0),
+	gsSP2Triangles(33, 23, 34, 0, 24, 34, 23, 0),
+	gsSP2Triangles(34, 24, 28, 0, 35, 34, 28, 0),
+	gsSP2Triangles(30, 35, 28, 0, 28, 29, 30, 0),
+	gsSP2Triangles(36, 35, 30, 0, 37, 35, 36, 0),
+	gsSP2Triangles(36, 38, 37, 0, 36, 39, 38, 0),
+	gsSP2Triangles(40, 39, 36, 0, 36, 30, 40, 0),
+	gsSP2Triangles(40, 30, 31, 0, 40, 31, 32, 0),
+	gsSP2Triangles(32, 41, 40, 0, 32, 42, 41, 0),
+	gsSP2Triangles(33, 42, 32, 0, 33, 43, 42, 0),
+	gsSP2Triangles(37, 43, 33, 0, 33, 34, 37, 0),
+	gsSP2Triangles(37, 34, 35, 0, 37, 38, 43, 0),
+	gsSP2Triangles(42, 43, 38, 0, 38, 39, 42, 0),
+	gsSP2Triangles(39, 41, 42, 0, 40, 41, 39, 0),
+	gsSP2Triangles(44, 45, 46, 0, 46, 47, 44, 0),
+	gsSP2Triangles(48, 49, 50, 0, 51, 49, 48, 0),
+	gsSP2Triangles(51, 48, 52, 0, 52, 48, 53, 0),
+	gsSP2Triangles(54, 53, 48, 0, 48, 50, 54, 0),
+	gsSPEndDisplayList(),
+};
+
 Vtx zbmspacman_r_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_vtx_0[28] = {
 	{{{13, -52, 37}, 0, {880, 496}, {0xB0, 0xD6, 0x59, 0xFF}}},
 	{{{13, -52, -30}, 0, {880, 240}, {0xAA, 0xBA, 0xC2, 0xFF}}},
@@ -3163,6 +3263,191 @@ Vtx zbmspacman_r_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4_vtx_0[4] = {
 Gfx zbmspacman_r_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4_tri_0[] = {
 	gsSPVertex(zbmspacman_r_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4_vtx_0 + 0, 4, 0),
 	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+	gsSPEndDisplayList(),
+};
+
+Vtx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_vtx_0[36] = {
+	{{{131, 47, -1}, 0, {12, -864}, {0xE4, 0x5C, 0xAE, 0xFF}}},
+	{{{107, -19, -33}, 0, {-618, -1060}, {0xCE, 0x0E, 0x8C, 0xFF}}},
+	{{{78, 11, 40}, 0, {-320, -274}, {0xD2, 0x40, 0x9D, 0xFF}}},
+	{{{70, -52, 35}, 0, {-896, -292}, {0xC6, 0xDB, 0x95, 0xFF}}},
+	{{{114, -92, -11}, 0, {-1240, -904}, {0xD0, 0xB9, 0xA2, 0xFF}}},
+	{{{192, 11, -2}, 0, {-1092, -1092}, {0x53, 0x22, 0xA6, 0xFF}}},
+	{{{107, -19, -33}, 0, {-1092, -1092}, {0xCE, 0x0E, 0x8C, 0xFF}}},
+	{{{131, 47, -1}, 0, {-1092, -1092}, {0xE4, 0x5C, 0xAE, 0xFF}}},
+	{{{182, -72, -8}, 0, {-1092, -1092}, {0x4A, 0xD9, 0xA0, 0xFF}}},
+	{{{246, 29, 128}, 0, {-1092, -1092}, {0x71, 0x29, 0xD6, 0xFF}}},
+	{{{183, 100, 86}, 0, {-1092, -1092}, {0x14, 0x7B, 0xE9, 0xFF}}},
+	{{{129, 65, 103}, 0, {-1092, -1092}, {0xA4, 0x4D, 0x29, 0xFF}}},
+	{{{78, 11, 40}, 0, {-1092, -1092}, {0xD2, 0x40, 0x9D, 0xFF}}},
+	{{{45, 49, 53}, 0, {-1092, -1092}, {0x17, 0x3A, 0x92, 0xFF}}},
+	{{{18, -13, 33}, 0, {-1092, -1092}, {0x01, 0x0A, 0x81, 0xFF}}},
+	{{{70, -52, 35}, 0, {-1092, -1092}, {0xC6, 0xDB, 0x95, 0xFF}}},
+	{{{29, -82, 43}, 0, {-1092, -1092}, {0x0B, 0xD2, 0x8A, 0xFF}}},
+	{{{106, -124, 90}, 0, {-1092, -1092}, {0x98, 0xBB, 0x17, 0xFF}}},
+	{{{114, -92, -11}, 0, {-1092, -1092}, {0xD0, 0xB9, 0xA2, 0xFF}}},
+	{{{151, -168, 67}, 0, {-1092, -1092}, {0xF7, 0x88, 0xD8, 0xFF}}},
+	{{{228, -121, 117}, 0, {-1092, -1092}, {0x65, 0xC4, 0xCF, 0xFF}}},
+	{{{181, -167, 138}, 0, {-1092, -1092}, {0x08, 0x84, 0x1B, 0xFF}}},
+	{{{273, -105, 188}, 0, {-1092, -1092}, {0x6D, 0xC5, 0x1E, 0xFF}}},
+	{{{285, -6, 196}, 0, {-1092, -1092}, {0x76, 0x1B, 0x26, 0xFF}}},
+	{{{211, 81, 156}, 0, {-1092, -1092}, {0x26, 0x71, 0x2C, 0xFF}}},
+	{{{228, 1, 228}, 0, {-1092, -1092}, {0xFC, 0x21, 0x7A, 0xFF}}},
+	{{{192, 42, 190}, 0, {-1092, -1092}, {0xC4, 0x36, 0x62, 0xFF}}},
+	{{{160, 65, 148}, 0, {-1092, -1092}, {0xB0, 0x43, 0x48, 0xFF}}},
+	{{{137, -137, 134}, 0, {-1092, -1092}, {0xA3, 0xC7, 0x41, 0xFF}}},
+	{{{73, 11, 60}, 0, {-1092, -1092}, {0xBC, 0xFA, 0x6B, 0xFF}}},
+	{{{45, 49, 53}, 0, {-1092, -1092}, {0xC9, 0xEC, 0x71, 0xFF}}},
+	{{{18, -13, 33}, 0, {-1092, -1092}, {0xCD, 0xFD, 0x74, 0xFF}}},
+	{{{65, -53, 55}, 0, {-1092, -1092}, {0xBB, 0x08, 0x6A, 0xFF}}},
+	{{{29, -82, 43}, 0, {-1092, -1092}, {0xCD, 0x10, 0x73, 0xFF}}},
+	{{{171, -129, 178}, 0, {-1092, -1092}, {0xB6, 0xCD, 0x5A, 0xFF}}},
+	{{{216, -104, 220}, 0, {-1092, -1092}, {0xF4, 0xCF, 0x74, 0xFF}}},
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_tri_0[] = {
+	gsSPVertex(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_vtx_0 + 0, 36, 0),
+	gsSP2Triangles(0, 1, 2, 0, 1, 3, 2, 0),
+	gsSP2Triangles(1, 4, 3, 0, 5, 6, 7, 0),
+	gsSP2Triangles(8, 6, 5, 0, 8, 5, 9, 0),
+	gsSP2Triangles(5, 10, 9, 0, 7, 10, 5, 0),
+	gsSP2Triangles(10, 7, 11, 0, 12, 11, 7, 0),
+	gsSP2Triangles(12, 13, 11, 0, 12, 14, 13, 0),
+	gsSP2Triangles(15, 14, 12, 0, 16, 14, 15, 0),
+	gsSP2Triangles(16, 15, 17, 0, 18, 17, 15, 0),
+	gsSP2Triangles(17, 18, 19, 0, 8, 19, 18, 0),
+	gsSP2Triangles(18, 6, 8, 0, 20, 19, 8, 0),
+	gsSP2Triangles(19, 20, 21, 0, 20, 22, 21, 0),
+	gsSP2Triangles(23, 22, 20, 0, 20, 9, 23, 0),
+	gsSP2Triangles(20, 8, 9, 0, 24, 23, 9, 0),
+	gsSP2Triangles(25, 23, 24, 0, 25, 24, 26, 0),
+	gsSP2Triangles(26, 24, 27, 0, 27, 24, 10, 0),
+	gsSP2Triangles(24, 9, 10, 0, 10, 11, 27, 0),
+	gsSP2Triangles(27, 11, 28, 0, 11, 29, 28, 0),
+	gsSP2Triangles(11, 30, 29, 0, 30, 31, 29, 0),
+	gsSP2Triangles(32, 29, 31, 0, 32, 31, 33, 0),
+	gsSP2Triangles(32, 33, 17, 0, 32, 17, 28, 0),
+	gsSP2Triangles(17, 19, 28, 0, 19, 21, 28, 0),
+	gsSP2Triangles(28, 21, 34, 0, 34, 21, 35, 0),
+	gsSP2Triangles(21, 22, 35, 0, 35, 22, 25, 0),
+	gsSP2Triangles(22, 23, 25, 0, 35, 25, 26, 0),
+	gsSP2Triangles(26, 34, 35, 0, 26, 28, 34, 0),
+	gsSP2Triangles(26, 27, 28, 0, 29, 32, 28, 0),
+	gsSPEndDisplayList(),
+};
+
+Vtx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_vtx_1[30] = {
+	{{{4, -3, -32}, 0, {-16, -16}, {0x49, 0x1F, 0x9D, 0xFF}}},
+	{{{-19, 47, -4}, 0, {-16, -16}, {0x2E, 0x74, 0xE9, 0xFF}}},
+	{{{-2, 41, 0}, 0, {-16, -16}, {0xDD, 0x73, 0xD7, 0xFF}}},
+	{{{-13, 26, 41}, 0, {-16, -16}, {0x2F, 0x50, 0x57, 0xFF}}},
+	{{{1, 24, 35}, 0, {-16, -16}, {0xF8, 0x3F, 0x6E, 0xFF}}},
+	{{{23, -25, 35}, 0, {-16, -16}, {0x10, 0xC0, 0x6D, 0xFF}}},
+	{{{13, -37, 41}, 0, {-16, -16}, {0x57, 0xE5, 0x59, 0xFF}}},
+	{{{31, -39, 0}, 0, {-16, -16}, {0x3D, 0x98, 0xD7, 0xFF}}},
+	{{{24, -55, -4}, 0, {-16, -16}, {0x74, 0xD3, 0xE9, 0xFF}}},
+	{{{16, 1, -22}, 0, {-16, -16}, {0x04, 0xFF, 0x81, 0xFF}}},
+	{{{35, 9, -36}, 0, {-16, -16}, {0xE6, 0xF5, 0x84, 0xFF}}},
+	{{{11, 60, -3}, 0, {-16, -16}, {0xB2, 0x59, 0xD2, 0xFF}}},
+	{{{29, 62, 34}, 0, {-16, -16}, {0xCE, 0x59, 0x4B, 0xFF}}},
+	{{{29, 7, 48}, 0, {-16, -16}, {0xC0, 0xF9, 0x6E, 0xFF}}},
+	{{{75, -32, 65}, 0, {-16, -16}, {0x19, 0xB2, 0x61, 0xFF}}},
+	{{{55, -43, -3}, 0, {-16, -16}, {0x07, 0x8C, 0xCD, 0xFF}}},
+	{{{103, -25, 1}, 0, {-16, -16}, {0x65, 0xBF, 0xD6, 0xFF}}},
+	{{{85, 30, -32}, 0, {-16, -16}, {0x45, 0x1C, 0x99, 0xFF}}},
+	{{{58, 81, 0}, 0, {-16, -16}, {0x18, 0x79, 0xE3, 0xFF}}},
+	{{{54, 54, 44}, 0, {-16, -16}, {0x15, 0x51, 0x60, 0xFF}}},
+	{{{56, 11, 65}, 0, {-16, -16}, {0xF1, 0x13, 0x7D, 0xFF}}},
+	{{{95, -8, 52}, 0, {-16, -16}, {0x67, 0xF9, 0x4A, 0xFF}}},
+	{{{96, 39, 24}, 0, {-16, -16}, {0x6C, 0x3D, 0x1C, 0xFF}}},
+	{{{85, 15, 52}, 0, {-16, -16}, {0x44, 0x2D, 0x62, 0xFF}}},
+	{{{13, -37, 41}, 0, {-16, -16}, {0x9B, 0xB8, 0x1E, 0xFF}}},
+	{{{-15, -12, 7}, 0, {-16, -16}, {0x8B, 0xCF, 0xF8, 0xFF}}},
+	{{{24, -55, -4}, 0, {-16, -16}, {0xA1, 0xAF, 0xEC, 0xFF}}},
+	{{{-13, 26, 41}, 0, {-16, -16}, {0x87, 0xEB, 0x1F, 0xFF}}},
+	{{{-19, 47, -4}, 0, {-16, -16}, {0x83, 0xF4, 0xED, 0xFF}}},
+	{{{4, -3, -32}, 0, {-16, -16}, {0x99, 0xD5, 0xC4, 0xFF}}},
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_tri_1[] = {
+	gsSPVertex(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_vtx_1 + 0, 30, 0),
+	gsSP2Triangles(0, 1, 2, 0, 2, 1, 3, 0),
+	gsSP2Triangles(3, 4, 2, 0, 5, 4, 3, 0),
+	gsSP2Triangles(3, 6, 5, 0, 7, 5, 6, 0),
+	gsSP2Triangles(6, 8, 7, 0, 7, 8, 0, 0),
+	gsSP2Triangles(0, 9, 7, 0, 2, 9, 0, 0),
+	gsSP2Triangles(10, 9, 2, 0, 11, 10, 2, 0),
+	gsSP2Triangles(11, 2, 4, 0, 12, 11, 4, 0),
+	gsSP2Triangles(4, 13, 12, 0, 13, 4, 5, 0),
+	gsSP2Triangles(14, 13, 5, 0, 15, 14, 5, 0),
+	gsSP2Triangles(5, 7, 15, 0, 10, 15, 7, 0),
+	gsSP2Triangles(7, 9, 10, 0, 10, 16, 15, 0),
+	gsSP2Triangles(10, 17, 16, 0, 18, 17, 10, 0),
+	gsSP2Triangles(11, 18, 10, 0, 18, 11, 12, 0),
+	gsSP2Triangles(12, 19, 18, 0, 19, 12, 20, 0),
+	gsSP2Triangles(12, 13, 20, 0, 14, 20, 13, 0),
+	gsSP2Triangles(14, 21, 20, 0, 16, 21, 14, 0),
+	gsSP2Triangles(15, 16, 14, 0, 16, 22, 21, 0),
+	gsSP2Triangles(17, 22, 16, 0, 18, 22, 17, 0),
+	gsSP2Triangles(19, 22, 18, 0, 22, 19, 23, 0),
+	gsSP2Triangles(23, 19, 20, 0, 21, 23, 20, 0),
+	gsSP2Triangles(21, 22, 23, 0, 24, 25, 26, 0),
+	gsSP2Triangles(27, 25, 24, 0, 28, 25, 27, 0),
+	gsSP2Triangles(29, 25, 28, 0, 26, 25, 29, 0),
+	gsSPEndDisplayList(),
+};
+
+Vtx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4_vtx_0[7] = {
+	{{{114, -92, -11}, 0, {-114, 208}, {0x99, 0xCB, 0xCB, 0xFF}}},
+	{{{106, -124, 90}, 0, {-413, 660}, {0x9D, 0xB7, 0xE1, 0xFF}}},
+	{{{70, -52, 35}, 0, {224, 809}, {0x91, 0xE0, 0xCB, 0xFF}}},
+	{{{107, -19, -33}, 0, {512, 32}, {0x95, 0x12, 0xBE, 0xFF}}},
+	{{{78, 11, 40}, 0, {800, 809}, {0x9C, 0x40, 0xD3, 0xFF}}},
+	{{{131, 47, -1}, 0, {1138, 208}, {0xA8, 0x52, 0xD6, 0xFF}}},
+	{{{129, 65, 103}, 0, {1437, 660}, {0xB0, 0x61, 0xEE, 0xFF}}},
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4_tri_0[] = {
+	gsSPVertex(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4_vtx_0 + 0, 7, 0),
+	gsSP2Triangles(0, 1, 2, 0, 3, 0, 2, 0),
+	gsSP2Triangles(3, 2, 4, 0, 5, 3, 4, 0),
+	gsSP1Triangle(4, 6, 5, 0),
+	gsSPEndDisplayList(),
+};
+
+Vtx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_vtx_0[8] = {
+	{{{178, -177, 128}, 0, {0, 2048}, {0xA8, 0xB3, 0xCF, 0xFF}}},
+	{{{319, -248, -14}, 0, {0, 0}, {0xA8, 0xB3, 0xCF, 0xFF}}},
+	{{{349, -325, 53}, 0, {990, 0}, {0xA8, 0xB3, 0xCF, 0xFF}}},
+	{{{207, -253, 195}, 0, {990, 2048}, {0xA8, 0xB3, 0xCF, 0xFF}}},
+	{{{414, 206, 82}, 0, {990, 0}, {0xBD, 0x65, 0xD8, 0xFF}}},
+	{{{368, 146, 7}, 0, {0, 0}, {0xBD, 0x65, 0xD9, 0xFF}}},
+	{{{212, 96, 143}, 0, {0, 2048}, {0xBD, 0x65, 0xD9, 0xFF}}},
+	{{{258, 156, 218}, 0, {990, 2048}, {0xBD, 0x65, 0xD8, 0xFF}}},
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_tri_0[] = {
+	gsSPVertex(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_vtx_0 + 0, 8, 0),
+	gsSP2Triangles(0, 1, 2, 0, 3, 0, 2, 0),
+	gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
+	gsSPEndDisplayList(),
+};
+
+Vtx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_vtx_1[8] = {
+	{{{368, 146, 7}, 0, {990, 0}, {0xBD, 0x65, 0xD9, 0xFF}}},
+	{{{166, 37, 68}, 0, {0, 2048}, {0xBE, 0x65, 0xD9, 0xFF}}},
+	{{{212, 96, 143}, 0, {990, 2048}, {0xBD, 0x65, 0xD9, 0xFF}}},
+	{{{322, 87, -67}, 0, {0, 0}, {0xBE, 0x65, 0xD9, 0xFF}}},
+	{{{178, -177, 128}, 0, {990, 2048}, {0xA8, 0xB3, 0xCF, 0xFF}}},
+	{{{149, -100, 60}, 0, {0, 2048}, {0xA8, 0xB3, 0xCF, 0xFF}}},
+	{{{319, -248, -14}, 0, {990, 0}, {0xA8, 0xB3, 0xCF, 0xFF}}},
+	{{{290, -171, -81}, 0, {0, 0}, {0xA8, 0xB3, 0xCE, 0xFF}}},
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_tri_1[] = {
+	gsSPVertex(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_vtx_1 + 0, 8, 0),
+	gsSP2Triangles(0, 1, 2, 0, 0, 3, 1, 0),
+	gsSP2Triangles(4, 5, 6, 0, 5, 7, 6, 0),
 	gsSPEndDisplayList(),
 };
 
@@ -4213,6 +4498,20 @@ Gfx zbmspacman_r_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_
 	gsSPEndDisplayList(),
 };
 
+Gfx zbmspacman_r_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1[] = {
+	gsSPDisplayList(mat_zbmspacman_r_pacmanorange),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_zbmspacman_r_pacmanorange),
+	gsSPEndDisplayList(),
+};
+
+Gfx zbmspacman_r_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_Metal_0[] = {
+	gsSPDisplayList(mat_zbmspacman_r_Metal),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_zbmspacman_r_Metal),
+	gsSPEndDisplayList(),
+};
+
 Gfx zbmspacman_r_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1[] = {
 	gsSPDisplayList(mat_zbmspacman_r_pacmanorange),
 	gsSPDisplayList(zbmspacman_r_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_tri_0),
@@ -4238,6 +4537,58 @@ Gfx zbmspacman_r_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4_mat_override_M
 	gsSPDisplayList(mat_zbmspacman_r_Metal),
 	gsSPDisplayList(zbmspacman_r_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4_tri_0),
 	gsSPDisplayList(mat_revert_zbmspacman_r_Metal),
+	gsSPEndDisplayList(),
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1[] = {
+	gsSPDisplayList(mat_zbmspacman_r_pacmanred),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_zbmspacman_r_pacmanred),
+	gsSPDisplayList(mat_zbmspacman_r_pacmanorange),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_tri_1),
+	gsSPDisplayList(mat_revert_zbmspacman_r_pacmanorange),
+	gsSPEndDisplayList(),
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_Metal_0[] = {
+	gsSPDisplayList(mat_zbmspacman_r_Metal),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_tri_0),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_tri_1),
+	gsSPDisplayList(mat_revert_zbmspacman_r_Metal),
+	gsSPEndDisplayList(),
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4[] = {
+	gsSPDisplayList(mat_zbmspacman_r_pacmandot),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4_tri_0),
+	gsSPDisplayList(mat_revert_zbmspacman_r_pacmandot),
+	gsSPEndDisplayList(),
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4_mat_override_Metal_0[] = {
+	gsSPDisplayList(mat_zbmspacman_r_Metal),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4_tri_0),
+	gsSPDisplayList(mat_revert_zbmspacman_r_Metal),
+	gsSPEndDisplayList(),
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4[] = {
+	gsSPDisplayList(mat_zbmspacman_r_Wing_Tip),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_tri_0),
+	gsSPDisplayList(mat_revert_zbmspacman_r_Wing_Tip),
+	gsSPDisplayList(mat_zbmspacman_r_Wing_Base),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_tri_1),
+	gsSPDisplayList(mat_revert_zbmspacman_r_Wing_Base),
+	gsSPEndDisplayList(),
+};
+
+Gfx zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_Metal_0[] = {
+	gsSPDisplayList(mat_zbmspacman_r_Wing_Tip),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_tri_0),
+	gsSPDisplayList(mat_revert_zbmspacman_r_Wing_Tip),
+	gsSPDisplayList(mat_zbmspacman_r_Wing_Base),
+	gsSPDisplayList(zbmspacman_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_tri_1),
+	gsSPDisplayList(mat_revert_zbmspacman_r_Wing_Base),
 	gsSPEndDisplayList(),
 };
 

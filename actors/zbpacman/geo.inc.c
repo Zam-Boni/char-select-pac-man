@@ -1,17 +1,3 @@
-const GeoLayout zbpacman_Pac_Eat[] = {
-	GEO_NODE_START(),
-	GEO_OPEN_NODE(),
-		GEO_SWITCH_CASE(0, geo_switch_mario_eyes),
-		GEO_OPEN_NODE(),
-			GEO_NODE_START(),
-			GEO_OPEN_NODE(),
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Pac_Eat_Switch_Option_Pac_Eat_mesh_layer_5),
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, zbpacman_Pac_Eat_Switch_Option_Pac_Eat_mesh_layer_1),
-			GEO_CLOSE_NODE(),
-		GEO_CLOSE_NODE(),
-	GEO_CLOSE_NODE(),
-	GEO_RETURN(),
-};
 const GeoLayout zbpacman_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
@@ -29,6 +15,13 @@ const GeoLayout zbpacman_Right_Hand_Open[] = {
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
+const GeoLayout zbpacman_Right_Hand_Peace[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 60, 0, 0, zbpacman_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
 const GeoLayout zbpacman_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
@@ -39,16 +32,13 @@ const GeoLayout zbpacman_Right_Hand_Cap[] = {
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
-const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Pac_Eat[] = {
+const GeoLayout zbpacman_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_SWITCH_CASE(0, geo_switch_mario_eyes),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 60, 0, 0, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1),
 		GEO_OPEN_NODE(),
-			GEO_NODE_START(),
-			GEO_OPEN_NODE(),
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Pac_Eat_Switch_Option_Pac_Eat_mesh_layer_5),
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Pac_Eat_Switch_Option_Pac_Eat_mesh_layer_1),
-			GEO_CLOSE_NODE(),
+			GEO_DISPLAY_LIST(LAYER_ALPHA, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4),
+			GEO_DISPLAY_LIST(LAYER_ALPHA, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4),
 		GEO_CLOSE_NODE(),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
@@ -70,13 +60,10 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_R
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
-const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Cap[] = {
+const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 47, 0, 0, zbpacman_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1),
-		GEO_OPEN_NODE(),
-			GEO_BILLBOARD_WITH_PARAMS_AND_DL(LAYER_TRANSPARENT, 75, 0, 48, zbpacman_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4),
-		GEO_CLOSE_NODE(),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 60, 0, 0, zbpacman_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
@@ -90,12 +77,27 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_R
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
-const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Cap[] = {
+const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 47, 0, 0, zbpacman_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 60, 0, 0, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1),
 		GEO_OPEN_NODE(),
-			GEO_BILLBOARD_WITH_PARAMS_AND_DL(LAYER_TRANSPARENT, 75, 0, 48, zbpacman_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4),
+			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4),
+			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4),
+		GEO_CLOSE_NODE(),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
+const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_opt1[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_SWITCH_CASE(0, geo_switch_mario_eyes),
+		GEO_OPEN_NODE(),
+			GEO_NODE_START(),
+			GEO_OPEN_NODE(),
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_Buttons_1),
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_1_mat_override_Buttons_1),
+			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
@@ -103,24 +105,24 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_R
 const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_opt0_Eye_State_Switch_opt1[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmaneyes_1),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmaneyes_1),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmaneyes_2),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmaneyes_2),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_opt0_Eye_State_Switch_opt2[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmanclosed_2),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmanclosed_2),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmanclosed_3),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmanclosed_3),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_opt0_Eye_State_Switch_opt3[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmandead_3),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmandead_3),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmandead_4),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmandead_4),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
@@ -157,7 +159,7 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1[] = {
 											GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_opt0_Eye_State_Switch_opt3),
 										GEO_CLOSE_NODE(),
 									GEO_CLOSE_NODE(),
-									GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Pac_Eat),
+									GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_opt1),
 								GEO_CLOSE_NODE(),
 							GEO_CLOSE_NODE(),
 						GEO_CLOSE_NODE(),
@@ -208,9 +210,9 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1[] = {
 											GEO_CLOSE_NODE(),
 										GEO_CLOSE_NODE(),
 										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Open),
+										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Peace),
 										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Cap),
-										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Cap),
-										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Cap),
+										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbpacman_Right_Hand_Wing_Cap),
 									GEO_CLOSE_NODE(),
 								GEO_CLOSE_NODE(),
 							GEO_CLOSE_NODE(),
@@ -272,20 +274,6 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt1[] = {
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
-const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Pac_Eat[] = {
-	GEO_NODE_START(),
-	GEO_OPEN_NODE(),
-		GEO_SWITCH_CASE(0, geo_switch_mario_eyes),
-		GEO_OPEN_NODE(),
-			GEO_NODE_START(),
-			GEO_OPEN_NODE(),
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Pac_Eat_Switch_Option_Pac_Eat_mesh_layer_5_mat_override_Metal_0),
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, zbpacman_Pac_Eat_Switch_Option_Pac_Eat_mesh_layer_1_mat_override_Metal_0),
-			GEO_CLOSE_NODE(),
-		GEO_CLOSE_NODE(),
-	GEO_CLOSE_NODE(),
-	GEO_RETURN(),
-};
 const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
@@ -303,13 +291,10 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_R
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
-const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Cap[] = {
+const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 47, 0, 0, zbpacman_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_Metal_0),
-		GEO_OPEN_NODE(),
-			GEO_BILLBOARD_WITH_PARAMS_AND_DL(LAYER_ALPHA, 75, 0, 48, zbpacman_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4_mat_override_Metal_0),
-		GEO_CLOSE_NODE(),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 60, 0, 0, zbpacman_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_Metal_0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
@@ -323,12 +308,13 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_R
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
-const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Cap[] = {
+const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 47, 0, 0, zbpacman_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_Metal_0),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 60, 0, 0, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_Metal_0),
 		GEO_OPEN_NODE(),
-			GEO_BILLBOARD_WITH_PARAMS_AND_DL(LAYER_ALPHA, 75, 0, 48, zbpacman_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4_mat_override_Metal_0),
+			GEO_DISPLAY_LIST(LAYER_ALPHA, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4_mat_override_Metal_0),
+			GEO_DISPLAY_LIST(LAYER_ALPHA, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_Metal_0),
 		GEO_CLOSE_NODE(),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
@@ -363,7 +349,6 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2[] = {
 											GEO_CLOSE_NODE(),
 										GEO_CLOSE_NODE(),
 									GEO_CLOSE_NODE(),
-									GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Pac_Eat),
 								GEO_CLOSE_NODE(),
 							GEO_CLOSE_NODE(),
 						GEO_CLOSE_NODE(),
@@ -414,9 +399,9 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2[] = {
 											GEO_CLOSE_NODE(),
 										GEO_CLOSE_NODE(),
 										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Open),
+										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Peace),
 										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Cap),
-										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Cap),
-										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Cap),
+										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbpacman_Right_Hand_Wing_Cap),
 									GEO_CLOSE_NODE(),
 								GEO_CLOSE_NODE(),
 							GEO_CLOSE_NODE(),
@@ -478,20 +463,6 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt2[] = {
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
-const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Pac_Eat[] = {
-	GEO_NODE_START(),
-	GEO_OPEN_NODE(),
-		GEO_SWITCH_CASE(0, geo_switch_mario_eyes),
-		GEO_OPEN_NODE(),
-			GEO_NODE_START(),
-			GEO_OPEN_NODE(),
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Pac_Eat_Switch_Option_Pac_Eat_mesh_layer_5_mat_override_Metal_0),
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Pac_Eat_Switch_Option_Pac_Eat_mesh_layer_1_mat_override_Metal_0),
-			GEO_CLOSE_NODE(),
-		GEO_CLOSE_NODE(),
-	GEO_CLOSE_NODE(),
-	GEO_RETURN(),
-};
 const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
@@ -509,13 +480,10 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_R
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
-const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Cap[] = {
+const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 47, 0, 0, zbpacman_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_Metal_0),
-		GEO_OPEN_NODE(),
-			GEO_BILLBOARD_WITH_PARAMS_AND_DL(LAYER_TRANSPARENT, 75, 0, 48, zbpacman_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4_mat_override_Metal_0),
-		GEO_CLOSE_NODE(),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 60, 0, 0, zbpacman_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_Metal_0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
@@ -529,12 +497,13 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_R
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
-const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Cap[] = {
+const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 47, 0, 0, zbpacman_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_Metal_0),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 60, 0, 0, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_Metal_0),
 		GEO_OPEN_NODE(),
-			GEO_BILLBOARD_WITH_PARAMS_AND_DL(LAYER_TRANSPARENT, 75, 0, 48, zbpacman_Right_Hand_Cap_Switch_Option_PACDOT_mesh_layer_4_mat_override_Metal_0),
+			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_4_mat_override_Metal_0),
+			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_Metal_0),
 		GEO_CLOSE_NODE(),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
@@ -569,7 +538,6 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3[] = {
 											GEO_CLOSE_NODE(),
 										GEO_CLOSE_NODE(),
 									GEO_CLOSE_NODE(),
-									GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Pac_Eat),
 								GEO_CLOSE_NODE(),
 							GEO_CLOSE_NODE(),
 						GEO_CLOSE_NODE(),
@@ -620,9 +588,9 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3[] = {
 											GEO_CLOSE_NODE(),
 										GEO_CLOSE_NODE(),
 										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Open),
+										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Peace),
 										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Cap),
-										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Cap),
-										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Cap),
+										GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbpacman_Right_Hand_Wing_Cap),
 									GEO_CLOSE_NODE(),
 								GEO_CLOSE_NODE(),
 							GEO_CLOSE_NODE(),
@@ -684,27 +652,41 @@ const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt3[] = {
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
+const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_opt1[] = {
+	GEO_NODE_START(),
+	GEO_OPEN_NODE(),
+		GEO_SWITCH_CASE(0, geo_switch_mario_eyes),
+		GEO_OPEN_NODE(),
+			GEO_NODE_START(),
+			GEO_OPEN_NODE(),
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_Buttons_1),
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, zbpacman_Head_DL_mesh_layer_1_mat_override_Buttons_1),
+			GEO_CLOSE_NODE(),
+		GEO_CLOSE_NODE(),
+	GEO_CLOSE_NODE(),
+	GEO_RETURN(),
+};
 const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_opt0_Eye_State_Switch_opt1[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmaneyes_1),
-		GEO_DISPLAY_LIST(LAYER_OPAQUE, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmaneyes_1),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmaneyes_2),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmaneyes_2),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_opt0_Eye_State_Switch_opt2[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmanclosed_2),
-		GEO_DISPLAY_LIST(LAYER_OPAQUE, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmanclosed_2),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmanclosed_3),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmanclosed_3),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_opt0_Eye_State_Switch_opt3[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmandead_3),
-		GEO_DISPLAY_LIST(LAYER_OPAQUE, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmandead_3),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbpacman_Head_DL_mesh_layer_5_mat_override_pacmandead_4),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, zbpacman_Head_DL_mesh_layer_1_mat_override_pacmandead_4),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
@@ -755,7 +737,7 @@ const GeoLayout zbpacman_geo[] = {
 																	GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_opt0_Eye_State_Switch_opt3),
 																GEO_CLOSE_NODE(),
 															GEO_CLOSE_NODE(),
-															GEO_BRANCH(1, zbpacman_Pac_Eat),
+															GEO_BRANCH(1, zbpacman_2_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_opt1),
 														GEO_CLOSE_NODE(),
 													GEO_CLOSE_NODE(),
 												GEO_CLOSE_NODE(),
@@ -806,9 +788,9 @@ const GeoLayout zbpacman_geo[] = {
 																	GEO_CLOSE_NODE(),
 																GEO_CLOSE_NODE(),
 																GEO_BRANCH(1, zbpacman_Right_Hand_Open),
+																GEO_BRANCH(1, zbpacman_Right_Hand_Peace),
 																GEO_BRANCH(1, zbpacman_Right_Hand_Cap),
-																GEO_BRANCH(1, zbpacman_Right_Hand_Cap),
-																GEO_BRANCH(1, zbpacman_Right_Hand_Cap),
+																GEO_BRANCH(1, zbpacman_Right_Hand_Wing_Cap),
 															GEO_CLOSE_NODE(),
 														GEO_CLOSE_NODE(),
 													GEO_CLOSE_NODE(),
