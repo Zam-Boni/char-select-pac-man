@@ -39,12 +39,18 @@ local E_MODEL_ZBBLINKY =      smlua_model_util_get_id("zbblinky_geo")
 local E_MODEL_ZBBLINKYR =      smlua_model_util_get_id("zbblinky_r_geo")
 local E_MODEL_ZBINKY =      smlua_model_util_get_id("zbinky_geo")
 local E_MODEL_ZBINKYR =      smlua_model_util_get_id("zbinky_r_geo")
+local E_MODEL_ZBPINKY =      smlua_model_util_get_id("zbpinky_geo")
+local E_MODEL_ZBPINKYR =      smlua_model_util_get_id("zbpinky_r_geo")
+local E_MODEL_ZBCLYDE =      smlua_model_util_get_id("zbclyde_geo")
+local E_MODEL_ZBCLYDER =      smlua_model_util_get_id("zbclyde_r_geo")
 -- local E_MODEL_CHAR_STAR = smlua_model_util_get_id("custom_model_star_geo") -- Located in "actors"
 
 local TEX_ZBPACMAN_LIFE_ICON = get_texture_info("zbpm-icon") -- Located in "textures"
 local TEX_ZBMSPACMAN_LIFE_ICON = get_texture_info("zbmpm-icon")
 local TEX_ZBBLINKY_LIFE_ICON = get_texture_info("zbbl-icon")
 local TEX_ZBINKY_LIFE_ICON = get_texture_info("zbin-icon")
+local TEX_ZBPINKY_LIFE_ICON = get_texture_info("zbpn-icon")
+local TEX_ZBCLYDE_LIFE_ICON = get_texture_info("zbcl-icon")
 -- local TEX_CHAR_STAR_ICON = get_texture_info("exclamation-icon") -- Located in "textures"
 
 -- All sound files are located in "sound" folder
@@ -148,6 +154,14 @@ local CAPTABLE_CHAR = {
 local PALETTES_ZBPACMAN = {
     {
         name = "Default",
+        [PANTS]  = "ff003b",
+        [SHIRT]  = "ffbe00",
+        [GLOVES] = "ff5f00",
+        [CAP]    = "ffbe00",
+        [EMBLEM] = "000000",
+    },
+    {
+        name = "Pac-Man",
         [PANTS]  = "ff003b",
         [SHIRT]  = "ffbe00",
         [GLOVES] = "ff5f00",
@@ -312,6 +326,24 @@ local ANIMS_INKY = {
     [CHAR_ANIM_SINGLE_JUMP] = ANIM_INKY_JUMP,
     [CHAR_ANIM_FAST_LONGJUMP] = ANIM_INKY_LONGJUMP,
 }
+local ANIMS_PINKY = {
+    [CHAR_ANIM_RUNNING] = ANIM_PINKY_RUNNING,
+    [CHAR_ANIM_FIRST_PERSON] = ANIM_PINKY_IDLE,
+    [CHAR_ANIM_IDLE_HEAD_LEFT] = ANIM_PINKY_IDLE,
+    [CHAR_ANIM_IDLE_HEAD_RIGHT] = ANIM_PINKY_IDLE,
+    [CHAR_ANIM_IDLE_HEAD_CENTER] = ANIM_PINKY_IDLE,
+    [CHAR_ANIM_SINGLE_JUMP] = ANIM_PINKY_JUMP,
+    [CHAR_ANIM_FAST_LONGJUMP] = ANIM_PINKY_LONGJUMP,
+}
+local ANIMS_CLYDE = {
+    [CHAR_ANIM_RUNNING] = ANIM_CLYDE_RUNNING,
+    [CHAR_ANIM_FIRST_PERSON] = ANIM_CLYDE_IDLE,
+    [CHAR_ANIM_IDLE_HEAD_LEFT] = ANIM_CLYDE_IDLE,
+    [CHAR_ANIM_IDLE_HEAD_RIGHT] = ANIM_CLYDE_IDLE,
+    [CHAR_ANIM_IDLE_HEAD_CENTER] = ANIM_CLYDE_IDLE,
+    [CHAR_ANIM_SINGLE_JUMP] = ANIM_CLYDE_JUMP,
+    [CHAR_ANIM_FAST_LONGJUMP] = ANIM_CLYDE_LONGJUMP,
+}
 
 -- All Located in "textures" folder
 -- (Textures do not exist in template)
@@ -383,6 +415,26 @@ CT_ZBINKY = _G.charSelect.character_add(
     TEX_ZBINKY_LIFE_ICON, -- Life Icon
     1                  -- Camera Scale
 )
+CT_ZBPINKY = _G.charSelect.character_add(
+    "Pinky", -- Character Name
+    "Repeatedly pulling off the 'Accidentally On Purpose Crash Into Your Crush On The Street' trope gets tiring at some point, right?", -- Description
+    "Zam Boni", -- Credits
+    "FF80FF",           -- Menu Color
+    E_MODEL_ZBPINKY,       -- Character Model
+    CT_MARIO,           -- Override Character
+    TEX_ZBPINKY_LIFE_ICON, -- Life Icon
+    1                  -- Camera Scale
+)
+CT_ZBCLYDE = _G.charSelect.character_add(
+    "Clyde", -- Character Name
+    "This is my bottom-left power pellet! There are 3 others like it but this one is mine!", -- Description
+    "Zam Boni", -- Credits
+    "FF8000",           -- Menu Color
+    E_MODEL_ZBCLYDE,       -- Character Model
+    CT_MARIO,           -- Override Character
+    TEX_ZBCLYDE_LIFE_ICON, -- Life Icon
+    1                  -- Camera Scale
+)
 
 -- Adds cap models to your character
 -- (Models do not exist in template)
@@ -392,6 +444,8 @@ _G.charSelect.character_add_menu_instrumental(CT_ZBPACMAN, audio_stream_load("zb
 _G.charSelect.character_add_menu_instrumental(CT_ZBMSPACMAN, audio_stream_load("zbpm-tune.ogg"))
 _G.charSelect.character_add_menu_instrumental(CT_ZBBLINKY, audio_stream_load("zbpm-tune.ogg"))
 _G.charSelect.character_add_menu_instrumental(CT_ZBINKY, audio_stream_load("zbpm-tune.ogg"))
+_G.charSelect.character_add_menu_instrumental(CT_ZBPINKY, audio_stream_load("zbpm-tune.ogg"))
+_G.charSelect.character_add_menu_instrumental(CT_ZBCLYDE, audio_stream_load("zbpm-tune.ogg"))
 
 -- Adds a voice to your character
 -- (Sounds do not exist in template)
@@ -403,6 +457,10 @@ _G.charSelect.character_add_voice(E_MODEL_ZBBLINKY, VOICETABLE_ZBGHOST)
 _G.charSelect.character_add_voice(E_MODEL_ZBBLINKYR, VOICETABLE_ZBGHOST)
 _G.charSelect.character_add_voice(E_MODEL_ZBINKY, VOICETABLE_ZBGHOST)
 _G.charSelect.character_add_voice(E_MODEL_ZBINKYR, VOICETABLE_ZBGHOST)
+_G.charSelect.character_add_voice(E_MODEL_ZBPINKY, VOICETABLE_ZBGHOST)
+_G.charSelect.character_add_voice(E_MODEL_ZBPINKYR, VOICETABLE_ZBGHOST)
+_G.charSelect.character_add_voice(E_MODEL_ZBCLYDE, VOICETABLE_ZBGHOST)
+_G.charSelect.character_add_voice(E_MODEL_ZBCLYDER, VOICETABLE_ZBGHOST)
 
 _G.charSelect.character_add_animations(E_MODEL_ZBPACMAN, ANIMS_PACMAN)
 _G.charSelect.character_add_animations(E_MODEL_ZBPACMANR, ANIMS_PACMAN)
@@ -412,6 +470,10 @@ _G.charSelect.character_add_animations(E_MODEL_ZBBLINKY, ANIMS_BLINKY)
 _G.charSelect.character_add_animations(E_MODEL_ZBBLINKYR, ANIMS_BLINKY)
 _G.charSelect.character_add_animations(E_MODEL_ZBINKY, ANIMS_INKY)
 _G.charSelect.character_add_animations(E_MODEL_ZBINKYR, ANIMS_INKY)
+_G.charSelect.character_add_animations(E_MODEL_ZBPINKY, ANIMS_PINKY)
+_G.charSelect.character_add_animations(E_MODEL_ZBPINKYR, ANIMS_PINKY)
+_G.charSelect.character_add_animations(E_MODEL_ZBCLYDE, ANIMS_CLYDE)
+_G.charSelect.character_add_animations(E_MODEL_ZBCLYDER, ANIMS_CLYDE)
 
 -- Adds a celebration star to your character
 -- (Models do not exist in template)
@@ -427,6 +489,10 @@ for i = 1, #PALETTES_ZBPACMAN do
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBBLINKYR, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBINKY, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBINKYR, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
+    _G.charSelect.character_add_palette_preset(E_MODEL_ZBPINKY, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
+    _G.charSelect.character_add_palette_preset(E_MODEL_ZBPINKYR, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
+    _G.charSelect.character_add_palette_preset(E_MODEL_ZBCLYDE, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
+    _G.charSelect.character_add_palette_preset(E_MODEL_ZBCLYDER, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
 end
 
 -- Adds a health meter to your character
@@ -446,6 +512,8 @@ local function update_model()
         _G.charSelect.character_edit_costume(CT_ZBMSPACMAN, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBMSPACMAN or E_MODEL_ZBMSPACMANR)
         _G.charSelect.character_edit_costume(CT_ZBBLINKY, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBBLINKY or E_MODEL_ZBBLINKYR)
         _G.charSelect.character_edit_costume(CT_ZBINKY, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBINKY or E_MODEL_ZBINKYR)
+        _G.charSelect.character_edit_costume(CT_ZBPINKY, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBPINKY or E_MODEL_ZBPINKYR)
+        _G.charSelect.character_edit_costume(CT_ZBCLYDE, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBCLYDE or E_MODEL_ZBCLYDER)
         prevPalette = palette
     end
 end

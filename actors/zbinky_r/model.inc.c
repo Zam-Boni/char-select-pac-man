@@ -1,3 +1,7 @@
+Lights1 zbinky_r_inkyemblem_lights = gdSPDefLights1(
+	0x0, 0x7F, 0x7D,
+	0x0, 0x0, 0x0, 0x28, 0x28, 0x28);
+
 Lights1 zbinky_r_inkyblue_lights = gdSPDefLights1(
 	0x0, 0x7F, 0x7D,
 	0x0, 0xFF, 0xFB, 0x28, 0x28, 0x28);
@@ -5198,7 +5202,34 @@ Texture zbinky_r_custom_mario_logo_blend_rgba16[] = {
 	
 };
 
-Vtx zbinky_r_Butt_mesh_layer_1_vtx_0[25] = {
+Vtx zbinky_r_Butt_mesh_layer_1_vtx_0[13] = {
+	{{{11, 10, 0}, 0, {29, 496}, {0x81, 0x00, 0x00, 0xFF}}},
+	{{{-55, -130, 81}, 0, {29, 496}, {0x8A, 0x29, 0xE8, 0xFF}}},
+	{{{11, -68, 135}, 0, {29, 496}, {0x81, 0x00, 0x00, 0xFF}}},
+	{{{11, -146, 0}, 0, {29, 496}, {0x81, 0x00, 0x00, 0xFF}}},
+	{{{-55, -130, -81}, 0, {29, 496}, {0x8A, 0x29, 0x18, 0xFF}}},
+	{{{11, -68, -135}, 0, {29, 496}, {0x81, 0x00, 0x00, 0xFF}}},
+	{{{-55, 10, -161}, 0, {29, 496}, {0x8A, 0x00, 0x30, 0xFF}}},
+	{{{11, 88, -135}, 0, {29, 496}, {0x81, 0x00, 0x00, 0xFF}}},
+	{{{-55, 150, -81}, 0, {29, 496}, {0x8A, 0xD7, 0x18, 0xFF}}},
+	{{{11, 166, 0}, 0, {29, 496}, {0x81, 0x00, 0x00, 0xFF}}},
+	{{{-55, 150, 81}, 0, {29, 496}, {0x8A, 0xD7, 0xE8, 0xFF}}},
+	{{{11, 88, 135}, 0, {29, 496}, {0x81, 0x00, 0x00, 0xFF}}},
+	{{{-55, 10, 161}, 0, {29, 496}, {0x8A, 0x00, 0xD0, 0xFF}}},
+};
+
+Gfx zbinky_r_Butt_mesh_layer_1_tri_0[] = {
+	gsSPVertex(zbinky_r_Butt_mesh_layer_1_vtx_0 + 0, 13, 0),
+	gsSP2Triangles(0, 1, 2, 0, 3, 1, 0, 0),
+	gsSP2Triangles(0, 4, 3, 0, 5, 4, 0, 0),
+	gsSP2Triangles(0, 6, 5, 0, 7, 6, 0, 0),
+	gsSP2Triangles(0, 8, 7, 0, 9, 8, 0, 0),
+	gsSP2Triangles(0, 10, 9, 0, 11, 10, 0, 0),
+	gsSP2Triangles(0, 12, 11, 0, 2, 12, 0, 0),
+	gsSPEndDisplayList(),
+};
+
+Vtx zbinky_r_Butt_mesh_layer_1_vtx_1[12] = {
 	{{{11, 88, 135}, 0, {74, 496}, {0x1E, 0x3E, 0x6B, 0xFF}}},
 	{{{-55, 10, 161}, 0, {74, 496}, {0x2F, 0x00, 0x76, 0xFF}}},
 	{{{11, -68, 135}, 0, {74, 496}, {0x1E, 0xC2, 0x6B, 0xFF}}},
@@ -5211,32 +5242,13 @@ Vtx zbinky_r_Butt_mesh_layer_1_vtx_0[25] = {
 	{{{11, 88, -135}, 0, {74, 496}, {0x1E, 0x3E, 0x95, 0xFF}}},
 	{{{-55, 150, -81}, 0, {74, 496}, {0x2F, 0x66, 0xC5, 0xFF}}},
 	{{{-55, 10, -161}, 0, {74, 496}, {0x2F, 0x00, 0x8A, 0xFF}}},
-	{{{11, 10, 0}, 0, {74, 496}, {0x81, 0x00, 0x00, 0xFF}}},
-	{{{-55, -130, 81}, 0, {74, 496}, {0x8A, 0x29, 0xE8, 0xFF}}},
-	{{{11, -68, 135}, 0, {74, 496}, {0x81, 0x00, 0x00, 0xFF}}},
-	{{{11, -146, 0}, 0, {74, 496}, {0x81, 0x00, 0x00, 0xFF}}},
-	{{{-55, -130, -81}, 0, {74, 496}, {0x8A, 0x29, 0x18, 0xFF}}},
-	{{{11, -68, -135}, 0, {74, 496}, {0x81, 0x00, 0x00, 0xFF}}},
-	{{{-55, 10, -161}, 0, {74, 496}, {0x8A, 0x00, 0x30, 0xFF}}},
-	{{{11, 88, -135}, 0, {74, 496}, {0x81, 0x00, 0x00, 0xFF}}},
-	{{{-55, 150, -81}, 0, {74, 496}, {0x8A, 0xD7, 0x18, 0xFF}}},
-	{{{11, 166, 0}, 0, {74, 496}, {0x81, 0x00, 0x00, 0xFF}}},
-	{{{-55, 150, 81}, 0, {74, 496}, {0x8A, 0xD7, 0xE8, 0xFF}}},
-	{{{11, 88, 135}, 0, {74, 496}, {0x81, 0x00, 0x00, 0xFF}}},
-	{{{-55, 10, 161}, 0, {74, 496}, {0x8A, 0x00, 0xD0, 0xFF}}},
 };
 
-Gfx zbinky_r_Butt_mesh_layer_1_tri_0[] = {
-	gsSPVertex(zbinky_r_Butt_mesh_layer_1_vtx_0 + 0, 25, 0),
+Gfx zbinky_r_Butt_mesh_layer_1_tri_1[] = {
+	gsSPVertex(zbinky_r_Butt_mesh_layer_1_vtx_1 + 0, 12, 0),
 	gsSP2Triangles(0, 1, 2, 0, 2, 3, 4, 0),
 	gsSP2Triangles(4, 5, 6, 0, 7, 8, 0, 0),
 	gsSP2Triangles(9, 10, 7, 0, 6, 11, 9, 0),
-	gsSP2Triangles(12, 13, 14, 0, 15, 13, 12, 0),
-	gsSP2Triangles(12, 16, 15, 0, 17, 16, 12, 0),
-	gsSP2Triangles(12, 18, 17, 0, 19, 18, 12, 0),
-	gsSP2Triangles(12, 20, 19, 0, 21, 20, 12, 0),
-	gsSP2Triangles(12, 22, 21, 0, 23, 22, 12, 0),
-	gsSP2Triangles(12, 24, 23, 0, 14, 24, 12, 0),
 	gsSPEndDisplayList(),
 };
 
@@ -6144,6 +6156,25 @@ Gfx zbinky_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_tri_1[] = {
 };
 
 
+Gfx mat_zbinky_r_inkyemblem[] = {
+	gsSPLight(&zbinky_r_inkyemblem_lights.l, 1),
+    gsSPLight(&zbinky_r_inkyemblem_lights.a, 2),
+    gsSPCopyLightEXT(2, 17),
+	gsDPPipeSync(),
+	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
+	gsDPSetAlphaDither(G_AD_NOISE),
+	gsDPSetTextureLUT(G_TT_RGBA16),
+	gsSPTexture(65535, 65535, 0, 0, 1),
+	gsSPEndDisplayList(),
+};
+
+Gfx mat_revert_zbinky_r_inkyemblem[] = {
+	gsDPPipeSync(),
+	gsDPSetAlphaDither(G_AD_DISABLE),
+	gsDPSetTextureLUT(G_TT_NONE),
+	gsSPEndDisplayList(),
+};
+
 Gfx mat_zbinky_r_inkyblue[] = {
 	gsSPCopyLightsPlayerPart(CAP),
 	gsDPPipeSync(),
@@ -6384,8 +6415,11 @@ Gfx mat_revert_zbinky_r_Logo__EMBLEM__layer2[] = {
 };
 
 Gfx zbinky_r_Butt_mesh_layer_1[] = {
-	gsSPDisplayList(mat_zbinky_r_inkyblue),
+	gsSPDisplayList(mat_zbinky_r_inkyemblem),
 	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_zbinky_r_inkyemblem),
+	gsSPDisplayList(mat_zbinky_r_inkyblue),
+	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_1),
 	gsSPDisplayList(mat_revert_zbinky_r_inkyblue),
 	gsSPEndDisplayList(),
 };
@@ -6393,27 +6427,37 @@ Gfx zbinky_r_Butt_mesh_layer_1[] = {
 Gfx zbinky_r_Butt_mesh_layer_1_mat_override_Metal__METAL__0[] = {
 	gsSPDisplayList(mat_zbinky_r_Metal__METAL_),
 	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_0),
+	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_1),
 	gsSPDisplayList(mat_revert_zbinky_r_Metal__METAL_),
 	gsSPEndDisplayList(),
 };
 
 Gfx zbinky_r_Butt_mesh_layer_1_mat_override_ghostblue_1[] = {
-	gsSPDisplayList(mat_zbinky_r_ghostblue),
+	gsSPDisplayList(mat_zbinky_r_inkyemblem),
 	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_zbinky_r_inkyemblem),
+	gsSPDisplayList(mat_zbinky_r_ghostblue),
+	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_1),
 	gsSPDisplayList(mat_revert_zbinky_r_ghostblue),
 	gsSPEndDisplayList(),
 };
 
 Gfx zbinky_r_Butt_mesh_layer_1_mat_override_blinkyhalf_2[] = {
-	gsSPDisplayList(mat_zbinky_r_blinkyhalf),
+	gsSPDisplayList(mat_zbinky_r_inkyemblem),
 	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_zbinky_r_inkyemblem),
+	gsSPDisplayList(mat_zbinky_r_blinkyhalf),
+	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_1),
 	gsSPDisplayList(mat_revert_zbinky_r_blinkyhalf),
 	gsSPEndDisplayList(),
 };
 
 Gfx zbinky_r_Butt_mesh_layer_1_mat_override_blinkyclosed_3[] = {
-	gsSPDisplayList(mat_zbinky_r_blinkyclosed),
+	gsSPDisplayList(mat_zbinky_r_inkyemblem),
 	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_zbinky_r_inkyemblem),
+	gsSPDisplayList(mat_zbinky_r_blinkyclosed),
+	gsSPDisplayList(zbinky_r_Butt_mesh_layer_1_tri_1),
 	gsSPDisplayList(mat_revert_zbinky_r_blinkyclosed),
 	gsSPEndDisplayList(),
 };
@@ -6450,6 +6494,13 @@ Gfx zbinky_r_Head_DL_skinned_mesh_layer_1_mat_override_blinkyclosed_3[] = {
 	gsSPDisplayList(mat_zbinky_r_blinkyclosed),
 	gsSPDisplayList(zbinky_r_Head_DL_skinned_mesh_layer_1_tri_0),
 	gsSPDisplayList(mat_revert_zbinky_r_blinkyclosed),
+	gsSPEndDisplayList(),
+};
+
+Gfx zbinky_r_Head_DL_skinned_mesh_layer_1_mat_override_ghostblue_4[] = {
+	gsSPDisplayList(mat_zbinky_r_ghostblue),
+	gsSPDisplayList(zbinky_r_Head_DL_skinned_mesh_layer_1_tri_0),
+	gsSPDisplayList(mat_revert_zbinky_r_ghostblue),
 	gsSPEndDisplayList(),
 };
 
@@ -6490,6 +6541,14 @@ Gfx zbinky_r_Head_DL_mesh_layer_1_mat_override_blinkyclosed_3[] = {
 	gsSPDisplayList(zbinky_r_Head_DL_mesh_layer_1_tri_0),
 	gsSPDisplayList(zbinky_r_Head_DL_mesh_layer_1_tri_1),
 	gsSPDisplayList(mat_revert_zbinky_r_blinkyclosed),
+	gsSPEndDisplayList(),
+};
+
+Gfx zbinky_r_Head_DL_mesh_layer_1_mat_override_ghostblue_4[] = {
+	gsSPDisplayList(mat_zbinky_r_ghostblue),
+	gsSPDisplayList(zbinky_r_Head_DL_mesh_layer_1_tri_0),
+	gsSPDisplayList(zbinky_r_Head_DL_mesh_layer_1_tri_1),
+	gsSPDisplayList(mat_revert_zbinky_r_ghostblue),
 	gsSPEndDisplayList(),
 };
 
@@ -6608,9 +6667,9 @@ Gfx zbinky_r_Left_Arm_Color_mesh_layer_1_mat_override_Metal__METAL__0[] = {
 };
 
 Gfx zbinky_r_Left_Arm_Color_mesh_layer_1_mat_override_ghostblue_1[] = {
-	gsSPDisplayList(mat_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_zbinky_r_ghostblue),
 	gsSPDisplayList(zbinky_r_Left_Arm_Color_mesh_layer_1_tri_0),
-	gsSPDisplayList(mat_revert_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_revert_zbinky_r_ghostblue),
 	gsSPEndDisplayList(),
 };
 
@@ -6643,9 +6702,9 @@ Gfx zbinky_r_Left_Forearm_skinned_mesh_layer_1_mat_override_Metal__METAL__0[] = 
 };
 
 Gfx zbinky_r_Left_Forearm_skinned_mesh_layer_1_mat_override_ghostblue_1[] = {
-	gsSPDisplayList(mat_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_zbinky_r_ghostblue),
 	gsSPDisplayList(zbinky_r_Left_Forearm_skinned_mesh_layer_1_tri_0),
-	gsSPDisplayList(mat_revert_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_revert_zbinky_r_ghostblue),
 	gsSPEndDisplayList(),
 };
 
@@ -6682,9 +6741,9 @@ Gfx zbinky_r_Left_Forearm_mesh_layer_1_mat_override_Metal__METAL__0[] = {
 };
 
 Gfx zbinky_r_Left_Forearm_mesh_layer_1_mat_override_ghostblue_1[] = {
-	gsSPDisplayList(mat_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_zbinky_r_ghostblue),
 	gsSPDisplayList(zbinky_r_Left_Forearm_mesh_layer_1_tri_0),
-	gsSPDisplayList(mat_revert_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_revert_zbinky_r_ghostblue),
 	gsSPDisplayList(mat_zbinky_r_ghostorange),
 	gsSPDisplayList(zbinky_r_Left_Forearm_mesh_layer_1_tri_1),
 	gsSPDisplayList(mat_revert_zbinky_r_ghostorange),
@@ -6796,9 +6855,9 @@ Gfx zbinky_r_Right_Arm_Color_mesh_layer_1_mat_override_Metal__METAL__0[] = {
 };
 
 Gfx zbinky_r_Right_Arm_Color_mesh_layer_1_mat_override_ghostblue_1[] = {
-	gsSPDisplayList(mat_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_zbinky_r_ghostblue),
 	gsSPDisplayList(zbinky_r_Right_Arm_Color_mesh_layer_1_tri_0),
-	gsSPDisplayList(mat_revert_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_revert_zbinky_r_ghostblue),
 	gsSPEndDisplayList(),
 };
 
@@ -6831,9 +6890,9 @@ Gfx zbinky_r_Right_Forearm_skinned_mesh_layer_1_mat_override_Metal__METAL__0[] =
 };
 
 Gfx zbinky_r_Right_Forearm_skinned_mesh_layer_1_mat_override_ghostblue_1[] = {
-	gsSPDisplayList(mat_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_zbinky_r_ghostblue),
 	gsSPDisplayList(zbinky_r_Right_Forearm_skinned_mesh_layer_1_tri_0),
-	gsSPDisplayList(mat_revert_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_revert_zbinky_r_ghostblue),
 	gsSPEndDisplayList(),
 };
 
@@ -6870,9 +6929,9 @@ Gfx zbinky_r_Right_Forearm_mesh_layer_1_mat_override_Metal__METAL__0[] = {
 };
 
 Gfx zbinky_r_Right_Forearm_mesh_layer_1_mat_override_ghostblue_1[] = {
-	gsSPDisplayList(mat_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_zbinky_r_ghostblue),
 	gsSPDisplayList(zbinky_r_Right_Forearm_mesh_layer_1_tri_0),
-	gsSPDisplayList(mat_revert_zbinky_r_inkyshirt),
+	gsSPDisplayList(mat_revert_zbinky_r_ghostblue),
 	gsSPDisplayList(mat_zbinky_r_ghostorange),
 	gsSPDisplayList(zbinky_r_Right_Forearm_mesh_layer_1_tri_1),
 	gsSPDisplayList(mat_revert_zbinky_r_ghostorange),

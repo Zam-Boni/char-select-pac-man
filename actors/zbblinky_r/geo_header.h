@@ -78,6 +78,7 @@ extern const GeoLayout zbblinky_r_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Caples
 extern const GeoLayout zbblinky_r_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt0_Capless_Switch_opt0_Eye_State_Switch_opt2[];
 extern const GeoLayout zbblinky_r_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt0_Capless_Switch_opt0_Eye_State_Switch_opt3[];
 extern const GeoLayout zbblinky_r_geo[];
+extern Lights1 zbblinky_r_blinkyemblem_lights;
 extern Lights1 zbblinky_r_blinkyred_lights;
 extern Lights1 zbblinky_r_Metal__METAL__lights;
 extern Lights1 zbblinky_r_ghostblue_lights;
@@ -98,8 +99,10 @@ extern u8 zbblinky_r_wing_2_rgba16[];
 extern u8 zbblinky_r_wing1_rgba16[];
 extern u8 zbblinky_r_innn_rgba16[];
 extern u8 zbblinky_r_custom_mario_logo_blend_rgba16[];
-extern Vtx zbblinky_r_Butt_mesh_layer_1_vtx_0[25];
+extern Vtx zbblinky_r_Butt_mesh_layer_1_vtx_0[13];
 extern Gfx zbblinky_r_Butt_mesh_layer_1_tri_0[];
+extern Vtx zbblinky_r_Butt_mesh_layer_1_vtx_1[12];
+extern Gfx zbblinky_r_Butt_mesh_layer_1_tri_1[];
 extern Vtx zbblinky_r_Head_DL_skinned_mesh_layer_1_vtx_0[6];
 extern Gfx zbblinky_r_Head_DL_skinned_mesh_layer_1_tri_0[];
 extern Vtx zbblinky_r_Head_DL_mesh_layer_1_vtx_0[6];
@@ -160,6 +163,8 @@ extern Vtx zbblinky_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_vtx_0
 extern Gfx zbblinky_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_tri_0[];
 extern Vtx zbblinky_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_vtx_1[8];
 extern Gfx zbblinky_r_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_tri_1[];
+extern Gfx mat_zbblinky_r_blinkyemblem[];
+extern Gfx mat_revert_zbblinky_r_blinkyemblem[];
 extern Gfx mat_zbblinky_r_blinkyred[];
 extern Gfx mat_revert_zbblinky_r_blinkyred[];
 extern Gfx mat_zbblinky_r_Metal__METAL_[];

@@ -817,7 +817,7 @@ const GeoLayout zbinky_r_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_
 		GEO_OPEN_NODE(),
 			GEO_NODE_START(),
 			GEO_OPEN_NODE(),
-				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbinky_r_Head_DL_mesh_layer_1_mat_override_ghostblue_1),
+				GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbinky_r_Head_DL_mesh_layer_1_mat_override_ghostblue_4),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
 	GEO_CLOSE_NODE(),
@@ -840,7 +840,7 @@ const GeoLayout zbinky_r_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_
 const GeoLayout zbinky_r_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt0_Capless_Switch_opt0_Eye_State_Switch_opt3[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbinky_r_Head_DL_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbinky_r_Head_DL_mesh_layer_1_mat_override_ghostblue_4),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
@@ -2118,7 +2118,7 @@ const GeoLayout zbinky_r_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_
 		GEO_OPEN_NODE(),
 			GEO_NODE_START(),
 			GEO_OPEN_NODE(),
-				GEO_DISPLAY_LIST(LAYER_OPAQUE, zbinky_r_Head_DL_mesh_layer_1_mat_override_ghostblue_1),
+				GEO_DISPLAY_LIST(LAYER_OPAQUE, zbinky_r_Head_DL_mesh_layer_1_mat_override_ghostblue_4),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
 	GEO_CLOSE_NODE(),
@@ -2141,7 +2141,7 @@ const GeoLayout zbinky_r_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_
 const GeoLayout zbinky_r_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt0_Capless_Switch_opt0_Eye_State_Switch_opt3[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_DISPLAY_LIST(LAYER_OPAQUE, zbinky_r_Head_DL_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_DISPLAY_LIST(LAYER_OPAQUE, zbinky_r_Head_DL_mesh_layer_1_mat_override_ghostblue_4),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
