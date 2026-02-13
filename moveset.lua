@@ -1,14 +1,15 @@
 SAMPLE_BOUNCE = audio_sample_load("zbpmsfx-bounce.ogg")
 SAMPLE_TAKE_OFF = audio_sample_load("zbpmsfx-takeoff.ogg")
 
-local PAC_MAN_MAX_SPEED = 40
+local PAC_MAX_SPEED = 30
 
 local gExtrasStates = {}
 for i = 0, MAX_PLAYERS - 1 do
     gExtrasStates[i] = {
         revAudio = audio_stream_load("zbpmsfx-revup.ogg"),
         bounceCount = 0,
-        forceDefaultWalk = false
+        forceDefaultWalk = false,
+        faceAngleLerp = 0,
     }
     audio_stream_set_looping(gExtrasStates[i].revAudio, true)
 end
@@ -35,61 +36,61 @@ end
 
 local function update_walking_speed(m)
     if not m then return end
-    local maxTargetSpeed = PAC_MAN_MAX_SPEED
+    local e = gExtrasStates[m.playerIndex]
+    local maxTargetSpeed = PAC_MAX_SPEED
 
     local slipperyFloor = ((m.area.terrainType & TERRAIN_MASK) == TERRAIN_SNOW and (m.floor ~= nil and m.floor.type & SURFACE_CLASS_SLIPPERY | SURFACE_CLASS_VERY_SLIPPERY ~= 0 ));
 
-    if (m.floor ~= nil) then
-        if (m.floor.type == SURFACE_SLOW) then
-            maxTargetSpeed = PAC_MAN_MAX_SPEED*0.75
-        end
+    --m.forwardVel = approach_f32(m.forwardVel, 0.0, 0.35, 0.35);
+--
+    local intendedDYaw = m.intendedYaw;
+    local intendedMag = m.intendedMag / 32.0;
+--
+    --m.forwardVel = m.forwardVel + 1.5 * coss(intendedDYaw) * intendedMag;
+    --m.faceAngle.y = lerp_s16(m.faceAngle.y, m.intendedYaw, 0.3);
+--
+    --m.forwardVel = math.min(m.forwardVel, PAC_MAX_SPEED)
+    --if (m.forwardVel < -16.0) then
+    --    m.forwardVel = m.forwardVel + 2.0;
+    --end
+
+    m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, slipperyFloor and 0.05 or 0.3)
+    m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, slipperyFloor and 0.05 or 0.3)
+    m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
+    if m.forwardVel > 1 then
+        m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
+        apply_slope_accel(m);
+    else
+        m.vel.x = 0
+        m.vel.z = 0
+        m.forwardVel = 0
+        set_mario_action(m, ACT_IDLE, 0)
     end
-
-    local targetSpeed = math.min(m.intendedMag/32*maxTargetSpeed, maxTargetSpeed)
-
-    if (m.quicksandDepth > 10.0) then
-        targetSpeed = targetSpeed * 6.25 / m.quicksandDepth;
-    end
-
-    if (m.forwardVel <= 0.0) then
-        m.forwardVel = m.forwardVel + 1.1;
-    elseif (m.forwardVel <= targetSpeed) then
-        m.forwardVel = m.forwardVel + 1.1 - m.forwardVel / 43.0;
-    elseif (m.floor ~=nil and m.floor.normal.y >= 0.95) then
-        m.forwardVel = m.forwardVel - 1.0;
-    end
-
-    if (m.forwardVel > 48.0) then
-        m.forwardVel = 48.0;
-    end
-
-    m.faceAngle.y = lerp_s16(m.faceAngle.y, m.intendedYaw, 0.3);
-    apply_slope_accel(m);
 end
 
 local function pac_update_air_with_turn(m)
     if not m then return end
 
-    if (check_horizontal_wind(m) == 0) then
-        local dragThreshold = m.action == ACT_LONG_JUMP and 48.0 or 32.0;
-        m.forwardVel = approach_f32(m.forwardVel, 0.0, 0.35, 0.35);
+    --if (check_horizontal_wind(m) == 0) then
+        if m.input & INPUT_ZERO_MOVEMENT == 0 then
+            local intendedDYaw = m.intendedYaw;
+            local intendedMag = m.intendedMag / 32.0;
 
-        local intendedDYaw = m.intendedYaw - m.faceAngle.y;
-        local intendedMag = m.intendedMag / 32.0;
-
-        m.forwardVel = m.forwardVel + 1.5 * coss(intendedDYaw) * intendedMag;
-        m.faceAngle.y = lerp_s16(m.faceAngle.y, m.intendedYaw, 0.3);
-
-        m.forwardVel = math.min(m.forwardVel, dragThreshold)
-        if (m.forwardVel < -16.0) then
-            m.forwardVel = m.forwardVel + 2.0;
+            m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.3)
+            m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.3)
+        else
+            m.vel.x = math.lerp(m.vel.x, 0, 0.1)
+            m.vel.z = math.lerp(m.vel.z, 0, 0.1)
         end
-
-        m.slideVelX = m.forwardVel * sins(m.faceAngle.y);
-        m.slideVelZ = m.forwardVel * coss(m.faceAngle.y);
-        m.vel.x = math.lerp(m.vel.x, m.slideVelX, 0.2)
-        m.vel.z = math.lerp(m.vel.z, m.slideVelZ, 0.2)
-    end
+        m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
+        if m.forwardVel > 1 then
+            m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
+        else
+            m.vel.x = 0
+            m.vel.z = 0
+            m.forwardVel = 0
+        end
+    --end
 end
 
 local function pac_air_action_step(m, landAction, animation, stepArg)
@@ -103,7 +104,9 @@ local function pac_air_action_step(m, landAction, animation, stepArg)
     end
 
     if stepResult == AIR_STEP_NONE then
-        set_character_animation(m, animation);
+        if animation ~= nil then
+            set_character_animation(m, animation);
+        end
     elseif stepResult == AIR_STEP_LANDED then
         if (check_fall_damage_or_get_stuck(m, ACT_HARD_BACKWARD_GROUND_KB) == 0) then
             return set_mario_action(m, landAction, 0);
@@ -150,7 +153,7 @@ function mario_detatch_from_floor(m, e, airAction, arg)
     local velY = m.forwardVel * -prevSlope * (m.forwardVel < 0 and -1 or 1)
     local velF = m.forwardVel * (1 - math.abs(prevSlope)*0.5) * (m.forwardVel < 0 and -1 or 1)
     local velAngle = coss(atan2s(velY, velF))
-    if (slopeDif > 0.4 and (velAngle < slope - 0.1 or velAngle > slope + 0.1) and prevSlope < 0) or (m.pos.y > m.floorHeight + 10) then
+    if ((slopeDif > 0.4) and (velAngle < slope - 0.1 or velAngle > slope + 0.1)) or (m.pos.y > m.floorHeight + 10) then
         m.vel.y = velY
         m.forwardVel = velF
         e.floorSteep = nil
@@ -160,10 +163,12 @@ function mario_detatch_from_floor(m, e, airAction, arg)
     return 0
 end
 
-local ACT_PAC_WALKING = allocate_mario_action(ACT_GROUP_MOVING)
-local ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
+local ACT_PAC_WALKING = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_WATER_OR_TEXT)
+local ACT_PAC_SKID = allocate_mario_action(ACT_GROUP_AIRBORNE)
+local ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION | ACT_FLAG_WATER_OR_TEXT)
 local ACT_PAC_FREEFALL = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
 local ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
+local ACT_PAC_ROLL = allocate_mario_action(ACT_GROUP_CUTSCENE)
 local ACT_PAC_REV_CHARGE = allocate_mario_action(ACT_GROUP_STATIONARY)
 local ACT_PAC_REV_ROLL = allocate_mario_action(ACT_GROUP_MOVING)
 local ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE)
@@ -188,7 +193,7 @@ local function act_pac_walking(m)
     mario_drop_held_object(m);
 
     if (should_begin_sliding(m) ~= 0) then
-        return set_mario_action(m, ACT_BEGIN_SLIDING, 0);
+        --return set_mario_action(m, ACT_BEGIN_SLIDING, 0);
     end
 
     if (m.input & INPUT_FIRST_PERSON ~= 0) then
@@ -204,7 +209,11 @@ local function act_pac_walking(m)
     end
 
     if (m.input & INPUT_ZERO_MOVEMENT ~= 0) then
-        return begin_braking_action(m);
+        --return begin_braking_action(m);
+    end
+
+    if mario_floor_is_slippery(m) ~= 0 then
+        set_mario_action(m, ACT_PAC_ROLL, 0)
     end
 
     m.actionState = 0;
@@ -228,14 +237,43 @@ local function act_pac_walking(m)
     return 0;
 end
 
+local function act_pac_skid(m)
+    if not m then return 0 end
+    
+    if m.pos.y < m.floorHeight + 10 then
+        perform_ground_step(m)
+    else
+        perform_air_step(m, AIR_STEP_NONE)
+    end
+
+    set_character_animation(m, CHAR_ANIM_SKID_ON_GROUND)
+    set_mario_particle_flags(m, PARTICLE_DUST, 0)
+
+    m.forwardVel = math.max(m.forwardVel - 5, math.max(PAC_MAX_SPEED * m.intendedMag/32, 1))
+    m.vel.x = sins(m.faceAngle.y)*m.forwardVel
+    m.vel.z = coss(m.faceAngle.y)*m.forwardVel
+    if m.forwardVel <= math.max(PAC_MAX_SPEED * m.intendedMag/32, 1) then
+        if m.pos.y < m.floorHeight + 10 then
+            return set_mario_action(m, ACT_PAC_WALKING, 0)
+        else
+            return set_mario_action(m, ACT_PAC_FREEFALL, 0)
+        end
+    end
+    return 0;
+end
+
 ---@param m MarioState
 local function act_pac_jump(m)
     if not m then return 0 end
     local e = gExtrasStates[m.playerIndex]
 
-    local anim = CHAR_ANIM_SINGLE_JUMP
+    local anim = m.vel.y > 10 and CHAR_ANIM_DOUBLE_JUMP_RISE or CHAR_ANIM_DOUBLE_JUMP_FALL
     if e.bounceCount > 0 then
-        anim = CHAR_ANIM_GROUND_POUND
+        if e.bounceCount >= 3 then
+            anim = CHAR_ANIM_SPECIAL_GROUND_POUND
+        else
+            anim = CHAR_ANIM_GROUND_POUND
+        end
         if m.actionState == 0 then
             audio_sample_play(SAMPLE_BOUNCE, m.pos, 0.5)
         end
@@ -263,6 +301,9 @@ local function act_pac_jump(m)
 
     pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, anim, 0);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
+        if mario_floor_is_slippery(m) ~= 0 then
+            set_mario_action(m, ACT_PAC_ROLL, 0)
+        end
         e.bounceCount = 0
         queue_rumble_data_mario(m, 5, 40);
     end
@@ -289,6 +330,9 @@ local function act_pac_freefall(m)
 
     pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, CHAR_ANIM_GENERAL_FALL, 0);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
+        if mario_floor_is_slippery(m) ~= 0 then
+            set_mario_action(m, ACT_PAC_ROLL, 0)
+        end
         e.bounceCount = 0
         queue_rumble_data_mario(m, 5, 40);
     end
@@ -306,9 +350,53 @@ local function act_pac_kick(m)
 
     pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, CHAR_ANIM_AIR_KICK, 0);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
+        if mario_floor_is_slippery(m) ~= 0 then
+            set_mario_action(m, ACT_PAC_ROLL, 0)
+        end
         queue_rumble_data_mario(m, 5, 40);
     end
     return 0;
+end
+
+local function act_pac_roll(m)
+    if not m then return 0 end
+
+    local step = perform_ground_step(m)
+    if step == GROUND_STEP_LEFT_GROUND then
+        set_mario_action(m, ACT_PAC_SKID, 0)
+    elseif step == GROUND_STEP_HIT_WALL then
+        local wall = m.wall
+        if wall ~= nil then
+            local nx, nz = wall.normal.x, wall.normal.z
+            
+            local vx, vz = m.vel.x, m.vel.z
+            
+            local dot = vx * nx + vz * nz
+            
+            m.vel.x = vx - 2 * dot * nx
+            m.vel.z = vz - 2 * dot * nz
+            
+            m.vel.x = m.vel.x * 0.7
+            m.vel.z = m.vel.z * 0.7
+        end
+    end
+
+    local floor = m.floor
+    if floor ~= nil then
+        local nx, ny, nz = floor.normal.x, floor.normal.y, floor.normal.z
+        local push = ny < 0.99 and 4 or 0
+        m.vel.x = math.clamp(m.vel.x + nx * push, -PAC_MAX_SPEED*2, PAC_MAX_SPEED*2)
+        m.vel.z = math.clamp(m.vel.z + nz * push, -PAC_MAX_SPEED*2, PAC_MAX_SPEED*2)
+    end
+
+    m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
+
+    if mario_floor_is_slippery(m) == 0 then
+        set_mario_action(m, ACT_PAC_SKID, 0)
+    end
+
+    set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
+    m.marioObj.header.gfx.animInfo.animAccel = 0x800 * m.forwardVel
 end
 
 ---@param m MarioState
@@ -320,9 +408,6 @@ local function act_pac_rev_charge(m)
     end
 
     local distFromCam = m.playerIndex == 0 and 0.5 or math.clamp(500/vec3f_dist(m.pos, gLakituState.pos), 0, 0.5)
-    if m.playerIndex ~= 0 then
-        djui_chat_message_create(tostring(distFromCam))
-    end
     if m.actionState == 0 then
         audio_stream_play(e.revAudio, true, distFromCam)
         m.actionState = m.actionState + 1
@@ -344,8 +429,12 @@ local function act_pac_rev_charge(m)
     if m.controller.buttonDown & B_BUTTON ~= 0 then
         if m.actionTimer == 30 then
             local sp24 = spawn_non_sync_object(id_bhvSmoke, E_MODEL_SMOKE, m.pos.x, m.pos.y, m.pos.z, function (o)
-                o.oPosX = o.oPosX + (random_float() * 80.0) - 40;
-                o.oPosZ = o.oPosZ + (random_float() * 80.0) - 40;
+                local angle = (m.faceAngle.y + 0x8000) + 0x2000 * random_float() - 0x1000
+                o.oPosX = o.oPosX + sins(angle)*40
+                o.oPosZ = o.oPosZ + coss(angle)*40
+                o.oMoveAngleYaw = angle
+                o.oForwardVel = 10
+                o.oVelY = random_float()*5
             end);
         end
 
@@ -377,11 +466,13 @@ local function act_pac_rev_roll(m)
     end
 
     local step = perform_ground_step(m)
-    if step == AIR_STEP_HIT_WALL then
+    if step == GROUND_STEP_HIT_WALL then
         mario_bonk_reflection(m, 0)
         m.forwardVel = m.forwardVel * 0.8
     end
+
     set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
+    m.marioObj.header.gfx.animInfo.animAccel = 0x800 * m.forwardVel
 
     if m.actionState == 0 then
         if m.prevAction ~= ACT_PAC_REV_ROLL_AIR then
@@ -389,22 +480,20 @@ local function act_pac_rev_roll(m)
         end
         m.actionTimer = m.actionArg
         m.actionState = m.actionState + 1
+    else
+        if m.actionTimer == 0 then
+            set_mario_action(m, ACT_PAC_SKID, 0)
+        end
     end
     apply_slope_accel(m)
     if (m.input & INPUT_A_PRESSED ~= 0) then
         return set_mario_action(m, ACT_PAC_JUMP, 0);
     end
 
-    m.marioObj.header.gfx.animInfo.animAccel = 0x800 * m.forwardVel
-
     m.faceAngle.y = m.intendedYaw - approach_s32(math.s16(m.intendedYaw - m.faceAngle.y), 0, 0xA00, 0xA00);
 
     m.vel.x = m.forwardVel * sins(m.faceAngle.y)
     m.vel.z = m.forwardVel * coss(m.faceAngle.y)
-
-    if m.actionTimer == 0 then
-        set_mario_action(m, ACT_BRAKING, 0)
-    end
 
     m.actionTimer = math.max(m.actionTimer - 1, 0)
 end
@@ -412,16 +501,21 @@ end
 ---@param m MarioState
 local function act_pac_rev_roll_air(m)
     if not m then return 0 end
-    local step = perform_air_step(m, AIR_STEP_NONE)
-    if step == AIR_STEP_LANDED then
-        set_mario_action(m, ACT_PAC_REV_ROLL, 0);
-    end
-    set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
 
     if m.actionState == 0 then
         m.actionTimer = m.actionArg
         m.actionState = m.actionState + 1
+    else
+        if m.actionTimer == 0 then
+            set_mario_action(m, ACT_PAC_SKID, 0)
+        end
     end
+
+    local step = perform_air_step(m, AIR_STEP_NONE)
+    if step == AIR_STEP_LANDED then
+        set_mario_action(m, ACT_PAC_REV_ROLL, m.actionTimer);
+    end
+    set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
     
     if (m.input & INPUT_A_PRESSED ~= 0) then
         return set_mario_action(m, ACT_PAC_FREEFALL, 0);
@@ -440,13 +534,20 @@ end
 ---@param m MarioState
 local function act_pac_butt_bounce(m)
     if not m then return 0 end
+    local e = gExtrasStates[m.playerIndex]
 
     if m.actionState == 0 then
         m.actionState = m.actionState + 1
     end
 
-    pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, CHAR_ANIM_START_GROUND_POUND, 0);
+    if e.bounceCount < 3 then
+        set_character_animation(m, CHAR_ANIM_START_GROUND_POUND)
+    end
+    pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, nil, 0);
     if (m.action == ACT_PAC_BUTT_BOUNCE_LAND) then
+        if mario_floor_is_slippery(m) ~= 0 then
+            set_mario_action(m, ACT_PAC_ROLL, 0)
+        end
         queue_rumble_data_mario(m, 5, 40);
     end
     --play_flip_sounds(m, 2, 8, 20);
@@ -456,7 +557,6 @@ end
 ---@param m MarioState
 local function act_pac_butt_bounce_land(m)
     if not m then return 0 end
-    
     local e = gExtrasStates[m.playerIndex]
     e.bounceCount = e.bounceCount + 1
 
@@ -469,14 +569,30 @@ local function act_pac_butt_bounce_land(m)
 end
 
 hook_mario_action(ACT_PAC_WALKING, act_pac_walking)
+hook_mario_action(ACT_PAC_SKID, {every_frame = act_pac_skid, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_JUMP, {every_frame = act_pac_jump, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_FREEFALL, {every_frame = act_pac_freefall, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_KICK, {every_frame = act_pac_kick, gravity = pac_gravity}, INT_KICK)
+hook_mario_action(ACT_PAC_ROLL, act_pac_roll, INT_FAST_ATTACK_OR_SHELL)
 hook_mario_action(ACT_PAC_REV_CHARGE, act_pac_rev_charge)
 hook_mario_action(ACT_PAC_REV_ROLL, act_pac_rev_roll, INT_PUNCH)
 hook_mario_action(ACT_PAC_REV_ROLL_AIR, {every_frame = act_pac_rev_roll_air, gravity = pac_gravity}, INT_PUNCH)
 hook_mario_action(ACT_PAC_BUTT_BOUNCE, {every_frame = act_pac_butt_bounce, gravity = pac_butt_bounce_gravity}, INT_GROUND_POUND)
 hook_mario_action(ACT_PAC_BUTT_BOUNCE_LAND, act_pac_butt_bounce_land, INT_GROUND_POUND)
+
+---@param m MarioState
+local function pac_update(m)
+    if not m then return 0 end
+    local e = gExtrasStates[m.playerIndex]
+
+    -- Update Movement Visuals
+    e.faceAngleLerp = lerp_s16(e.faceAngleLerp, m.intendedYaw, 0.3)
+    if m.action == ACT_PAC_WALKING or (m.action == ACT_PAC_JUMP and e.bounceCount == 0) then
+        m.marioObj.header.gfx.angle.y = e.faceAngleLerp
+        m.marioBodyState.headAngle.z = math.clamp(math.s16(e.faceAngleLerp - m.intendedYaw), -0x2000, 0x2000)*0.7
+    end
+
+end
 
 local overrideActs = {
     [ACT_JUMP] = ACT_PAC_JUMP,
@@ -488,6 +604,12 @@ local overrideActs = {
     [ACT_DIVE] = ACT_PAC_REV_CHARGE,
     [ACT_FREEFALL] = ACT_PAC_FREEFALL,
     [ACT_WALKING] = ACT_PAC_WALKING,
+    [ACT_WALKING] = ACT_PAC_WALKING,
+    [ACT_BRAKING] = ACT_PAC_SKID,
+    [ACT_BUTT_SLIDE] = ACT_PAC_ROLL,
+    [ACT_DIVE_SLIDE] = ACT_PAC_ROLL,
+    [ACT_STOMACH_SLIDE] = ACT_PAC_ROLL,
+    [ACT_BEGIN_SLIDING] = ACT_PAC_ROLL,
 
     [ACT_START_CROUCHING] = false,
     [ACT_STOP_CROUCHING] = false,
@@ -498,9 +620,12 @@ local overrideActs = {
 local function before_pac_action(m, nextAct)
     local e = gExtrasStates[m.playerIndex]
     audio_stream_pause(e.revAudio)
+    e.floorSteep = nil
+    local forceDefaultWalk = e.forceDefaultWalk
+    e.forceDefaultWalk = false
     if overrideActs[nextAct] then
         if overrideActs[nextAct] ~= false then
-            if nextAct ~= ACT_WALKING or not e.forceDefaultWalk then
+            if nextAct ~= ACT_WALKING or not forceDefaultWalk then
                 return set_mario_action(m, overrideActs[nextAct], 0)
             end
         else
@@ -556,6 +681,7 @@ local function on_play_sound(sound, pos)
     end
 end
 
+hook_pac_event(HOOK_MARIO_UPDATE, pac_update)
 hook_pac_event(HOOK_BEFORE_SET_MARIO_ACTION, before_pac_action)
 hook_pac_event(HOOK_ON_INTERACT, on_interact)
 hook_pac_event(HOOK_ON_PLAY_SOUND, on_play_sound)
