@@ -10,6 +10,8 @@ for i = 0, MAX_PLAYERS - 1 do
         bounceCount = 0,
         forceDefaultWalk = false,
         faceAngleLerp = 0,
+        prevPos = {x = 0, y = 0, z = 0},
+        pelletPath = {}
     }
     audio_stream_set_looping(gExtrasStates[i].revAudio, true)
 end
@@ -32,6 +34,15 @@ local function lerp_s16(a, b, t)
     end
 
     return math.s16(a + delta * t)
+end
+
+local function catmullRom(p0, p1, p2, p3, t)
+    return 0.5 * (
+        (2 * p1) +
+        (-p0 + p2) * t +
+        (2*p0 - 5*p1 + 4*p2 - p3) * t^2 +
+        (-p0 + 3*p1 - 3*p2 + p3) * t^3
+    )
 end
 
 local function update_walking_speed(m)
@@ -174,6 +185,7 @@ local ACT_PAC_REV_ROLL = allocate_mario_action(ACT_GROUP_MOVING)
 local ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE)
 local ACT_PAC_BUTT_BOUNCE = allocate_mario_action(ACT_GROUP_AIRBORNE)
 local ACT_PAC_BUTT_BOUNCE_LAND = allocate_mario_action(ACT_GROUP_MOVING)
+local ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING)
 
 local function pac_gravity(m)
     if not m then return 0 end
@@ -339,8 +351,12 @@ local function act_pac_freefall(m)
     return 0;
 end
 
+---@param m MarioState
 local function act_pac_kick(m)
     if not m then return 0 end
+    if (m.flags & MARIO_WING_CAP ~= 0) and m.prevAction == ACT_PAC_JUMP then
+        return set_mario_action(m, ACT_PAC_POWER_PELLET, 0)
+    end
     if m.actionState == 0 then
         set_mario_y_vel_based_on_fspeed(m, m.vel.y > 0 and m.vel.y*0.6 or m.vel.y, 0.0)
         m.actionState = m.actionState + 1
@@ -568,6 +584,54 @@ local function act_pac_butt_bounce_land(m)
     return 0;
 end
 
+local eatRate = 4
+---@param m MarioState
+local function act_pac_power_pellet(m)
+    if not m then return 0 end
+    local e = gExtrasStates[m.playerIndex]
+    
+    if m.actionState == 0 then
+        local o = spawn_pellet_trail(m)
+        if m.controller.buttonDown & B_BUTTON == 0 then
+            e.pelletPath[#e.pelletPath + 1] = {x = o.oPosX, y = o.oPosY, z = o.oPosZ}
+            m.actionState = m.actionState + 1
+        end
+        set_character_animation(m, CHAR_ANIM_FIRST_PUNCH)
+    elseif m.actionState == 1 then
+        m.actionState = m.actionState + 1
+        e.pelletPath[0] = {x = m.pos.x, y = m.pos.y, z = m.pos.z}
+    else
+        local f = math.floor(m.actionTimer/eatRate)
+        local t = (m.actionTimer % eatRate) / eatRate
+        if #e.pelletPath > 0 and e.pelletPath[f] ~= nil then
+            -- Get four neighboring samples (make sure they exist)
+            local p1 = e.pelletPath[f]           -- current
+            local p0 = e.pelletPath[f - 1] or p1 -- previous
+            local p2 = e.pelletPath[f + 1] or p1 -- next
+            local p3 = e.pelletPath[f + 2] or p2 -- next next
+
+            -- Smooth position interpolation
+            m.pos.x = catmullRom(p0.x, p1.x, p2.x, p3.x, t)
+            m.pos.y = catmullRom(p0.y, p1.y, p2.y, p3.y, t)
+            m.pos.z = catmullRom(p0.z, p1.z, p2.z, p3.z, t)
+
+            m.faceAngle.y = atan2s(m.pos.z - e.prevPos.z, m.pos.x - e.prevPos.x)
+            m.marioObj.header.gfx.angle.x = m.actionTimer * 0x1000
+
+            vec3f_copy(e.prevPos, m.pos)
+            perform_air_step(m, AIR_STEP_NONE)
+            set_character_animation(m, CHAR_ANIM_FAST_LONGJUMP)
+
+            m.actionTimer = m.actionTimer + 1
+        else
+            e.pelletPath = {}
+            return set_mario_action(m, ACT_PAC_FREEFALL, 0)
+        end
+    end
+
+    return 0;
+end
+
 hook_mario_action(ACT_PAC_WALKING, act_pac_walking)
 hook_mario_action(ACT_PAC_SKID, {every_frame = act_pac_skid, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_JUMP, {every_frame = act_pac_jump, gravity = pac_gravity})
@@ -579,6 +643,7 @@ hook_mario_action(ACT_PAC_REV_ROLL, act_pac_rev_roll, INT_PUNCH)
 hook_mario_action(ACT_PAC_REV_ROLL_AIR, {every_frame = act_pac_rev_roll_air, gravity = pac_gravity}, INT_PUNCH)
 hook_mario_action(ACT_PAC_BUTT_BOUNCE, {every_frame = act_pac_butt_bounce, gravity = pac_butt_bounce_gravity}, INT_GROUND_POUND)
 hook_mario_action(ACT_PAC_BUTT_BOUNCE_LAND, act_pac_butt_bounce_land, INT_GROUND_POUND)
+hook_mario_action(ACT_PAC_POWER_PELLET, {every_frame = act_pac_power_pellet, gravity = function() end})
 
 ---@param m MarioState
 local function pac_update(m)
@@ -663,20 +728,12 @@ end
 local wakaSound = audio_sample_load("zbpm-credit.ogg")
 local fruitSound = audio_sample_load("zbpm-fruit.ogg")
 local function on_play_sound(sound, pos)
-    local pos = {
-        x = pos.x - gMarioStates[0].marioObj.header.gfx.cameraToObject.x,
-        y = pos.y - gMarioStates[0].marioObj.header.gfx.cameraToObject.y,
-        z = pos.z - gMarioStates[0].marioObj.header.gfx.cameraToObject.z,
-    }
     if sound == SOUND_GENERAL_COIN then
-        djui_chat_message_create(tostring(pos.x))
-        djui_chat_message_create(tostring(pos.y))
-        djui_chat_message_create(tostring(pos.z))
-        audio_sample_play(wakaSound, pos, 1)
+        audio_sample_play(wakaSound, gMarioStates[0].pos, 1)
         return NO_SOUND
     end
     if sound == SOUND_GENERAL_RED_COIN or sound == SOUND_MENU_COLLECT_RED_COIN then
-        audio_sample_play(fruitSound, pos, 1)
+        audio_sample_play(fruitSound, gMarioStates[0].pos, 1)
         return NO_SOUND
     end
 end
@@ -685,3 +742,109 @@ hook_pac_event(HOOK_MARIO_UPDATE, pac_update)
 hook_pac_event(HOOK_BEFORE_SET_MARIO_ACTION, before_pac_action)
 hook_pac_event(HOOK_ON_INTERACT, on_interact)
 hook_pac_event(HOOK_ON_PLAY_SOUND, on_play_sound)
+
+-- Pac Man Objects
+local function obj_get_owner_mario(obj)
+    local index = obj.globalPlayerIndex < MAX_PLAYERS and network_local_index_from_global(obj.globalPlayerIndex) or nearest_mario_state_to_object(obj).playerIndex
+    return gMarioStates[index]
+end
+
+---@param o Object
+local function bhv_trail_pellet_init(o)
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.oGravity = 0
+
+    local m = obj_get_owner_mario(o)
+    local e = gExtrasStates[m.playerIndex]
+    table.insert(e.pelletPath, {x = o.oPosX, y = o.oPosY, z = o.oPosZ})
+end
+
+---@param o Object
+local function bhv_trail_pellet_loop(o)
+    local m = obj_get_owner_mario(o)
+
+    if m.action ~= ACT_PAC_POWER_PELLET then
+        obj_mark_for_deletion(o)
+    end
+
+    if m.actionState == 0 then
+
+    else
+        if vec3f_dist(m.pos, {x = o.oPosX, y = o.oPosY, z = o.oPosZ}) < 100 then
+            obj_mark_for_deletion(o)
+        end
+    end
+end
+
+id_bhvTrailPellet = hook_behavior(nil, OBJ_LIST_DEFAULT, true, bhv_trail_pellet_init, bhv_trail_pellet_loop, "id_bhvTrailPellet")
+
+---@param o Object
+local function bhv_aim_pellet_init(o)
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.oGravity = 0
+end
+
+local pelletTurnRadius = 0x300
+
+---@param o Object
+local function bhv_aim_pellet_loop(o)
+    local m = obj_get_owner_mario(o)
+    local e = gExtrasStates[m.playerIndex]
+
+    if m.action ~= ACT_PAC_POWER_PELLET then
+        obj_mark_for_deletion(o)
+    end
+
+    if m.actionState == 0 then
+        local angle = 0 + (m.controller.buttonDown & A_BUTTON ~= 0 and 0x4000 or 0) - (m.controller.buttonDown & Z_TRIG ~= 0 and 0x4000 or 0)
+        angle = angle * (1 - m.intendedMag / 64)
+        o.oMoveAnglePitch = angle - approach_s32(math.s16(angle - o.oMoveAnglePitch), 0, pelletTurnRadius, pelletTurnRadius);
+
+        if m.intendedMag > 2 then
+            o.oMoveAngleYaw = m.intendedYaw - approach_s32(math.s16(m.intendedYaw - o.oMoveAngleYaw), 0, pelletTurnRadius, pelletTurnRadius);
+        end
+
+        o.oVelY = 40*sins(o.oMoveAnglePitch)
+        o.oForwardVel = 40*coss(o.oMoveAnglePitch)
+
+        object_step()
+
+        if o.oTimer%5 == 0 then
+            spawn_sync_object(id_bhvTrailPellet, E_MODEL_FISH, o.oPosX, o.oPosY, o.oPosZ, function (tO)
+                tO.globalPlayerIndex = o.globalPlayerIndex
+            end)
+        end
+    else
+        if vec3f_dist(m.pos, {x = o.oPosX, y = o.oPosY, z = o.oPosZ}) < 100 then
+            obj_mark_for_deletion(o)
+        end
+    end
+end
+
+id_bhvAimPellet = hook_behavior(nil, OBJ_LIST_DEFAULT, true, bhv_aim_pellet_init, bhv_aim_pellet_loop, "id_bhvAimPellet")
+
+function get_pellet_trail(m)
+    local globalIndex = network_global_index_from_local(m.playerIndex)
+    local o = obj_get_first_with_behavior_id(id_bhvAimPellet)
+    while o ~= nil do
+        if o.globalPlayerIndex == globalIndex then
+            return o
+        end
+        o = obj_get_next_with_same_behavior_id(o)
+    end
+end
+
+function spawn_pellet_trail(m)
+    local globalIndex = network_global_index_from_local(m.playerIndex)
+
+    local trail = get_pellet_trail(m)
+
+    if trail == nil and m.playerIndex == 0 then
+        return spawn_sync_object(id_bhvAimPellet, E_MODEL_BOBOMB_BUDDY, m.pos.x, m.pos.y, m.pos.z, function(o)
+            o.globalPlayerIndex = globalIndex
+            o.oMoveAngleYaw = m.faceAngle.y
+        end)
+    else
+        return trail
+    end
+end
