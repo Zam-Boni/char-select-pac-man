@@ -1,14 +1,14 @@
 const GeoLayout zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -18,14 +18,14 @@ const GeoLayout zbclyde_Right_Hand_Open[] = {
 const GeoLayout zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2),
 		GEO_CLOSE_NODE(),
@@ -35,7 +35,7 @@ const GeoLayout zbclyde_Right_Hand_Cap[] = {
 const GeoLayout zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2),
 			GEO_DISPLAY_LIST(LAYER_ALPHA, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4),
@@ -46,14 +46,14 @@ const GeoLayout zbclyde_Right_Hand_Wing_Cap[] = {
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -63,14 +63,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Rig
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2),
 		GEO_CLOSE_NODE(),
@@ -80,7 +80,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Rig
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4),
@@ -91,14 +91,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Rig
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -108,14 +108,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_ghostblue_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_ghostblue_1),
 		GEO_CLOSE_NODE(),
@@ -125,7 +125,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_ghostblue_1),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_ghostblue_1),
@@ -276,14 +276,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_clydehalf_2),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_clydehalf_2),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -293,14 +293,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_clydehalf_2),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_clydehalf_2),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_clydehalf_2),
 		GEO_CLOSE_NODE(),
@@ -310,7 +310,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_clydehalf_2),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_clydehalf_2),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_clydehalf_2),
@@ -455,14 +455,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_clydeclosed_3),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_clydeclosed_3),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -472,14 +472,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_clydeclosed_3),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_clydeclosed_3),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_clydeclosed_3),
 		GEO_CLOSE_NODE(),
@@ -489,7 +489,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_clydeclosed_3),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_clydeclosed_3),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_clydeclosed_3),
@@ -634,14 +634,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -651,14 +651,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_ghostblue_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_ghostblue_1),
 		GEO_CLOSE_NODE(),
@@ -668,7 +668,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_ghostblue_1),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_ghostblue_1),
@@ -1004,14 +1004,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt1[] = {
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_Metal__METAL__0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_Metal__METAL__0),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -1021,14 +1021,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbclyde_Rig
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_Metal__METAL__0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_Metal__METAL__0),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_Metal__METAL__0),
 		GEO_CLOSE_NODE(),
@@ -1038,7 +1038,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbclyde_Rig
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt2_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_Metal__METAL__0),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_Metal__METAL__0),
 			GEO_DISPLAY_LIST(LAYER_ALPHA, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_Metal__METAL__0),
@@ -1198,14 +1198,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt2[] = {
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_Metal__METAL__0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_Metal__METAL__0),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -1215,14 +1215,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbclyde_Rig
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_Metal__METAL__0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_Metal__METAL__0),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_Metal__METAL__0),
 		GEO_CLOSE_NODE(),
@@ -1232,7 +1232,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbclyde_Rig
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt3_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_Metal__METAL__0),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_Metal__METAL__0),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_Metal__METAL__0),
 			GEO_DISPLAY_LIST(LAYER_TRANSPARENT, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_Metal__METAL__0),
@@ -1392,14 +1392,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt3[] = {
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt1_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt1_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -1409,14 +1409,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt1_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_ghostblue_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt1_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_ghostblue_1),
 		GEO_CLOSE_NODE(),
@@ -1426,7 +1426,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt1_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_ghostblue_1),
 			GEO_DISPLAY_LIST(LAYER_ALPHA, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_ghostblue_1),
@@ -1577,14 +1577,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_clydehalf_2),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_clydehalf_2),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -1594,14 +1594,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_clydehalf_2),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_clydehalf_2),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_clydehalf_2),
 		GEO_CLOSE_NODE(),
@@ -1611,7 +1611,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt1_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_clydehalf_2),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_clydehalf_2),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_clydehalf_2),
 			GEO_DISPLAY_LIST(LAYER_ALPHA, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_clydehalf_2),
@@ -1756,14 +1756,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_clydeclosed_3),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_clydeclosed_3),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -1773,14 +1773,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_clydeclosed_3),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_clydeclosed_3),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_clydeclosed_3),
 		GEO_CLOSE_NODE(),
@@ -1790,7 +1790,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt2_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_clydeclosed_3),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_clydeclosed_3),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_clydeclosed_3),
 			GEO_DISPLAY_LIST(LAYER_ALPHA, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_clydeclosed_3),
@@ -1935,14 +1935,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_Left_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Left_Hand_Open_Switch_Option_Left_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_Right_Hand_Open[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Open_Switch_Option_Right_Hand_Open_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_HELD_OBJECT(0, 0, 0, 0, geo_switch_mario_hand_grab_pos),
 		GEO_CLOSE_NODE(),
@@ -1952,14 +1952,14 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_Right_Hand_Peace[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 90, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Peace_Switch_Option_Right_Hand_Peace_mesh_layer_1_mat_override_ghostblue_1),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
 };
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_Right_Hand_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Cap_Switch_Option_Right_Hand_Cap_mesh_layer_2_mat_override_ghostblue_1),
 		GEO_CLOSE_NODE(),
@@ -1969,7 +1969,7 @@ const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2
 const GeoLayout zbclyde_B_LoD_Switch_opt0_Cap_State_Switch_opt0_Capless_Switch_2_opt0_Eye_State_Switch_2_opt3_jump_zbclyde_Right_Hand_Wing_Cap[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_ANIMATED_PART(LAYER_OPAQUE, 105, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_ghostblue_1),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 120, 0, 0, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_1_mat_override_ghostblue_1),
 		GEO_OPEN_NODE(),
 			GEO_DISPLAY_LIST(LAYER_OPAQUE_DECAL, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Right_Hand_Wing_Cap_mesh_layer_2_mat_override_ghostblue_1),
 			GEO_DISPLAY_LIST(LAYER_ALPHA, zbclyde_Right_Hand_Wing_Cap_Swtich_Option_Wings_mesh_layer_4_mat_override_ghostblue_1),
