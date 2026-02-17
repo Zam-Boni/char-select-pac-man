@@ -1,6 +1,9 @@
 SAMPLE_BOUNCE = audio_sample_load("zbpmsfx-bounce.ogg")
 SAMPLE_TAKE_OFF = audio_sample_load("zbpmsfx-takeoff.ogg")
 
+local E_MODEL_PACDOT =      smlua_model_util_get_id("pacdot_geo")
+local E_MODEL_PACPELLET =      smlua_model_util_get_id("pacpellet_geo")
+
 local PAC_MAX_SPEED = 30
 
 local gExtrasStates = {}
@@ -725,7 +728,7 @@ local function on_interact(m, o, type)
     end
 end
 
-local wakaSound = audio_sample_load("zbpm-credit.ogg")
+local wakaSound = audio_sample_load("zbpm-waka.ogg")
 local fruitSound = audio_sample_load("zbpm-fruit.ogg")
 local function on_play_sound(sound, pos)
     if sound == SOUND_GENERAL_COIN then
@@ -771,6 +774,7 @@ local function bhv_trail_pellet_loop(o)
 
     else
         if vec3f_dist(m.pos, {x = o.oPosX, y = o.oPosY, z = o.oPosZ}) < 100 then
+            audio_sample_play(wakaSound, gMarioStates[0].pos, 1)
             obj_mark_for_deletion(o)
         end
     end
@@ -810,7 +814,7 @@ local function bhv_aim_pellet_loop(o)
         object_step()
 
         if o.oTimer%5 == 0 then
-            spawn_sync_object(id_bhvTrailPellet, E_MODEL_FISH, o.oPosX, o.oPosY, o.oPosZ, function (tO)
+            spawn_sync_object(id_bhvTrailPellet, E_MODEL_PACDOT, o.oPosX, o.oPosY, o.oPosZ, function (tO)
                 tO.globalPlayerIndex = o.globalPlayerIndex
             end)
         end
@@ -840,7 +844,7 @@ function spawn_pellet_trail(m)
     local trail = get_pellet_trail(m)
 
     if trail == nil and m.playerIndex == 0 then
-        return spawn_sync_object(id_bhvAimPellet, E_MODEL_BOBOMB_BUDDY, m.pos.x, m.pos.y, m.pos.z, function(o)
+        return spawn_sync_object(id_bhvAimPellet, E_MODEL_PACPELLET, m.pos.x, m.pos.y, m.pos.z, function(o)
             o.globalPlayerIndex = globalIndex
             o.oMoveAngleYaw = m.faceAngle.y
         end)
