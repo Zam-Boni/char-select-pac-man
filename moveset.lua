@@ -48,25 +48,19 @@ local function catmullRom(p0, p1, p2, p3, t)
     )
 end
 
+local function obj_get_owner_mario(obj)
+    local index = obj.globalPlayerIndex < MAX_PLAYERS and network_local_index_from_global(obj.globalPlayerIndex) or nearest_mario_state_to_object(obj).playerIndex
+    return gMarioStates[index]
+end
+
 local function update_walking_speed(m)
     if not m then return end
     local e = gExtrasStates[m.playerIndex]
-    local maxTargetSpeed = PAC_MAX_SPEED
 
     local slipperyFloor = ((m.area.terrainType & TERRAIN_MASK) == TERRAIN_SNOW and (m.floor ~= nil and m.floor.type & SURFACE_CLASS_SLIPPERY | SURFACE_CLASS_VERY_SLIPPERY ~= 0 ));
 
-    --m.forwardVel = approach_f32(m.forwardVel, 0.0, 0.35, 0.35);
---
     local intendedDYaw = m.intendedYaw;
     local intendedMag = m.intendedMag / 32.0;
---
-    --m.forwardVel = m.forwardVel + 1.5 * coss(intendedDYaw) * intendedMag;
-    --m.faceAngle.y = lerp_s16(m.faceAngle.y, m.intendedYaw, 0.3);
---
-    --m.forwardVel = math.min(m.forwardVel, PAC_MAX_SPEED)
-    --if (m.forwardVel < -16.0) then
-    --    m.forwardVel = m.forwardVel + 2.0;
-    --end
 
     m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, slipperyFloor and 0.05 or 0.3)
     m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, slipperyFloor and 0.05 or 0.3)
@@ -85,26 +79,24 @@ end
 local function pac_update_air_with_turn(m)
     if not m then return end
 
-    --if (check_horizontal_wind(m) == 0) then
-        if m.input & INPUT_ZERO_MOVEMENT == 0 then
-            local intendedDYaw = m.intendedYaw;
-            local intendedMag = m.intendedMag / 32.0;
+    if m.input & INPUT_ZERO_MOVEMENT == 0 then
+        local intendedDYaw = m.intendedYaw;
+        local intendedMag = m.intendedMag / 32.0;
 
-            m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.3)
-            m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.3)
-        else
-            m.vel.x = math.lerp(m.vel.x, 0, 0.1)
-            m.vel.z = math.lerp(m.vel.z, 0, 0.1)
-        end
-        m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
-        if m.forwardVel > 1 then
-            m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
-        else
-            m.vel.x = 0
-            m.vel.z = 0
-            m.forwardVel = 0
-        end
-    --end
+        m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.3)
+        m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.3)
+    else
+        m.vel.x = math.lerp(m.vel.x, 0, 0.1)
+        m.vel.z = math.lerp(m.vel.z, 0, 0.1)
+    end
+    m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
+    if m.forwardVel > 1 then
+        m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
+    else
+        m.vel.x = 0
+        m.vel.z = 0
+        m.forwardVel = 0
+    end
 end
 
 local function pac_air_action_step(m, landAction, animation, stepArg)
@@ -136,7 +128,6 @@ local function pac_air_action_step(m, landAction, animation, stepArg)
 
     return stepResult;
 end
-
 
 function get_mario_slope_steepness(m)
     local floor = m.floor
@@ -189,6 +180,7 @@ local ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE)
 local ACT_PAC_BUTT_BOUNCE = allocate_mario_action(ACT_GROUP_AIRBORNE)
 local ACT_PAC_BUTT_BOUNCE_LAND = allocate_mario_action(ACT_GROUP_MOVING)
 local ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING)
+local ACT_PAC_SWIM = allocate_mario_action(ACT_GROUP_SUBMERGED | ACT_FLAG_SWIMMING | ACT_FLAG_SWIMMING_OR_FLYING)
 
 local function pac_gravity(m)
     if not m then return 0 end
@@ -331,6 +323,11 @@ local function act_pac_freefall(m)
     if not m then return 0 end
     local e = gExtrasStates[m.playerIndex]
 
+    if m.actionState == 0 then
+        m.vel.x = m.forwardVel*sins(m.faceAngle.y)
+        m.vel.z = m.forwardVel*coss(m.faceAngle.y)
+    end
+
     if (m.input & INPUT_B_PRESSED ~= 0) then
         e.bounceCount = 0
         return set_mario_action(m, ACT_PAC_KICK, 0);
@@ -399,6 +396,9 @@ local function act_pac_roll(m)
             m.vel.z = m.vel.z * 0.7
         end
     end
+
+    m.vel.x = m.vel.x + sins(m.intendedYaw) * m.intendedMag / 32 * 1.1
+    m.vel.z = m.vel.z + coss(m.intendedYaw) * m.intendedMag / 32 * 1.1
 
     local floor = m.floor
     if floor ~= nil then
@@ -635,6 +635,65 @@ local function act_pac_power_pellet(m)
     return 0;
 end
 
+local function check_water_jump(m)
+    if not m then return 0 end
+    local probe = m.pos.y + 1.5
+
+    if (m.input & INPUT_A_PRESSED ~= 0) then
+        if (probe >= m.waterLevel - 80 and m.faceAngle.x >= 0 and m.controller.stickY < -60.0) then      
+            local allowForceAction = true;
+            if not allowForceAction then return 0 end
+
+            vec3s_set(m.angleVel, 0, 0, 0);
+
+            m.vel.y = 62.0;
+
+            if (m.heldObj == nil) then
+                return set_mario_action(m, ACT_WATER_JUMP, 0);
+            else
+                return set_mario_action(m, ACT_HOLD_WATER_JUMP, 0);
+            end
+        end
+    end
+
+    return 0;
+end
+
+local function act_pac_swim(m)
+    if not m then return 0 end
+    local pIndex = m.playerIndex;
+
+    if (m.flags & MARIO_METAL_CAP ~= 0) then
+        return set_mario_action(m, ACT_METAL_WATER_FALLING, 1);
+    end
+    
+    local intendedDYaw = m.intendedYaw;
+    local intendedMag = m.intendedMag / 32.0;
+    local vTarget = 0 + (m.controller.buttonDown & A_BUTTON ~= 0 and 0x2000 or 0) - (m.controller.buttonDown & B_BUTTON ~= 0 and 0x2000 or 0)
+
+    m.forwardVel = math.lerp(m.forwardVel, (vTarget ~= 0 and 1 or intendedMag)*PAC_MAX_SPEED*0.5, 0.1)
+    if intendedMag > 0.2 then
+        m.faceAngle.y = lerp_s16(m.faceAngle.y, intendedDYaw, 0.03)
+    end
+    m.faceAngle.y = lerp_s16(m.faceAngle.y, intendedDYaw, 0.03)
+    m.faceAngle.x = lerp_s16(m.faceAngle.x, vTarget, 0.03)
+    if vTarget > 0 then
+        m.faceAngle.x = math.max(m.faceAngle.x, 0)
+    elseif vTarget < 0 then
+        m.faceAngle.x = math.min(m.faceAngle.x, 0)
+    end
+
+    m.vel.y = sins(m.faceAngle.x) * PAC_MAX_SPEED*0.5
+    m.vel.x = sins(m.faceAngle.y) * m.forwardVel
+    m.vel.z = coss(m.faceAngle.y) * m.forwardVel
+
+    perform_water_step(m)
+
+    set_character_animation(m, CHAR_ANIM_SWIM_PART1);
+
+    return 0;
+end
+
 hook_mario_action(ACT_PAC_WALKING, act_pac_walking)
 hook_mario_action(ACT_PAC_SKID, {every_frame = act_pac_skid, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_JUMP, {every_frame = act_pac_jump, gravity = pac_gravity})
@@ -647,6 +706,7 @@ hook_mario_action(ACT_PAC_REV_ROLL_AIR, {every_frame = act_pac_rev_roll_air, gra
 hook_mario_action(ACT_PAC_BUTT_BOUNCE, {every_frame = act_pac_butt_bounce, gravity = pac_butt_bounce_gravity}, INT_GROUND_POUND)
 hook_mario_action(ACT_PAC_BUTT_BOUNCE_LAND, act_pac_butt_bounce_land, INT_GROUND_POUND)
 hook_mario_action(ACT_PAC_POWER_PELLET, {every_frame = act_pac_power_pellet, gravity = function() end})
+hook_mario_action(ACT_PAC_SWIM, act_pac_swim)
 
 ---@param m MarioState
 local function pac_update(m)
@@ -659,7 +719,6 @@ local function pac_update(m)
         m.marioObj.header.gfx.angle.y = e.faceAngleLerp
         m.marioBodyState.headAngle.z = math.clamp(math.s16(e.faceAngleLerp - m.intendedYaw), -0x2000, 0x2000)*0.7
     end
-
 end
 
 local overrideActs = {
@@ -691,6 +750,9 @@ local function before_pac_action(m, nextAct)
     e.floorSteep = nil
     local forceDefaultWalk = e.forceDefaultWalk
     e.forceDefaultWalk = false
+    if nextAct & ACT_FLAG_SWIMMING ~= 0 and nextAct ~= ACT_PAC_SWIM then
+        return set_mario_action(m, ACT_PAC_SWIM, 0)
+    end
     if overrideActs[nextAct] then
         if overrideActs[nextAct] ~= false then
             if nextAct ~= ACT_WALKING or not forceDefaultWalk then
@@ -702,7 +764,6 @@ local function before_pac_action(m, nextAct)
     end
 end
 
-
 local forceWalkingInteracts = {
     [id_bhvDoor] = true,
     [id_bhvDoorWarp] = true,
@@ -711,6 +772,22 @@ local forceWalkingInteracts = {
     [id_bhvTowerDoor] = true,
     [id_bhvKoopaShell] = true,
 }
+
+-- BOWSER INTERACTION CODE
+-- Thank you SwagSkeleton95
+local function hit_effect_bowser(m, target)
+    if target.oAction ~= 19 and target.oAction ~= 4 and target.oAction ~= 12 and target.oAction ~= 1 then
+        target.oMoveFlags = 0
+        target.oFaceAngleYaw = m.faceAngle.y + 0x8000
+        target.oMoveAngleYaw = m.faceAngle.y + 0x8000
+        target.oSubAction = 0
+        target.oAction = 1
+        target.oVelY = 50
+        target.oForwardVel = -m.forwardVel
+        return true
+    end
+    return false
+end
 
 ---@param m MarioState
 ---@param o Object
@@ -722,9 +799,28 @@ local function on_interact(m, o, type)
         e.forceDefaultWalk = true
         set_mario_action(m, ACT_WALKING, 0)
     end
+end
 
-    if type == INTERACT_COIN then
-
+---@param m MarioState
+---@param o Object
+---@param type InteractionType
+local function allow_interact(m, o, type)
+    if m.action == ACT_PAC_REV_ROLL then
+        if obj_has_behavior_id(o, id_bhvBowserBodyAnchor) ~= 0 then
+            if hit_effect_bowser(m, o.parentObj) then
+                m.vel.y = 30
+                m.forwardVel = -30
+                set_mario_action(m, ACT_PAC_FREEFALL, 0)
+                return false
+            end
+        elseif type & INTERACT_DAMAGE ~= 0 then
+            m.vel.y = 30
+            m.forwardVel = -30
+            set_mario_action(m, ACT_PAC_FREEFALL, 0)
+        end
+    end
+    if o.parentObj.oAction == 1 and m.action == ACT_PAC_FREEFALL then
+        return false
     end
 end
 
@@ -744,13 +840,10 @@ end
 hook_pac_event(HOOK_MARIO_UPDATE, pac_update)
 hook_pac_event(HOOK_BEFORE_SET_MARIO_ACTION, before_pac_action)
 hook_pac_event(HOOK_ON_INTERACT, on_interact)
+hook_pac_event(HOOK_ALLOW_INTERACT, allow_interact)
 hook_pac_event(HOOK_ON_PLAY_SOUND, on_play_sound)
 
 -- Pac Man Objects
-local function obj_get_owner_mario(obj)
-    local index = obj.globalPlayerIndex < MAX_PLAYERS and network_local_index_from_global(obj.globalPlayerIndex) or nearest_mario_state_to_object(obj).playerIndex
-    return gMarioStates[index]
-end
 
 ---@param o Object
 local function bhv_trail_pellet_init(o)
