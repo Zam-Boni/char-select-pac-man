@@ -14,6 +14,7 @@ for i = 0, MAX_PLAYERS - 1 do
         forceDefaultWalk = false,
         faceAngleLerp = 0,
         prevPos = {x = 0, y = 0, z = 0},
+        overrideVel = {x = 0, y = 0, z = 0},
         pelletPath = {}
     }
     audio_stream_set_looping(gExtrasStates[i].revAudio, true)
@@ -53,6 +54,18 @@ local function obj_get_owner_mario(obj)
     return gMarioStates[index]
 end
 
+local function apply_override_vel(m)
+    local e = gExtrasStates[m.playerIndex]
+
+    m.vel.x = m.vel.x + e.overrideVel.x
+    m.vel.y = m.vel.y + e.overrideVel.y
+    m.vel.z = m.vel.z + e.overrideVel.z
+
+    e.overrideVel.x = math.max(math.abs(e.overrideVel.x) - 4, 0) * (e.overrideVel.x > 0 and 1 or -1)
+    e.overrideVel.y = math.max(math.abs(e.overrideVel.y) - 4, 0) * (e.overrideVel.y > 0 and 1 or -1)
+    e.overrideVel.z = math.max(math.abs(e.overrideVel.z) - 4, 0) * (e.overrideVel.z > 0 and 1 or -1)
+end
+
 local function update_walking_speed(m)
     if not m then return end
     local e = gExtrasStates[m.playerIndex]
@@ -64,7 +77,9 @@ local function update_walking_speed(m)
 
     m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, slipperyFloor and 0.05 or 0.3)
     m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, slipperyFloor and 0.05 or 0.3)
+    apply_override_vel(m)
     m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
+
     if m.forwardVel > 1 then
         m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
         apply_slope_accel(m);
@@ -78,6 +93,7 @@ end
 
 local function pac_update_air_with_turn(m)
     if not m then return end
+    local e = gExtrasStates[m.playerIndex]
 
     if m.input & INPUT_ZERO_MOVEMENT == 0 then
         local intendedDYaw = m.intendedYaw;
@@ -89,7 +105,10 @@ local function pac_update_air_with_turn(m)
         m.vel.x = math.lerp(m.vel.x, 0, 0.1)
         m.vel.z = math.lerp(m.vel.z, 0, 0.1)
     end
+
+    apply_override_vel(m)
     m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
+    
     if m.forwardVel > 1 then
         m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
     else
@@ -323,21 +342,8 @@ local function act_pac_freefall(m)
     if not m then return 0 end
     local e = gExtrasStates[m.playerIndex]
 
-    if m.actionState == 0 then
-        m.vel.x = m.forwardVel*sins(m.faceAngle.y)
-        m.vel.z = m.forwardVel*coss(m.faceAngle.y)
-    end
-
     if (m.input & INPUT_B_PRESSED ~= 0) then
-        e.bounceCount = 0
         return set_mario_action(m, ACT_PAC_KICK, 0);
-    end
-    if m.actionTimer > 5 then
-        if (m.input & INPUT_A_PRESSED ~= 0) then
-            return set_mario_action(m, ACT_PAC_BUTT_BOUNCE, 0);
-        end
-    else
-        m.actionTimer = m.actionTimer + 1
     end
 
     pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, CHAR_ANIM_GENERAL_FALL, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
@@ -345,7 +351,6 @@ local function act_pac_freefall(m)
         if mario_floor_is_slippery(m) ~= 0 then
             set_mario_action(m, ACT_PAC_ROLL, 0)
         end
-        e.bounceCount = 0
         queue_rumble_data_mario(m, 5, 40);
     end
     return 0;
@@ -597,7 +602,7 @@ local function act_pac_power_pellet(m)
     
     if m.actionState == 0 then
         local o = spawn_pellet_trail(m)
-        if m.controller.buttonDown & B_BUTTON == 0 then
+        if m.controller.buttonDown & B_BUTTON == 0 or (m.flags & MARIO_WING_CAP == 0) then
             e.pelletPath[#e.pelletPath + 1] = {x = o.oPosX, y = o.oPosY, z = o.oPosZ}
             m.actionState = m.actionState + 1
         end
@@ -719,7 +724,7 @@ local function pac_update(m)
 
     -- Update Movement Visuals
     e.faceAngleLerp = lerp_s16(e.faceAngleLerp, m.intendedYaw, 0.3)
-    if m.action == ACT_PAC_WALKING or (m.action == ACT_PAC_JUMP and e.bounceCount == 0) then
+    if m.action == ACT_PAC_WALKING or m.action == ACT_PAC_FREEFALL or (m.action == ACT_PAC_JUMP and e.bounceCount == 0) then
         m.marioObj.header.gfx.angle.y = e.faceAngleLerp
         m.marioBodyState.headAngle.z = math.clamp(math.s16(e.faceAngleLerp - m.intendedYaw), -0x2000, 0x2000)*0.7
     end
@@ -790,8 +795,8 @@ local function hit_effect_bowser(m, target)
         target.oMoveAngleYaw = m.faceAngle.y + 0x8000
         target.oSubAction = 0
         target.oAction = 1
-        target.oVelY = 50
-        target.oForwardVel = -m.forwardVel
+        target.oVelY = 80
+        target.oForwardVel = -m.forwardVel*1.2
         return true
     end
     return false
@@ -813,15 +818,18 @@ end
 ---@param o Object
 ---@param type InteractionType
 local function allow_interact(m, o, type)
+    local e = gExtrasStates[m.playerIndex]
     if m.action == ACT_PAC_REV_ROLL then
         if obj_has_behavior_id(o, id_bhvBowserBodyAnchor) ~= 0 then
             if hit_effect_bowser(m, o.parentObj) then
+                e.overrideVel.x = sins(o.parentObj.oMoveAngleYaw) * 50
+                e.overrideVel.z = coss(o.parentObj.oMoveAngleYaw) * 50
+                e.overrideVel.y = 15
+                m.invincTimer = 3
+                set_mario_action(m, ACT_PAC_FREEFALL, 0)
                 return false
             end
         end
-    end
-    if o.parentObj.oAction == 1 and m.action == ACT_PAC_FREEFALL then
-        return false
     end
 end
 
