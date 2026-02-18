@@ -57,7 +57,7 @@ local function update_walking_speed(m)
     if not m then return end
     local e = gExtrasStates[m.playerIndex]
 
-    local slipperyFloor = ((m.area.terrainType & TERRAIN_MASK) == TERRAIN_SNOW and (m.floor ~= nil and m.floor.type & SURFACE_CLASS_SLIPPERY | SURFACE_CLASS_VERY_SLIPPERY ~= 0 ));
+    local slipperyFloor = ((m.area.terrainType & TERRAIN_MASK) == TERRAIN_SNOW and (m.floor ~= nil and m.floor.type & SURFACE_CLASS_VERY_SLIPPERY ~= 0 ));
 
     local intendedDYaw = m.intendedYaw;
     local intendedMag = m.intendedMag / 32.0;
@@ -306,7 +306,7 @@ local function act_pac_jump(m)
         m.actionTimer = m.actionTimer + 1
     end
 
-    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, anim, 0);
+    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, anim, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
         if mario_floor_is_slippery(m) ~= 0 then
             set_mario_action(m, ACT_PAC_ROLL, 0)
@@ -340,7 +340,7 @@ local function act_pac_freefall(m)
         m.actionTimer = m.actionTimer + 1
     end
 
-    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, CHAR_ANIM_GENERAL_FALL, 0);
+    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, CHAR_ANIM_GENERAL_FALL, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
         if mario_floor_is_slippery(m) ~= 0 then
             set_mario_action(m, ACT_PAC_ROLL, 0)
@@ -364,7 +364,7 @@ local function act_pac_kick(m)
 
     play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAHOO);
 
-    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, CHAR_ANIM_AIR_KICK, 0);
+    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, CHAR_ANIM_AIR_KICK, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
         if mario_floor_is_slippery(m) ~= 0 then
             set_mario_action(m, ACT_PAC_ROLL, 0)
@@ -397,25 +397,25 @@ local function act_pac_roll(m)
         end
     end
 
-    m.vel.x = m.vel.x + sins(m.intendedYaw) * m.intendedMag / 32 * 1.1
-    m.vel.z = m.vel.z + coss(m.intendedYaw) * m.intendedMag / 32 * 1.1
+    m.vel.x = m.vel.x + sins(m.intendedYaw) * m.intendedMag / 32 * 2
+    m.vel.z = m.vel.z + coss(m.intendedYaw) * m.intendedMag / 32 * 2
 
     local floor = m.floor
     if floor ~= nil then
         local nx, ny, nz = floor.normal.x, floor.normal.y, floor.normal.z
         local push = ny < 0.99 and 4 or 0
-        m.vel.x = math.clamp(m.vel.x + nx * push, -PAC_MAX_SPEED*2, PAC_MAX_SPEED*2)
-        m.vel.z = math.clamp(m.vel.z + nz * push, -PAC_MAX_SPEED*2, PAC_MAX_SPEED*2)
+        m.vel.x = math.clamp(m.vel.x + nx * push, -PAC_MAX_SPEED*3, PAC_MAX_SPEED*3)
+        m.vel.z = math.clamp(m.vel.z + nz * push, -PAC_MAX_SPEED*3, PAC_MAX_SPEED*3)
     end
 
     m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
 
-    if mario_floor_is_slippery(m) == 0 then
+    if mario_floor_is_slippery(m) == 0 and (m.area.terrainType & TERRAIN_MASK) ~= TERRAIN_SLIDE then
         set_mario_action(m, ACT_PAC_SKID, 0)
     end
 
     set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
-    m.marioObj.header.gfx.animInfo.animAccel = 0x800 * m.forwardVel
+    m.marioObj.header.gfx.animInfo.animAccel = 0x800 * math.sqrt(m.vel.x^2 + m.vel.z^2)
 end
 
 ---@param m MarioState
@@ -478,6 +478,8 @@ end
 ---@param m MarioState
 local function act_pac_rev_roll(m)
     if not m then return 0 end
+
+
 
     local detach = mario_detatch_from_floor(m, gExtrasStates[m.playerIndex], ACT_PAC_REV_ROLL_AIR, m.actionTimer)
     if detach ~= 0 then
@@ -562,7 +564,7 @@ local function act_pac_butt_bounce(m)
     if e.bounceCount < 3 then
         set_character_animation(m, CHAR_ANIM_START_GROUND_POUND)
     end
-    pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, nil, 0);
+    pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, nil, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
     if (m.action == ACT_PAC_BUTT_BOUNCE_LAND) then
         if mario_floor_is_slippery(m) ~= 0 then
             set_mario_action(m, ACT_PAC_ROLL, 0)
@@ -640,7 +642,7 @@ local function check_water_jump(m)
     local probe = m.pos.y + 1.5
 
     if (m.input & INPUT_A_PRESSED ~= 0) then
-        if (probe >= m.waterLevel - 80 and m.faceAngle.x >= 0 and m.controller.stickY < -60.0) then      
+        if (probe >= m.waterLevel - 80 and m.faceAngle.x >= 0) then      
             local allowForceAction = true;
             if not allowForceAction then return 0 end
 
@@ -669,9 +671,9 @@ local function act_pac_swim(m)
     
     local intendedDYaw = m.intendedYaw;
     local intendedMag = m.intendedMag / 32.0;
-    local vTarget = 0 + (m.controller.buttonDown & A_BUTTON ~= 0 and 0x2000 or 0) - (m.controller.buttonDown & B_BUTTON ~= 0 and 0x2000 or 0)
+    local vTarget = 0 + (m.controller.buttonDown & A_BUTTON ~= 0 and 0x3000 or 0) - (m.controller.buttonDown & B_BUTTON ~= 0 and 0x3000 or 0)
 
-    m.forwardVel = math.lerp(m.forwardVel, (vTarget ~= 0 and 1 or intendedMag)*PAC_MAX_SPEED*0.5, 0.1)
+    m.forwardVel = math.lerp(m.forwardVel, (vTarget ~= 0 and 1 or intendedMag)*PAC_MAX_SPEED, 0.1)
     if intendedMag > 0.2 then
         m.faceAngle.y = lerp_s16(m.faceAngle.y, intendedDYaw, 0.03)
     end
@@ -683,11 +685,13 @@ local function act_pac_swim(m)
         m.faceAngle.x = math.min(m.faceAngle.x, 0)
     end
 
-    m.vel.y = sins(m.faceAngle.x) * PAC_MAX_SPEED*0.5
+    m.vel.y = sins(m.faceAngle.x) * PAC_MAX_SPEED
     m.vel.x = sins(m.faceAngle.y) * m.forwardVel
     m.vel.z = coss(m.faceAngle.y) * m.forwardVel
 
     perform_water_step(m)
+
+    check_water_jump(m)
 
     set_character_animation(m, CHAR_ANIM_SWIM_PART1);
 
@@ -718,6 +722,10 @@ local function pac_update(m)
     if m.action == ACT_PAC_WALKING or (m.action == ACT_PAC_JUMP and e.bounceCount == 0) then
         m.marioObj.header.gfx.angle.y = e.faceAngleLerp
         m.marioBodyState.headAngle.z = math.clamp(math.s16(e.faceAngleLerp - m.intendedYaw), -0x2000, 0x2000)*0.7
+    end
+
+    if m.action ~= ACT_PAC_POWER_PELLET then
+        e.pelletPath = {}
     end
 end
 
@@ -808,15 +816,8 @@ local function allow_interact(m, o, type)
     if m.action == ACT_PAC_REV_ROLL then
         if obj_has_behavior_id(o, id_bhvBowserBodyAnchor) ~= 0 then
             if hit_effect_bowser(m, o.parentObj) then
-                m.vel.y = 30
-                m.forwardVel = -30
-                set_mario_action(m, ACT_PAC_FREEFALL, 0)
                 return false
             end
-        elseif type & INTERACT_DAMAGE ~= 0 then
-            m.vel.y = 30
-            m.forwardVel = -30
-            set_mario_action(m, ACT_PAC_FREEFALL, 0)
         end
     end
     if o.parentObj.oAction == 1 and m.action == ACT_PAC_FREEFALL then
@@ -847,24 +848,25 @@ hook_pac_event(HOOK_ON_PLAY_SOUND, on_play_sound)
 
 ---@param o Object
 local function bhv_trail_pellet_init(o)
-    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
-    o.oGravity = 0
-
     local m = obj_get_owner_mario(o)
     local e = gExtrasStates[m.playerIndex]
-    table.insert(e.pelletPath, {x = o.oPosX, y = o.oPosY, z = o.oPosZ})
+
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.oGravity = 0
+    o.oAction = #e.pelletPath + 1
 end
 
 ---@param o Object
 local function bhv_trail_pellet_loop(o)
     local m = obj_get_owner_mario(o)
+    local e = gExtrasStates[m.playerIndex]
 
     if m.action ~= ACT_PAC_POWER_PELLET then
         obj_mark_for_deletion(o)
     end
 
     if m.actionState == 0 then
-
+        e.pelletPath[o.oAction] = {x = o.oPosX, y = o.oPosY, z = o.oPosZ}
     else
         if vec3f_dist(m.pos, {x = o.oPosX, y = o.oPosY, z = o.oPosZ}) < 100 then
             audio_sample_play(wakaSound, gMarioStates[0].pos, 1)
@@ -907,9 +909,12 @@ local function bhv_aim_pellet_loop(o)
         object_step()
 
         if o.oTimer%5 == 0 then
-            spawn_sync_object(id_bhvTrailPellet, E_MODEL_PACDOT, o.oPosX, o.oPosY, o.oPosZ, function (tO)
-                tO.globalPlayerIndex = o.globalPlayerIndex
-            end)
+            djui_chat_message_create(tostring(not e.pelletPath[#e.pelletPath] or vec3f_dist({x = o.oPosX, y = o.oPosY, z = o.oPosZ}, e.pelletPath[#e.pelletPath])))
+            if not e.pelletPath[#e.pelletPath] or vec3f_dist({x = o.oPosX, y = o.oPosY, z = o.oPosZ}, e.pelletPath[#e.pelletPath]) > 150 then
+                spawn_non_sync_object(id_bhvTrailPellet, E_MODEL_PACDOT, o.oPosX, o.oPosY, o.oPosZ, function (tO)
+                    tO.globalPlayerIndex = o.globalPlayerIndex
+                end)
+            end
         end
     else
         if vec3f_dist(m.pos, {x = o.oPosX, y = o.oPosY, z = o.oPosZ}) < 100 then
