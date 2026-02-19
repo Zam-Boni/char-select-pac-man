@@ -188,7 +188,7 @@ function mario_detatch_from_floor(m, e, airAction, arg)
 end
 
 ACT_PAC_WALKING = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_WATER_OR_TEXT)
-ACT_PAC_SKID = allocate_mario_action(ACT_GROUP_AIRBORNE )
+ACT_PAC_SKID = allocate_mario_action(ACT_GROUP_AIRBORNE)
 ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION | ACT_FLAG_WATER_OR_TEXT)
 ACT_PAC_FREEFALL = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
 ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ATTACKING | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
@@ -196,7 +196,7 @@ ACT_PAC_ROLL = allocate_mario_action(ACT_GROUP_CUTSCENE | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_REV_CHARGE = allocate_mario_action(ACT_GROUP_STATIONARY)
 ACT_PAC_REV_ROLL = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_SHORT_HITBOX)
-ACT_PAC_BUTT_BOUNCE = allocate_mario_action(ACT_GROUP_AIRBORNE)
+ACT_PAC_BUTT_BOUNCE = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ATTACKING)
 ACT_PAC_BUTT_BOUNCE_LAND = allocate_mario_action(ACT_GROUP_MOVING)
 ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING)
 ACT_PAC_SWIM = allocate_mario_action(ACT_GROUP_SUBMERGED | ACT_FLAG_SWIMMING | ACT_FLAG_SWIMMING_OR_FLYING)
@@ -294,10 +294,11 @@ local function act_pac_skid(m)
     set_character_animation(m, CHAR_ANIM_SKID_ON_GROUND)
     set_mario_particle_flags(m, PARTICLE_DUST, 0)
 
-    m.forwardVel = math.max(m.forwardVel - 5, math.max(PAC_MAX_SPEED * m.intendedMag/32, 1))
+    local speedTarget = m.actionArg == 0 and math.max(PAC_MAX_SPEED * m.intendedMag/32, 1) or 5
+    m.forwardVel = math.max(m.forwardVel - 3, speedTarget)
     m.vel.x = sins(m.faceAngle.y)*m.forwardVel
     m.vel.z = coss(m.faceAngle.y)*m.forwardVel
-    if m.actionArg == 0 and m.forwardVel <= math.max(PAC_MAX_SPEED * m.intendedMag/32, 1) or 5 then
+    if m.forwardVel <= speedTarget then
         if m.pos.y < m.floorHeight + 10 then
             return set_mario_action(m, ACT_PAC_WALKING, 0)
         else
@@ -421,21 +422,21 @@ local function act_pac_roll(m)
         end
     end
 
-    m.vel.x = m.vel.x + sins(m.intendedYaw) * m.intendedMag / 32 * 2
-    m.vel.z = m.vel.z + coss(m.intendedYaw) * m.intendedMag / 32 * 2
+    --m.vel.x = m.vel.x + sins(m.intendedYaw) * m.intendedMag / 32 * 2
+    --m.vel.z = m.vel.z + coss(m.intendedYaw) * m.intendedMag / 32 * 2
 
-    --local floor = m.floor
-    --if floor ~= nil then
-    --    local nx, ny, nz = floor.normal.x, floor.normal.y, floor.normal.z
-    --    local push = ny < 0.99 and 4 or 0
-    --    m.vel.x = math.clamp(m.vel.x + nx * push, -PAC_MAX_SPEED*3, PAC_MAX_SPEED*3)
-    --    m.vel.z = math.clamp(m.vel.z + nz * push, -PAC_MAX_SPEED*3, PAC_MAX_SPEED*3)
-    --end
+    local floor = m.floor
+    if floor ~= nil then
+        local nx, ny, nz = floor.normal.x, floor.normal.y, floor.normal.z
+        local push = ny < 0.99 and 4 or 0
+        m.vel.x = math.clamp(m.vel.x + nx * push, -PAC_MAX_SPEED*3, PAC_MAX_SPEED*3)
+        m.vel.z = math.clamp(m.vel.z + nz * push, -PAC_MAX_SPEED*3, PAC_MAX_SPEED*3)
+    end
 
     m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
 
     if mario_floor_is_slippery(m) == 0 and (m.area.terrainType & TERRAIN_MASK) ~= TERRAIN_SLIDE then
-        set_mario_action(m, ACT_PAC_SKID, 0)
+        set_mario_action(m, ACT_PAC_SKID, 1)
     end
 
     set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
@@ -448,9 +449,6 @@ local function act_pac_rev_charge(m)
     local e = gExtrasStates[m.playerIndex]
     if m.pos.y > m.floorHeight + 10 then
         return set_mario_action(m, ACT_PAC_KICK, 0)
-    end
-    if mario_floor_is_slippery(m) ~= 0 then
-        set_mario_action(m, ACT_PAC_ROLL, 0)
     end
 
     local distFromCam = m.playerIndex == 0 and 0.5 or math.clamp(500/vec3f_dist(m.pos, gLakituState.pos), 0, 0.5)
@@ -532,7 +530,11 @@ local function act_pac_rev_roll(m)
         m.actionState = m.actionState + 1
     else
         if m.actionTimer == 0 then
-            set_mario_action(m, ACT_PAC_SKID, 0)
+            if mario_floor_is_slippery(m) ~= 0 then
+                set_mario_action(m, ACT_PAC_ROLL, 0)
+            else
+                set_mario_action(m, ACT_PAC_SKID, 0)
+            end
         end
     end
     apply_slope_accel(m)
@@ -762,13 +764,13 @@ local function pac_update(m)
     if not m then return 0 end
     local e = gExtrasStates[m.playerIndex]
 
-    if m.action ~= ACT_FLAG_AIR and m.action ~= ACT_PAC_BUTT_BOUNCE_LAND then
+    if m.action & ACT_FLAG_AIR == 0 and m.action ~= ACT_PAC_BUTT_BOUNCE_LAND then
         e.bounceCount = 0
     end
 
     -- Update Movement Visuals
     e.faceAngleLerp = lerp_s16(e.faceAngleLerp, m.intendedYaw, 0.3)
-    if m.action == ACT_PAC_WALKING or m.action == ACT_PAC_FREEFALL or (m.action == ACT_PAC_JUMP and e.bounceCount == 0) then
+    if m.action == ACT_PAC_WALKING or m.action == ACT_PAC_FREEFALL or m.action == ACT_PAC_SKID or (m.action == ACT_PAC_JUMP and e.bounceCount == 0) then
         m.marioObj.header.gfx.angle.y = e.faceAngleLerp
         m.marioBodyState.headAngle.z = math.clamp(math.s16(e.faceAngleLerp - m.intendedYaw), -0x2000, 0x2000)*0.7
     end
