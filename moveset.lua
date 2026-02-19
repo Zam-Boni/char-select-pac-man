@@ -61,9 +61,9 @@ local function apply_override_vel(m)
     m.vel.y = m.vel.y + e.overrideVel.y
     m.vel.z = m.vel.z + e.overrideVel.z
 
-    e.overrideVel.x = math.max(math.abs(e.overrideVel.x) - 4, 0) * (e.overrideVel.x > 0 and 1 or -1)
+    e.overrideVel.x = math.max(math.abs(e.overrideVel.x) - 2, 0) * (e.overrideVel.x > 0 and 1 or -1)
     e.overrideVel.y = math.max(math.abs(e.overrideVel.y) - 4, 0) * (e.overrideVel.y > 0 and 1 or -1)
-    e.overrideVel.z = math.max(math.abs(e.overrideVel.z) - 4, 0) * (e.overrideVel.z > 0 and 1 or -1)
+    e.overrideVel.z = math.max(math.abs(e.overrideVel.z) - 2, 0) * (e.overrideVel.z > 0 and 1 or -1)
 end
 
 local function update_walking_speed(m)
@@ -187,19 +187,38 @@ function mario_detatch_from_floor(m, e, airAction, arg)
     return 0
 end
 
-local ACT_PAC_WALKING = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_WATER_OR_TEXT)
-local ACT_PAC_SKID = allocate_mario_action(ACT_GROUP_AIRBORNE)
-local ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION | ACT_FLAG_WATER_OR_TEXT)
-local ACT_PAC_FREEFALL = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
-local ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
-local ACT_PAC_ROLL = allocate_mario_action(ACT_GROUP_CUTSCENE)
-local ACT_PAC_REV_CHARGE = allocate_mario_action(ACT_GROUP_STATIONARY)
-local ACT_PAC_REV_ROLL = allocate_mario_action(ACT_GROUP_MOVING)
-local ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE)
-local ACT_PAC_BUTT_BOUNCE = allocate_mario_action(ACT_GROUP_AIRBORNE)
-local ACT_PAC_BUTT_BOUNCE_LAND = allocate_mario_action(ACT_GROUP_MOVING)
-local ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING)
-local ACT_PAC_SWIM = allocate_mario_action(ACT_GROUP_SUBMERGED | ACT_FLAG_SWIMMING | ACT_FLAG_SWIMMING_OR_FLYING)
+ACT_PAC_WALKING = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_WATER_OR_TEXT)
+ACT_PAC_SKID = allocate_mario_action(ACT_GROUP_AIRBORNE)
+ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION | ACT_FLAG_WATER_OR_TEXT)
+ACT_PAC_FREEFALL = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
+ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
+ACT_PAC_ROLL = allocate_mario_action(ACT_GROUP_CUTSCENE | ACT_FLAG_SHORT_HITBOX)
+ACT_PAC_REV_CHARGE = allocate_mario_action(ACT_GROUP_STATIONARY)
+ACT_PAC_REV_ROLL = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_SHORT_HITBOX)
+ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_SHORT_HITBOX)
+ACT_PAC_BUTT_BOUNCE = allocate_mario_action(ACT_GROUP_AIRBORNE)
+ACT_PAC_BUTT_BOUNCE_LAND = allocate_mario_action(ACT_GROUP_MOVING)
+ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING)
+ACT_PAC_SWIM = allocate_mario_action(ACT_GROUP_SUBMERGED | ACT_FLAG_SWIMMING | ACT_FLAG_SWIMMING_OR_FLYING)
+ACT_PAC_FREEZE = allocate_mario_action(ACT_GROUP_CUTSCENE)
+
+---@param m MarioState
+---@param o Object?
+---@param vel number
+local function pac_bump_away_from_obj(m, o, vel)
+    local e = gExtrasStates[m.playerIndex]
+    m.vel.x = 0
+    m.vel.y = 0
+    m.vel.z = 0
+
+    local angle = o and atan2s(m.pos.z - o.oPosZ, m.pos.x - o.oPosX) or m.faceAngle.y + 0x8000
+    e.overrideVel.x = sins(angle) * vel
+    e.overrideVel.z = coss(angle) * vel
+    e.overrideVel.y = 10 + vel*0.1
+    m.invincTimer = 1
+    set_mario_action(m, ACT_PAC_FREEFALL, 0)
+    set_mario_particle_flags(m, PARTICLE_TRIANGLE, 0)
+end
 
 local function pac_gravity(m)
     if not m then return 0 end
@@ -484,7 +503,9 @@ end
 local function act_pac_rev_roll(m)
     if not m then return 0 end
 
-
+    if m.forwardVel < 0 then
+        pac_bump_away_from_obj(m, nil, 30)
+    end
 
     local detach = mario_detatch_from_floor(m, gExtrasStates[m.playerIndex], ACT_PAC_REV_ROLL_AIR, m.actionTimer)
     if detach ~= 0 then
@@ -642,6 +663,7 @@ local function act_pac_power_pellet(m)
     return 0;
 end
 
+---@param m MarioState
 local function check_water_jump(m)
     if not m then return 0 end
     local probe = m.pos.y + 1.5
@@ -666,9 +688,14 @@ local function check_water_jump(m)
     return 0;
 end
 
+---@param m MarioState
 local function act_pac_swim(m)
     if not m then return 0 end
     local pIndex = m.playerIndex;
+
+    if (m.area.terrainType & TERRAIN_MASK) == TERRAIN_SNOW then
+        return set_mario_action(m, ACT_PAC_FREEZE, 0)
+    end
 
     if (m.flags & MARIO_METAL_CAP ~= 0) then
         return set_mario_action(m, ACT_METAL_WATER_FALLING, 1);
@@ -703,6 +730,15 @@ local function act_pac_swim(m)
     return 0;
 end
 
+---@param m MarioState
+local function act_pac_freeze(m)
+    if m.pos.y < m.waterLevel then
+        m.vel.y = m.vel.y + 1
+    end
+    m.marioObj.header.gfx.animInfo.animAccel = 0
+    perform_air_step(m, AIR_STEP_NONE)
+end
+
 hook_mario_action(ACT_PAC_WALKING, act_pac_walking)
 hook_mario_action(ACT_PAC_SKID, {every_frame = act_pac_skid, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_JUMP, {every_frame = act_pac_jump, gravity = pac_gravity})
@@ -710,12 +746,13 @@ hook_mario_action(ACT_PAC_FREEFALL, {every_frame = act_pac_freefall, gravity = p
 hook_mario_action(ACT_PAC_KICK, {every_frame = act_pac_kick, gravity = pac_gravity}, INT_KICK)
 hook_mario_action(ACT_PAC_ROLL, act_pac_roll, INT_FAST_ATTACK_OR_SHELL)
 hook_mario_action(ACT_PAC_REV_CHARGE, act_pac_rev_charge)
-hook_mario_action(ACT_PAC_REV_ROLL, act_pac_rev_roll, INT_PUNCH)
-hook_mario_action(ACT_PAC_REV_ROLL_AIR, {every_frame = act_pac_rev_roll_air, gravity = pac_gravity}, INT_PUNCH)
+hook_mario_action(ACT_PAC_REV_ROLL, act_pac_rev_roll, INT_KICK)
+hook_mario_action(ACT_PAC_REV_ROLL_AIR, {every_frame = act_pac_rev_roll_air, gravity = pac_gravity}, INT_KICK)
 hook_mario_action(ACT_PAC_BUTT_BOUNCE, {every_frame = act_pac_butt_bounce, gravity = pac_butt_bounce_gravity}, INT_GROUND_POUND)
 hook_mario_action(ACT_PAC_BUTT_BOUNCE_LAND, act_pac_butt_bounce_land, INT_GROUND_POUND)
 hook_mario_action(ACT_PAC_POWER_PELLET, {every_frame = act_pac_power_pellet, gravity = function() end})
 hook_mario_action(ACT_PAC_SWIM, act_pac_swim)
+hook_mario_action(ACT_PAC_FREEZE, act_pac_freeze)
 
 ---@param m MarioState
 local function pac_update(m)
@@ -786,22 +823,6 @@ local forceWalkingInteracts = {
     [id_bhvKoopaShell] = true,
 }
 
--- BOWSER INTERACTION CODE
--- Thank you SwagSkeleton95
-local function hit_effect_bowser(m, target)
-    if target.oAction ~= 19 and target.oAction ~= 4 and target.oAction ~= 12 and target.oAction ~= 1 then
-        target.oMoveFlags = 0
-        target.oFaceAngleYaw = m.faceAngle.y + 0x8000
-        target.oMoveAngleYaw = m.faceAngle.y + 0x8000
-        target.oSubAction = 0
-        target.oAction = 1
-        target.oVelY = 80
-        target.oForwardVel = -m.forwardVel*1.2
-        return true
-    end
-    return false
-end
-
 ---@param m MarioState
 ---@param o Object
 ---@param type InteractionType
@@ -814,21 +835,60 @@ local function on_interact(m, o, type)
     end
 end
 
+local revRollInteractions = {
+    [id_bhvBowserBodyAnchor] = function (m, o, type)
+        local target = o.parentObj
+        if target.oAction ~= 19 and target.oAction ~= 4 and target.oAction ~= 12 and target.oAction ~= 1 then
+            target.oMoveFlags = 0
+            target.oFaceAngleYaw = m.faceAngle.y + 0x8000
+            target.oMoveAngleYaw = m.faceAngle.y + 0x8000
+            target.oSubAction = 0
+            target.oAction = 1
+            target.oVelY = 80
+            target.oForwardVel = -m.forwardVel*1.2
+            if target.oSyncID ~= 0 then
+                network_send_object(target, true)
+            end
+            pac_bump_away_from_obj(m, o, 40)
+            return false
+        end
+    end,
+    [id_bhvMips] = function (m, o, type)
+        if o.oMipsStarStatus == MIPS_STAR_STATUS_HAVENT_SPAWNED_STAR then
+            o.oMipsStarStatus = MIPS_STAR_STATUS_SHOULD_SPAWN_STAR;
+        end
+    end,
+
+}
+
 ---@param m MarioState
 ---@param o Object
 ---@param type InteractionType
 local function allow_interact(m, o, type)
     local e = gExtrasStates[m.playerIndex]
-    if m.action == ACT_PAC_REV_ROLL then
-        if obj_has_behavior_id(o, id_bhvBowserBodyAnchor) ~= 0 then
-            if hit_effect_bowser(m, o.parentObj) then
-                e.overrideVel.x = sins(o.parentObj.oMoveAngleYaw) * 50
-                e.overrideVel.z = coss(o.parentObj.oMoveAngleYaw) * 50
-                e.overrideVel.y = 15
-                m.invincTimer = 3
-                set_mario_action(m, ACT_PAC_FREEFALL, 0)
-                return false
+    if m.action == ACT_PAC_REV_ROLL or m.action == ACT_PAC_REV_ROLL_AIR then
+        local func = revRollInteractions[get_id_from_vanilla_behavior(o.behavior)]
+        if func then
+            local funcReturn = func(m, o, type)
+            pac_bump_away_from_obj(m, o, 30)
+            if funcReturn ~= nil then
+                return funcReturn
             end
+        end
+
+        -- Fallback Grab Interaction
+        if (type & INTERACT_GRABBABLE ~= 0) and (o.oInteractionSubtype & INT_SUBTYPE_NOT_GRABBABLE == 0) then
+            o.oHeldState = 2 -- HELD_THROWN
+            o.oMoveAngleYaw = m.faceAngle.y
+            o.oForwardVel = m.forwardVel/o.oFriction
+            o.oVelX = o.oForwardVel*sins(o.oMoveAngleYaw)*0.5
+            o.oVelZ = o.oForwardVel*coss(o.oMoveAngleYaw)*0.5
+            o.oVelY = 30
+            if o.oSyncID ~= 0 then
+                network_send_object(o, true)
+            end
+            pac_bump_away_from_obj(m, o, 30)
+            return false
         end
     end
 end
