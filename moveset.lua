@@ -295,7 +295,7 @@ local function act_pac_skid(m)
     set_mario_particle_flags(m, PARTICLE_DUST, 0)
 
     local speedTarget = m.actionArg == 0 and math.max(PAC_MAX_SPEED * m.intendedMag/32, 1) or 5
-    m.forwardVel = math.max(m.forwardVel - 3, speedTarget)
+    m.forwardVel = math.max(m.forwardVel - 3.5, speedTarget)
     m.vel.x = sins(m.faceAngle.y)*m.forwardVel
     m.vel.z = coss(m.faceAngle.y)*m.forwardVel
     if m.forwardVel <= speedTarget then
@@ -504,10 +504,6 @@ end
 local function act_pac_rev_roll(m)
     if not m then return 0 end
 
-    if m.forwardVel < 0 then
-        pac_bump_away_from_obj(m, nil, 30)
-    end
-
     local detach = mario_detatch_from_floor(m, gExtrasStates[m.playerIndex], ACT_PAC_REV_ROLL_AIR, m.actionTimer)
     if detach ~= 0 then
         return detach
@@ -595,9 +591,14 @@ local function act_pac_butt_bounce(m)
     if e.bounceCount < 3 then
         set_character_animation(m, CHAR_ANIM_START_GROUND_POUND)
     end
+    local velY = m.vel.y
     pac_air_action_step(m, ACT_PAC_BUTT_BOUNCE_LAND, nil, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
     if (m.action == ACT_PAC_BUTT_BOUNCE_LAND) then
         if mario_floor_is_slippery(m) ~= 0 then
+            m.faceAngle.y = m.floorAngle
+            m.forwardVel = math.abs(velY * get_mario_slope_steepness(m))
+            m.vel.x = m.forwardVel*sins(m.faceAngle.y)
+            m.vel.z = m.forwardVel*coss(m.faceAngle.y)
             set_mario_action(m, ACT_PAC_ROLL, 0)
         end
         queue_rumble_data_mario(m, 5, 40);
@@ -768,6 +769,10 @@ local function pac_update(m)
         e.bounceCount = 0
     end
 
+    if m.action == ACT_LAVA_BOOST then
+        m.health = 0
+    end
+
     -- Update Movement Visuals
     e.faceAngleLerp = lerp_s16(e.faceAngleLerp, m.intendedYaw, 0.3)
     if m.action == ACT_PAC_WALKING or m.action == ACT_PAC_FREEFALL or m.action == ACT_PAC_SKID or (m.action == ACT_PAC_JUMP and e.bounceCount == 0) then
@@ -846,6 +851,11 @@ local function on_interact(m, o, type)
         e.forceDefaultWalk = true
         set_mario_action(m, ACT_WALKING, 0)
     end
+
+    -- Basic Bump Interactions
+    if (o.oInteractStatus & INT_STATUS_WAS_ATTACKED ~= 0) and (determine_interaction(m,o) == INT_KICK) then --object was hit by a kick
+        pac_bump_away_from_obj(m, o, 30)
+    end
 end
 
 local revRollInteractions = {
@@ -918,11 +928,15 @@ local function on_play_sound(sound, pos)
     end
 end
 
+--local function override_floor_class(m, surfaceClass)
+--end
+
 hook_pac_event(HOOK_MARIO_UPDATE, pac_update)
 hook_pac_event(HOOK_BEFORE_SET_MARIO_ACTION, before_pac_action)
 hook_pac_event(HOOK_ON_INTERACT, on_interact)
 hook_pac_event(HOOK_ALLOW_INTERACT, allow_interact)
 hook_pac_event(HOOK_ON_PLAY_SOUND, on_play_sound)
+--hook_pac_event(HOOK_MARIO_OVERRIDE_FLOOR_CLASS, override_floor_class)
 
 -- Pac Man Objects
 
