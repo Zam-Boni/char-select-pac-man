@@ -792,6 +792,7 @@ local overrideActs = {
     [ACT_SIDE_FLIP] = ACT_PAC_JUMP,
     [ACT_BACKFLIP] = ACT_PAC_JUMP,
     [ACT_WALL_KICK_AIR] = ACT_PAC_JUMP,
+    [ACT_TOP_OF_POLE_JUMP] = ACT_PAC_JUMP,
     [ACT_PUNCHING] = ACT_PAC_REV_CHARGE,
     [ACT_MOVE_PUNCHING] = ACT_PAC_REV_CHARGE,
     [ACT_DIVE] = ACT_PAC_REV_CHARGE,
@@ -855,6 +856,9 @@ local function on_interact(m, o, type)
     -- Basic Bump Interactions
     if (o.oInteractStatus & INT_STATUS_WAS_ATTACKED ~= 0) and (determine_interaction(m,o) == INT_KICK) then --object was hit by a kick
         pac_bump_away_from_obj(m, o, 30)
+    end
+    if (o.oInteractStatus & INT_STATUS_WAS_ATTACKED ~= 0) and (determine_interaction(m,o) == INT_GROUND_POUND) then --object was hit by a kick
+        set_mario_action(m, ACT_PAC_BUTT_BOUNCE_LAND, 0)
     end
 end
 
