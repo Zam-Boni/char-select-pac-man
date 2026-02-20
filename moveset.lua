@@ -15,7 +15,8 @@ for i = 0, MAX_PLAYERS - 1 do
         faceAngleLerp = 0,
         prevPos = {x = 0, y = 0, z = 0},
         overrideVel = {x = 0, y = 0, z = 0},
-        pelletPath = {}
+        pelletPathStart = {},
+        pelletPath = {},
     }
     audio_stream_set_looping(gExtrasStates[i].revAudio, true)
 end
@@ -198,7 +199,7 @@ ACT_PAC_REV_ROLL = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_SHORT_HITBO
 ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_BUTT_BOUNCE = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ATTACKING)
 ACT_PAC_BUTT_BOUNCE_LAND = allocate_mario_action(ACT_GROUP_MOVING)
-ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING)
+ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_INTANGIBLE --[[| ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING]])
 ACT_PAC_SWIM = allocate_mario_action(ACT_GROUP_SUBMERGED | ACT_FLAG_SWIMMING | ACT_FLAG_SWIMMING_OR_FLYING)
 ACT_PAC_FREEZE = allocate_mario_action(ACT_GROUP_CUTSCENE)
 
@@ -622,21 +623,34 @@ local function act_pac_butt_bounce_land(m)
 end
 
 local eatRate = 4
+local POWER_PELLET_ACTIVE_STATE = 3
 ---@param m MarioState
 local function act_pac_power_pellet(m)
     if not m then return 0 end
     local e = gExtrasStates[m.playerIndex]
     
     if m.actionState == 0 then
-        local o = spawn_pellet_trail(m)
-        if m.controller.buttonDown & B_BUTTON == 0 or (m.flags & MARIO_WING_CAP == 0) then
-            e.pelletPath[#e.pelletPath + 1] = {x = o.oPosX, y = o.oPosY, z = o.oPosZ}
-            m.actionState = m.actionState + 1
-        end
-        set_character_animation(m, CHAR_ANIM_FIRST_PUNCH)
-    elseif m.actionState == 1 then
-        m.actionState = m.actionState + 1
         e.pelletPath[0] = {x = m.pos.x, y = m.pos.y, z = m.pos.z}
+        m.actionState = m.actionState + 1
+    elseif m.actionState == 1 then
+        local o = spawn_pellet_trail(m)
+        if o ~= nil then
+            if m.controller.buttonDown & B_BUTTON == 0 or (m.flags & MARIO_WING_CAP == 0) then
+                e.pelletPath[#e.pelletPath + 1] = {x = o.oPosX, y = o.oPosY, z = o.oPosZ}
+                m.actionState = m.actionState + 1
+            end
+            set_character_animation(m, CHAR_ANIM_FIRST_PUNCH)
+            if m.playerIndex == 0 then
+                m.pos.x = o.oPosX
+                m.pos.y = o.oPosY
+                m.pos.z = o.oPosZ
+            end
+        end
+    elseif m.actionState == 2 then
+        m.pos.x = m.marioObj.header.gfx.pos.x
+        m.pos.y = m.marioObj.header.gfx.pos.y
+        m.pos.z = m.marioObj.header.gfx.pos.z
+        m.actionState = m.actionState + 1
     else
         local f = math.floor(m.actionTimer/eatRate)
         local t = (m.actionTimer % eatRate) / eatRate
@@ -660,7 +674,7 @@ local function act_pac_power_pellet(m)
             set_character_animation(m, CHAR_ANIM_FAST_LONGJUMP)
 
             m.actionTimer = m.actionTimer + 1
-        else
+        elseif m.playerIndex == 0 then
             e.pelletPath = {}
             return set_mario_action(m, ACT_PAC_FREEFALL, 0)
         end
@@ -892,6 +906,9 @@ local revRollInteractions = {
 ---@param type InteractionType
 local function allow_interact(m, o, type)
     local e = gExtrasStates[m.playerIndex]
+    if m.action == ACT_PAC_POWER_PELLET and m.actionState < POWER_PELLET_ACTIVE_STATE then
+        return false
+    end
     if m.action == ACT_PAC_REV_ROLL or m.action == ACT_PAC_REV_ROLL_AIR then
         local func = revRollInteractions[get_id_from_vanilla_behavior(o.behavior)]
         if func then
@@ -932,15 +949,20 @@ local function on_play_sound(sound, pos)
     end
 end
 
---local function override_floor_class(m, surfaceClass)
---end
+local function force_water(m, water)
+    if not water then
+        if (m.flags & MARIO_METAL_CAP ~= 0) or m.action == ACT_PAC_POWER_PELLET then
+            return false
+        end
+    end
+end
 
 hook_pac_event(HOOK_MARIO_UPDATE, pac_update)
 hook_pac_event(HOOK_BEFORE_SET_MARIO_ACTION, before_pac_action)
 hook_pac_event(HOOK_ON_INTERACT, on_interact)
 hook_pac_event(HOOK_ALLOW_INTERACT, allow_interact)
 hook_pac_event(HOOK_ON_PLAY_SOUND, on_play_sound)
---hook_pac_event(HOOK_MARIO_OVERRIDE_FLOOR_CLASS, override_floor_class)
+hook_pac_event(HOOK_ALLOW_FORCE_WATER_ACTION, force_water)
 
 -- Pac Man Objects
 
@@ -963,7 +985,7 @@ local function bhv_trail_pellet_loop(o)
         obj_mark_for_deletion(o)
     end
 
-    if m.actionState == 0 then
+    if m.actionState < POWER_PELLET_ACTIVE_STATE then
         e.pelletPath[o.oAction] = {x = o.oPosX, y = o.oPosY, z = o.oPosZ}
     else
         if vec3f_dist(m.pos, {x = o.oPosX, y = o.oPosY, z = o.oPosZ}) < 100 then
@@ -977,8 +999,23 @@ id_bhvTrailPellet = hook_behavior(nil, OBJ_LIST_DEFAULT, true, bhv_trail_pellet_
 
 ---@param o Object
 local function bhv_aim_pellet_init(o)
+    local m = obj_get_owner_mario(o)
+    local e = gExtrasStates[m.playerIndex]
     o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
     o.oGravity = 0
+    o.oFriction = 0
+    e.pelletPathStart = {x = m.pos.x, y = m.pos.y, z = m.pos.z}
+    network_init_object(o, false, {
+        "globalPlayerIndex",
+        "oMoveAngleYaw",
+        "oMoveAnglePitch",
+        "oVelY",
+        "oMoveAnglePitch",
+        "oForwardVel",
+        "oPosX",
+        "oPosY",
+        "oPosZ",
+    })
 end
 
 local pelletTurnRadius = 0x300
@@ -992,17 +1029,21 @@ local function bhv_aim_pellet_loop(o)
         obj_mark_for_deletion(o)
     end
 
-    if m.actionState == 0 then
-        local angle = 0 + (m.controller.buttonDown & A_BUTTON ~= 0 and 0x4000 or 0) - (m.controller.buttonDown & Z_TRIG ~= 0 and 0x4000 or 0)
-        angle = angle * (1 - m.intendedMag / 64)
-        o.oMoveAnglePitch = angle - approach_s32(math.s16(angle - o.oMoveAnglePitch), 0, pelletTurnRadius, pelletTurnRadius);
+    if m.actionState < POWER_PELLET_ACTIVE_STATE then
+        if m.playerIndex == 0 then
+            local angle = 0 + (m.controller.buttonDown & A_BUTTON ~= 0 and 0x4000 or 0) - (m.controller.buttonDown & Z_TRIG ~= 0 and 0x4000 or 0)
+            angle = angle * (1 - m.intendedMag / 64)
+            o.oMoveAnglePitch = angle - approach_s32(math.s16(angle - o.oMoveAnglePitch), 0, pelletTurnRadius, pelletTurnRadius);
 
-        if m.intendedMag > 2 then
-            o.oMoveAngleYaw = m.intendedYaw - approach_s32(math.s16(m.intendedYaw - o.oMoveAngleYaw), 0, pelletTurnRadius, pelletTurnRadius);
+            if m.intendedMag > 2 then
+                o.oMoveAngleYaw = m.intendedYaw - approach_s32(math.s16(m.intendedYaw - o.oMoveAngleYaw), 0, pelletTurnRadius, pelletTurnRadius);
+            end
+
+            o.oVelY = 40*sins(o.oMoveAnglePitch)
+            o.oForwardVel = 40*coss(o.oMoveAnglePitch)
+            
+            network_send_object(o, true)
         end
-
-        o.oVelY = 40*sins(o.oMoveAnglePitch)
-        o.oForwardVel = 40*coss(o.oMoveAnglePitch)
 
         object_step()
 
