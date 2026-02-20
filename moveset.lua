@@ -196,7 +196,7 @@ ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLA
 ACT_PAC_ROLL = allocate_mario_action(ACT_GROUP_CUTSCENE | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_REV_CHARGE = allocate_mario_action(ACT_GROUP_STATIONARY)
 ACT_PAC_REV_ROLL = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_SHORT_HITBOX)
-ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_SHORT_HITBOX)
+ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_BUTT_BOUNCE = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ATTACKING)
 ACT_PAC_BUTT_BOUNCE_LAND = allocate_mario_action(ACT_GROUP_MOVING)
 ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_INTANGIBLE --[[| ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING]])
@@ -514,6 +514,8 @@ local function act_pac_rev_roll(m)
     if step == GROUND_STEP_HIT_WALL then
         mario_bonk_reflection(m, 0)
         m.forwardVel = m.forwardVel * 0.8
+    elseif step == GROUND_STEP_LEFT_GROUND then
+        return set_mario_action(m, ACT_PAC_REV_ROLL_AIR, m.actionTimer)
     end
 
     set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
@@ -833,9 +835,9 @@ local function before_pac_action(m, nextAct)
     e.floorSteep = nil
     local forceDefaultWalk = e.forceDefaultWalk
     e.forceDefaultWalk = false
-    if nextAct & ACT_FLAG_SWIMMING ~= 0 and nextAct ~= ACT_PAC_SWIM then
-        return set_mario_action(m, ACT_PAC_SWIM, 0)
-    end
+    --if nextAct & ACT_FLAG_SWIMMING ~= 0 and nextAct ~= ACT_PAC_SWIM then
+    --    return set_mario_action(m, ACT_PAC_SWIM, 0)
+    --end
     if overrideActs[nextAct] then
         if overrideActs[nextAct] ~= false then
             if nextAct ~= ACT_WALKING or not forceDefaultWalk then
