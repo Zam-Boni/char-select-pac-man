@@ -4,7 +4,9 @@ SAMPLE_TAKE_OFF = audio_sample_load("zbpmsfx-takeoff.ogg")
 local E_MODEL_PACDOT =      smlua_model_util_get_id("pacdot_geo")
 local E_MODEL_PACPELLET =      smlua_model_util_get_id("pacpellet_geo")
 
-local PAC_MAX_SPEED = 30
+local PAC_MAX_SPEED = 35
+
+local PAC_HEALTH_SLICE = 0x880/4
 
 local gExtrasStates = {}
 for i = 0, MAX_PLAYERS - 1 do
@@ -13,10 +15,15 @@ for i = 0, MAX_PLAYERS - 1 do
         bounceCount = 0,
         forceDefaultWalk = false,
         faceAngleLerp = 0,
+        burnTimer = 0,
         prevPos = {x = 0, y = 0, z = 0},
         overrideVel = {x = 0, y = 0, z = 0},
         pelletPathStart = {},
         pelletPath = {},
+
+        healthSeg1Opacity = 255,
+        healthSeg2Opacity = 255,
+        healthSeg3Opacity = 255,
     }
     audio_stream_set_looping(gExtrasStates[i].revAudio, true)
 end
@@ -24,47 +31,6 @@ end
 local function hook_pac_event(hook, func)
     _G.charSelect.character_hook_moveset(CT_ZBPACMAN, hook, func)
     _G.charSelect.character_hook_moveset(CT_ZBMSPACMAN, hook, func)
-end
-
-local function lerp_s16(a, b, t)
-    a = math.s16(a)
-    b = math.s16(b)
-
-    local delta = b - a
-
-    if delta > 0x8000 then
-        delta = delta - 0x10000
-    elseif delta < -0x8000 then
-        delta = delta + 0x10000
-    end
-
-    return math.s16(a + delta * t)
-end
-
-local function catmullRom(p0, p1, p2, p3, t)
-    return 0.5 * (
-        (2 * p1) +
-        (-p0 + p2) * t +
-        (2*p0 - 5*p1 + 4*p2 - p3) * t^2 +
-        (-p0 + 3*p1 - 3*p2 + p3) * t^3
-    )
-end
-
-local function obj_get_owner_mario(obj)
-    local index = obj.globalPlayerIndex < MAX_PLAYERS and network_local_index_from_global(obj.globalPlayerIndex) or nearest_mario_state_to_object(obj).playerIndex
-    return gMarioStates[index]
-end
-
-local function apply_override_vel(m)
-    local e = gExtrasStates[m.playerIndex]
-
-    m.vel.x = m.vel.x + e.overrideVel.x
-    m.vel.y = m.vel.y + e.overrideVel.y
-    m.vel.z = m.vel.z + e.overrideVel.z
-
-    e.overrideVel.x = math.max(math.abs(e.overrideVel.x) - 2, 0) * (e.overrideVel.x > 0 and 1 or -1)
-    e.overrideVel.y = math.max(math.abs(e.overrideVel.y) - 4, 0) * (e.overrideVel.y > 0 and 1 or -1)
-    e.overrideVel.z = math.max(math.abs(e.overrideVel.z) - 2, 0) * (e.overrideVel.z > 0 and 1 or -1)
 end
 
 local function update_walking_speed(m)
@@ -78,7 +44,6 @@ local function update_walking_speed(m)
 
     m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, slipperyFloor and 0.05 or 0.3)
     m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, slipperyFloor and 0.05 or 0.3)
-    apply_override_vel(m)
     m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
 
     if m.forwardVel > 1 then
@@ -92,22 +57,20 @@ local function update_walking_speed(m)
     end
 end
 
-local function pac_update_air_with_turn(m)
+local function pac_update_air_with_turn(m, capped)
     if not m then return end
     local e = gExtrasStates[m.playerIndex]
 
-    if m.input & INPUT_ZERO_MOVEMENT == 0 then
-        local intendedDYaw = m.intendedYaw;
-        local intendedMag = m.intendedMag / 32.0;
+    local intendedDYaw = m.intendedYaw;
+    local intendedMag = m.intendedMag / 32.0;
 
-        m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.3)
-        m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.3)
-    else
-        m.vel.x = math.lerp(m.vel.x, 0, 0.1)
-        m.vel.z = math.lerp(m.vel.z, 0, 0.1)
+    m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.1)
+    m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.1)
+    if capped then
+        m.vel.x = math.clamp(m.vel.x, -PAC_MAX_SPEED, PAC_MAX_SPEED)
+        m.vel.z = math.clamp(m.vel.z, -PAC_MAX_SPEED, PAC_MAX_SPEED)
     end
 
-    apply_override_vel(m)
     m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
     
     if m.forwardVel > 1 then
@@ -119,10 +82,10 @@ local function pac_update_air_with_turn(m)
     end
 end
 
-local function pac_air_action_step(m, landAction, animation, stepArg)
+local function pac_air_action_step(m, landAction, animation, stepArg, capped)
     if not m then return 0 end
 
-    pac_update_air_with_turn(m);
+    pac_update_air_with_turn(m, capped);
 
     local stepResult = perform_air_step(m, stepArg);
     if (m.action == ACT_BUBBLED and stepResult == AIR_STEP_HIT_LAVA_WALL) then
@@ -149,49 +112,11 @@ local function pac_air_action_step(m, landAction, animation, stepArg)
     return stepResult;
 end
 
-function get_mario_slope_steepness(m)
-    local floor = m.floor
-    local slopeAngle = atan2s(floor.normal.z, floor.normal.x)
-    local angle = math.sqrt(floor.normal.x ^ 2 + floor.normal.z ^ 2)
-    if math.abs(math.s16(m.faceAngle.y - slopeAngle)) > 0x4000 then
-        angle = angle * -1.0
-    end
-    return angle
-end
-
----@param m MarioState
----@param e table ExtraState
-function mario_detatch_from_floor(m, e, airAction, arg)
-    if airAction == nil then airAction = ACT_FREEFALL end
-
-    if e.floorSteep == nil then
-        e.floorSteep = get_mario_slope_steepness(m)
-    end
-
-    local prevSlope = e.floorSteep
-    local slope = get_mario_slope_steepness(m)
-    local slopeDif = math.abs(prevSlope - slope)
-
-    e.floorSteep = slope
-
-    -- DETACH: sudden slope change
-    local velY = m.forwardVel * -prevSlope * (m.forwardVel < 0 and -1 or 1)
-    local velF = m.forwardVel * (1 - math.abs(prevSlope)*0.5) * (m.forwardVel < 0 and -1 or 1)
-    local velAngle = coss(atan2s(velY, velF))
-    if ((slopeDif > 0.4) and (velAngle < slope - 0.1 or velAngle > slope + 0.1)) or (m.pos.y > m.floorHeight + 10) then
-        m.vel.y = velY
-        m.forwardVel = velF
-        e.floorSteep = nil
-        return set_mario_action(m, airAction, arg)
-    end
-
-    return 0
-end
-
 ACT_PAC_WALKING = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_WATER_OR_TEXT)
 ACT_PAC_SKID = allocate_mario_action(ACT_GROUP_AIRBORNE)
 ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION | ACT_FLAG_WATER_OR_TEXT)
 ACT_PAC_FREEFALL = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
+ACT_PAC_KNOCKBACK = allocate_mario_action(ACT_GROUP_CUTSCENE | ACT_FLAG_INVULNERABLE)
 ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ATTACKING | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
 ACT_PAC_ROLL = allocate_mario_action(ACT_GROUP_CUTSCENE | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_REV_CHARGE = allocate_mario_action(ACT_GROUP_STATIONARY)
@@ -199,7 +124,7 @@ ACT_PAC_REV_ROLL = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_SHORT_HITBO
 ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_BUTT_BOUNCE = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ATTACKING)
 ACT_PAC_BUTT_BOUNCE_LAND = allocate_mario_action(ACT_GROUP_MOVING)
-ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_INTANGIBLE --[[| ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING]])
+ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_INVULNERABLE --[[| ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING]])
 ACT_PAC_SWIM = allocate_mario_action(ACT_GROUP_SUBMERGED | ACT_FLAG_SWIMMING | ACT_FLAG_SWIMMING_OR_FLYING)
 ACT_PAC_FREEZE = allocate_mario_action(ACT_GROUP_CUTSCENE)
 
@@ -208,14 +133,10 @@ ACT_PAC_FREEZE = allocate_mario_action(ACT_GROUP_CUTSCENE)
 ---@param vel number
 local function pac_bump_away_from_obj(m, o, vel)
     local e = gExtrasStates[m.playerIndex]
-    m.vel.x = 0
-    m.vel.y = 0
-    m.vel.z = 0
-
     local angle = o and atan2s(m.pos.z - o.oPosZ, m.pos.x - o.oPosX) or m.faceAngle.y + 0x8000
-    e.overrideVel.x = sins(angle) * vel
-    e.overrideVel.z = coss(angle) * vel
-    e.overrideVel.y = 10 + vel*0.1
+    m.vel.x = sins(angle) * vel
+    m.vel.z = coss(angle) * vel
+    m.vel.y = 10 + vel*0.1
     m.invincTimer = 1
     set_mario_action(m, ACT_PAC_FREEFALL, 0)
     set_mario_particle_flags(m, PARTICLE_TRIANGLE, 0)
@@ -328,6 +249,10 @@ local function act_pac_jump(m)
         play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAH_WAH_HOO);
     end
 
+    -- Fall Damage
+    if m.pos.y < m.peakHeight - 1000 then
+        return set_mario_action(m, ACT_PAC_FREEFALL, 1)
+    end
 
     if m.actionState == 0 then
         set_mario_y_vel_based_on_fspeed(m, math.max(65.0, m.vel.y), 0.0)
@@ -346,7 +271,7 @@ local function act_pac_jump(m)
         m.actionTimer = m.actionTimer + 1
     end
 
-    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, anim, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
+    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, anim, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG, true);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
         if mario_floor_is_slippery(m) ~= 0 then
             set_mario_action(m, ACT_PAC_ROLL, 0)
@@ -363,17 +288,57 @@ local function act_pac_freefall(m)
     if not m then return 0 end
     local e = gExtrasStates[m.playerIndex]
 
-    if (m.input & INPUT_B_PRESSED ~= 0) then
-        return set_mario_action(m, ACT_PAC_KICK, 0);
+    local anim = CHAR_ANIM_GENERAL_FALL
+    if m.actionArg ~= 1 then
+        if (m.input & INPUT_B_PRESSED ~= 0) then
+            return set_mario_action(m, ACT_PAC_KICK, 0);
+        end
+    else
+        anim = CHAR_ANIM_FALL_OVER_BACKWARDS
     end
 
-    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, CHAR_ANIM_GENERAL_FALL, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
+    local arg = m.actionArg
+    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, anim, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
         if mario_floor_is_slippery(m) ~= 0 then
-            set_mario_action(m, ACT_PAC_ROLL, 0)
+            return set_mario_action(m, ACT_PAC_ROLL, 0)
+        elseif arg == 1 then
+            m.hurtCounter = 4
+            return set_mario_action(m, ACT_BACKWARD_GROUND_KB, 0)
         end
         queue_rumble_data_mario(m, 5, 40);
     end
+    return 0;
+end
+
+---@param m MarioState
+local function act_pac_knockback(m)
+    if not m then return 0 end
+    local e = gExtrasStates[m.playerIndex]
+
+    if m.actionState == 0 then
+        m.vel.y = math.max(m.vel.y, 30)
+        m.actionState = m.actionState + 1
+    end
+
+    local anim = CHAR_ANIM_BACKWARD_AIR_KB
+    if m.health < 0x100 then
+        anim = CHAR_ANIM_DYING_ON_BACK
+        common_death_handler(m, anim, 20)
+    elseif m.actionTimer > 30 then
+        return set_mario_action(m, ACT_PAC_FREEFALL, 0)
+    end
+
+    if m.pos.y < m.floorHeight + 10 and m.vel.y <= 0 then
+        m.vel.x = 0
+        m.vel.y = 0
+        m.vel.z = 0
+        perform_ground_step(m)
+    else
+        perform_air_step(m, AIR_STEP_NONE)
+    end
+    m.actionTimer = m.actionTimer + 1
+    
     return 0;
 end
 
@@ -765,6 +730,7 @@ hook_mario_action(ACT_PAC_WALKING, act_pac_walking)
 hook_mario_action(ACT_PAC_SKID, {every_frame = act_pac_skid, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_JUMP, {every_frame = act_pac_jump, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_FREEFALL, {every_frame = act_pac_freefall, gravity = pac_gravity})
+hook_mario_action(ACT_PAC_KNOCKBACK, {every_frame = act_pac_knockback, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_KICK, {every_frame = act_pac_kick, gravity = pac_gravity}, INT_KICK)
 hook_mario_action(ACT_PAC_ROLL, act_pac_roll, INT_FAST_ATTACK_OR_SHELL)
 hook_mario_action(ACT_PAC_REV_CHARGE, act_pac_rev_charge)
@@ -785,6 +751,40 @@ local function pac_update(m)
         e.bounceCount = 0
     end
 
+    if e.burnTimer > 0 then
+        set_mario_particle_flags(m, PARTICLE_FIRE, 0)
+        e.burnTimer = e.burnTimer - 1
+    end
+
+    --Update Health
+    if m.hurtCounter > 0 then
+        if m.hurtCounter >= 30 then -- Full Kill
+            m.health = 0
+        else
+            m.health = math.max(m.health - 0x200, 0)
+        end
+        if m.health > 0x100 then
+            m.invincTimer = 30
+        else
+            m.vel.x = 0
+            m.vel.y = 0
+            set_mario_action(m, ACT_PAC_KNOCKBACK, 0)
+        end
+        m.hurtCounter = 0
+    end
+    if m.healCounter > 0 then
+        if m.healCounter >= 30 then -- Full Health
+            m.health = 0x880
+        else
+            m.health = math.min(m.health + 0x200, 0x880)
+        end
+        m.healCounter = 0
+    end
+
+    if m.action ~= ACT_PAC_JUMP then
+        m.peakHeight = m.pos.y
+    end
+
     if m.action == ACT_LAVA_BOOST then
         m.health = 0
     end
@@ -799,6 +799,12 @@ local function pac_update(m)
     if m.action ~= ACT_PAC_POWER_PELLET then
         e.pelletPath = {}
     end
+end
+
+local function on_fire_damage(m, nextAct)
+    m.hurtCounter = 4
+    gExtrasStates[m.playerIndex].burnTimer = 30
+    return 0
 end
 
 local overrideActs = {
@@ -823,29 +829,60 @@ local overrideActs = {
     [ACT_GROUND_POUND] = ACT_PAC_BUTT_BOUNCE,
     [ACT_GROUND_POUND_LAND] = ACT_PAC_BUTT_BOUNCE_LAND,
 
-    [ACT_START_CROUCHING] = false,
-    [ACT_STOP_CROUCHING] = false,
-    [ACT_CROUCHING] = false,
-    [ACT_CROUCH_SLIDE] = false,
+    [ACT_START_CROUCHING] = 0,
+    [ACT_STOP_CROUCHING] = 0,
+    [ACT_CROUCHING] = 0,
+    [ACT_CROUCH_SLIDE] = 0,
+    [ACT_BURNING_FALL] = on_fire_damage,
+    [ACT_BURNING_GROUND] = on_fire_damage,
+    [ACT_BURNING_JUMP] = on_fire_damage,
 }
 
+---@param m MarioState
 local function before_pac_action(m, nextAct)
     local e = gExtrasStates[m.playerIndex]
     audio_stream_pause(e.revAudio)
     e.floorSteep = nil
     local forceDefaultWalk = e.forceDefaultWalk
     e.forceDefaultWalk = false
-    --if nextAct & ACT_FLAG_SWIMMING ~= 0 and nextAct ~= ACT_PAC_SWIM then
-    --    return set_mario_action(m, ACT_PAC_SWIM, 0)
-    --end
+    if nextAct == ACT_LAVA_BOOST then
+        m.health = 0
+        return set_mario_action(m, ACT_PAC_KNOCKBACK, 0)
+    end
     if overrideActs[nextAct] then
-        if overrideActs[nextAct] ~= false then
+        if run_func_or_get_var(overrideActs[nextAct], m, nextAct) ~= 0 then
             if nextAct ~= ACT_WALKING or not forceDefaultWalk then
                 return set_mario_action(m, overrideActs[nextAct], 0)
             end
         else
             return 1
         end
+    end
+end
+
+local knockbackActs = {
+    [ACT_FORWARD_AIR_KB] = false,
+    [ACT_FORWARD_GROUND_KB] = false,
+    [ACT_HARD_FORWARD_AIR_KB] = false,
+    [ACT_HARD_FORWARD_GROUND_KB] = false,
+    [ACT_SOFT_FORWARD_GROUND_KB] = false,
+    [ACT_BACKWARD_AIR_KB] = true,
+    [ACT_BACKWARD_GROUND_KB] = true,
+    [ACT_HARD_BACKWARD_AIR_KB] = true,
+    [ACT_HARD_BACKWARD_GROUND_KB] = true,
+    [ACT_SOFT_BACKWARD_GROUND_KB] = true,
+}
+
+local function on_pac_action(m)
+    local e = gExtrasStates[m.playerIndex]
+    audio_stream_pause(e.revAudio)
+    e.floorSteep = nil
+    
+    if knockbackActs[m.action] ~= nil then
+        if not knockbackActs[m.action] then
+            m.faceAngle.y = m.faceAngle.y + 0x8000
+        end
+        set_mario_action(m, ACT_PAC_KNOCKBACK, 0)
     end
 end
 
@@ -874,6 +911,8 @@ local function on_interact(m, o, type)
         pac_bump_away_from_obj(m, o, 30)
     end
     if (o.oInteractStatus & INT_STATUS_WAS_ATTACKED ~= 0) and (determine_interaction(m,o) == INT_GROUND_POUND) then --object was hit by a kick
+        m.vel.y = 0
+        m.invincTimer = 3
         set_mario_action(m, ACT_PAC_BUTT_BOUNCE_LAND, 0)
     end
 end
@@ -941,13 +980,18 @@ end
 local wakaSound = audio_sample_load("zbpm-waka.ogg")
 local fruitSound = audio_sample_load("zbpm-fruit.ogg")
 local function on_play_sound(sound, pos)
+    -- Normal Coins
     if sound == SOUND_GENERAL_COIN then
         audio_sample_play(wakaSound, gMarioStates[0].pos, 1)
         return NO_SOUND
     end
-    if sound == SOUND_GENERAL_RED_COIN or sound == SOUND_MENU_COLLECT_RED_COIN then
-        audio_sample_play(fruitSound, gMarioStates[0].pos, 1)
-        return NO_SOUND
+
+    -- Red Coins
+    for i = 0, 7 do
+        if sound == SOUND_MENU_COLLECT_RED_COIN + ((7 - i) << 16) then
+            audio_sample_play(fruitSound, gMarioStates[0].pos, 1)
+            return NO_SOUND
+        end
     end
 end
 
@@ -959,12 +1003,22 @@ local function force_water(m, water)
     end
 end
 
+local function allow_hazard(m, type)
+    if type == HAZARD_TYPE_LAVA_FLOOR then
+        if (m.flags & MARIO_METAL_CAP ~= 0) or (m.action == ACT_PAC_KNOCKBACK and m.health < 0x100) then
+            return false
+        end
+    end
+end
+
 hook_pac_event(HOOK_MARIO_UPDATE, pac_update)
 hook_pac_event(HOOK_BEFORE_SET_MARIO_ACTION, before_pac_action)
+hook_pac_event(HOOK_ON_SET_MARIO_ACTION, on_pac_action)
 hook_pac_event(HOOK_ON_INTERACT, on_interact)
 hook_pac_event(HOOK_ALLOW_INTERACT, allow_interact)
 hook_pac_event(HOOK_ON_PLAY_SOUND, on_play_sound)
 hook_pac_event(HOOK_ALLOW_FORCE_WATER_ACTION, force_water)
+hook_pac_event(HOOK_ALLOW_HAZARD_SURFACE, allow_hazard)
 
 -- Pac Man Objects
 
@@ -1090,3 +1144,61 @@ function spawn_pellet_trail(m)
         return trail
     end
 end
+
+-- Health Meter
+
+local TEX_METER_BACK = get_texture_info("zbpm-meter-back")
+local TEX_METER_SEG_1 = get_texture_info("zbpm-meter-1")
+local TEX_METER_SEG_2 = get_texture_info("zbpm-meter-2")
+local TEX_METER_SEG_3 = get_texture_info("zbpm-meter-3")
+local meterScale = 0.7
+local function pac_health_meter(localIndex, health, prevX, prevY, prevScaleW, prevScaleH, x, y, scaleW, scaleH)
+    local e = gExtrasStates[localIndex]
+
+    local djuiFilter = djui_hud_get_filter()
+    local djuiColor = djui_hud_get_color()
+    local playerColor = network_player_get_override_palette_color(gNetworkPlayers[localIndex], CAP)
+    local meterColor = {
+        r = math.min(playerColor.r*1.21, 255) * djuiColor.r/255,
+        g = math.min(playerColor.g*1.21, 255) * djuiColor.r/255,
+        b = math.min(playerColor.b*1.21, 255) * djuiColor.r/255,
+    }
+
+    local prevScaleW = prevScaleW / 128 * meterScale
+    local prevScaleH = prevScaleH / 128 * meterScale
+    local scaleW = scaleW / 128 * meterScale
+    local scaleH = scaleH / 128 * meterScale
+
+    local prevX = prevX + (32 - (32 * meterScale*0.5)) * prevScaleW
+    local prevY = prevY + (32 - (32 * meterScale*0.5)) * prevScaleH
+    local x = x + (32 - (32 * meterScale*0.5)) * scaleW
+    local y = y + (32 - (32 * meterScale*0.5)) * scaleH
+
+    djui_hud_set_filter(FILTER_LINEAR)
+    if _G.charSelect.gCSPlayers[localIndex].movesetToggle then
+        local displayHealth = math.round((health >> 8) / 2)
+
+        e.healthSeg1Opacity = math.lerp(e.healthSeg1Opacity, displayHealth >= 2 and 255 or 0, 0.05)
+        e.healthSeg2Opacity = math.lerp(e.healthSeg2Opacity, displayHealth >= 3 and 255 or 0, 0.05)
+        e.healthSeg3Opacity = math.lerp(e.healthSeg3Opacity, displayHealth >= 4 and 255 or 0, 0.05)
+
+        djui_hud_render_texture_interpolated(TEX_METER_BACK, prevX, prevY, prevScaleW, prevScaleH, x, y, scaleW, scaleH)
+
+        djui_hud_set_color(meterColor.r, meterColor.g, meterColor.b, e.healthSeg1Opacity * djuiColor.a/255)
+        djui_hud_render_texture_interpolated(TEX_METER_SEG_1, prevX, prevY, prevScaleW, prevScaleH, x, y, scaleW, scaleH)
+        djui_hud_set_color(meterColor.r, meterColor.g, meterColor.b, e.healthSeg2Opacity * djuiColor.a/255)
+        djui_hud_render_texture_interpolated(TEX_METER_SEG_2, prevX, prevY, prevScaleW, prevScaleH, x, y, scaleW, scaleH)
+        djui_hud_set_color(meterColor.r, meterColor.g, meterColor.b, e.healthSeg3Opacity * djuiColor.a/255)
+        djui_hud_render_texture_interpolated(TEX_METER_SEG_3, prevX, prevY, prevScaleW, prevScaleH, x, y, scaleW, scaleH)
+    else
+        local displayHealth = health >> 8
+        djui_hud_print_text(tostring(displayHealth), x, y, scaleW/64 * 2)
+    end 
+
+    -- Revert Changes
+    djui_hud_set_filter(djuiFilter)
+    djui_hud_set_color(djuiColor.r, djuiColor.g, djuiColor.b, djuiColor.a)
+end
+
+_G.charSelect.character_add_health_meter(CT_ZBPACMAN, pac_health_meter)
+_G.charSelect.character_add_health_meter(CT_ZBMSPACMAN, pac_health_meter)
