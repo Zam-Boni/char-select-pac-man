@@ -1,3 +1,26 @@
+-- Globals
+
+ROMHACK = "sm64"
+for i in pairs(gActiveMods) do
+    local mod = gActiveMods[i]
+    if mod.incompatible ~= nil then
+        if mod.incompatible:find("romhack") then
+            ROMHACK = mod.relativePath
+        end
+    end
+    if mod.category ~= nil then
+        if mod.category:find("romhack") then
+            ROMHACK = mod.relativePath
+        end
+    end
+    ROMHACK = ROMHACK:gsub("[/\\]+$", "")
+    ROMHACK = ROMHACK:gsub(".*[/\\]", "")
+end
+
+log_to_console(ROMHACK, 0)
+
+-- Funcs
+
 function run_func_or_get_var(x, ...)
     if type(x) == "function" then
         return x(...)
