@@ -50,6 +50,7 @@ end
 ---@param e table ExtraState
 function perform_ground_step_with_detatch(m, e, airAction, arg)
     if airAction == nil then airAction = ACT_FREEFALL end
+    if arg == nil then arg = 0 end
     
     local step = perform_ground_step(m)
 

@@ -114,11 +114,12 @@ end
 
 ACT_PAC_WALKING = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_WATER_OR_TEXT)
 ACT_PAC_SKID = allocate_mario_action(ACT_GROUP_AIRBORNE)
-ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION | ACT_FLAG_WATER_OR_TEXT)
-ACT_PAC_FREEFALL = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
+ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_WATER_OR_TEXT)
+ACT_PAC_FREEFALL = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR)
 ACT_PAC_KNOCKBACK = allocate_mario_action(ACT_GROUP_CUTSCENE | ACT_FLAG_INVULNERABLE)
-ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ATTACKING | ACT_FLAG_ALLOW_VERTICAL_WIND_ACTION)
-ACT_PAC_ROLL = allocate_mario_action(ACT_GROUP_CUTSCENE | ACT_FLAG_SHORT_HITBOX)
+ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ATTACKING)
+ACT_PAC_ROLL = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_SHORT_HITBOX)
+ACT_PAC_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_REV_CHARGE = allocate_mario_action(ACT_GROUP_STATIONARY)
 ACT_PAC_REV_ROLL = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_REV_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_SHORT_HITBOX)
@@ -368,10 +369,11 @@ end
 local function act_pac_roll(m)
     if not m then return 0 end
 
-    local step = perform_ground_step(m)
-    if step == GROUND_STEP_LEFT_GROUND then
-        set_mario_action(m, ACT_PAC_SKID, 1)
-    elseif step == GROUND_STEP_HIT_WALL then
+    local step, detach = perform_ground_step_with_detatch(m, gExtrasStates[m.playerIndex], ACT_PAC_ROLL_AIR)
+    if detach ~= nil then
+        return detach
+    end
+    if step == GROUND_STEP_HIT_WALL then
         local wall = m.wall
         if wall ~= nil then
             local nx, nz = wall.normal.x, wall.normal.z
@@ -388,22 +390,88 @@ local function act_pac_roll(m)
         end
     end
 
-    --m.vel.x = m.vel.x + sins(m.intendedYaw) * m.intendedMag / 32 * 2
-    --m.vel.z = m.vel.z + coss(m.intendedYaw) * m.intendedMag / 32 * 2
-
     local floor = m.floor
     if floor ~= nil then
         local nx, ny, nz = floor.normal.x, floor.normal.y, floor.normal.z
-        local push = ny < 0.99 and 4 or 0
+        local push = ny < 0.99 and 5 or 0
         m.vel.x = math.clamp(m.vel.x + nx * push, -PAC_MAX_SPEED*3, PAC_MAX_SPEED*3)
         m.vel.z = math.clamp(m.vel.z + nz * push, -PAC_MAX_SPEED*3, PAC_MAX_SPEED*3)
     end
 
-    m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
 
-    if mario_floor_is_slippery(m) == 0 and (m.area.terrainType & TERRAIN_MASK) ~= TERRAIN_SLIDE then
-        set_mario_action(m, ACT_PAC_SKID, 1)
+    if (m.input & INPUT_NONZERO_ANALOG ~= 0) then
+        intendedDYaw = m.intendedYaw - m.faceAngle.y;
+        intendedMag = m.intendedMag / 32.0;
+
+        sidewaysSpeed = intendedMag * sins(intendedDYaw)
+
+        -- Turning Speed
+        m.vel.x = m.vel.x + sidewaysSpeed * sins(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED
+        m.vel.z = m.vel.z + sidewaysSpeed * coss(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED
     end
+
+    m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
+    m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
+
+    local koopaObj = obj_get_first_with_behavior_id(id_bhvKoopa)
+    local KTQExists = false
+    while koopaObj ~= nil and not KTQExists do
+        if (koopaObj.oKoopaMovementType ~= KOOPA_BP_UNSHELLED and koopaObj.oKoopaMovementType ~= KOOPA_BP_NORMAL) then
+            KTQExists = true
+        end
+    end
+    
+    djui_chat_message_create(tostring(level_control_timer_running() ~= 0 and not KTQExists))
+    -- Checks for either slide terrain, or a running timer with no Koopa The Quick
+    if (m.area.terrainType & TERRAIN_MASK) == TERRAIN_SLIDE or (level_control_timer_running() ~= 0 and not KTQExists) then
+        if (m.input & INPUT_A_PRESSED ~= 0) then
+            return set_mario_action(m, ACT_JUMP, 0);
+        end
+    else
+        if mario_floor_is_slippery(m) == 0 then
+            set_mario_action(m, ACT_PAC_SKID, 1)
+        end
+    end
+
+    set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
+    m.marioObj.header.gfx.animInfo.animAccel = 0x600 * math.sqrt(m.vel.x^2 + m.vel.y^2 + m.vel.z^2)
+end
+
+
+local function act_pac_roll_air(m)
+    if not m then return 0 end
+
+    local step = perform_air_step(m, AIR_STEP_NONE)
+    if step == AIR_STEP_LANDED then
+        set_mario_action(m, ACT_PAC_ROLL, 1)
+    elseif step == AIR_STEP_HIT_WALL then
+        local wall = m.wall
+        if wall ~= nil then
+            local nx, nz = wall.normal.x, wall.normal.z
+            
+            local vx, vz = m.vel.x, m.vel.z
+            
+            local dot = vx * nx + vz * nz
+            
+            m.vel.x = vx - 2 * dot * nx
+            m.vel.z = vz - 2 * dot * nz
+            
+            m.vel.x = m.vel.x * 0.7
+            m.vel.z = m.vel.z * 0.7
+        end
+    end
+    if (m.input & INPUT_NONZERO_ANALOG ~= 0) then
+        intendedDYaw = m.intendedYaw - m.faceAngle.y;
+        intendedMag = m.intendedMag / 32.0;
+
+        sidewaysSpeed = intendedMag * sins(intendedDYaw)
+
+        m.vel.x = m.vel.x + sidewaysSpeed * sins(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED
+        m.vel.z = m.vel.z + sidewaysSpeed * coss(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED
+    end
+
+    m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
+    m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
 
     set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
     m.marioObj.header.gfx.animInfo.animAccel = 0x600 * math.sqrt(m.vel.x^2 + m.vel.y^2 + m.vel.z^2)
@@ -730,6 +798,7 @@ hook_mario_action(ACT_PAC_FREEFALL, {every_frame = act_pac_freefall, gravity = p
 hook_mario_action(ACT_PAC_KNOCKBACK, {every_frame = act_pac_knockback, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_KICK, {every_frame = act_pac_kick, gravity = pac_gravity}, INT_KICK)
 hook_mario_action(ACT_PAC_ROLL, act_pac_roll, INT_FAST_ATTACK_OR_SHELL)
+hook_mario_action(ACT_PAC_ROLL_AIR, act_pac_roll_air, INT_FAST_ATTACK_OR_SHELL)
 hook_mario_action(ACT_PAC_REV_CHARGE, act_pac_rev_charge)
 hook_mario_action(ACT_PAC_REV_ROLL, act_pac_rev_roll, INT_KICK)
 hook_mario_action(ACT_PAC_REV_ROLL_AIR, {every_frame = act_pac_rev_roll_air, gravity = pac_gravity}, INT_KICK)

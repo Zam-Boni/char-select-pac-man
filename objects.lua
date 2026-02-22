@@ -43,7 +43,7 @@ local revRampPlacements = {
         },
         [LEVEL_THI] = {
             [3] = {
-                {x = -1950, y = 1030, z = 50, pitch = 0x1A00, yaw = 0x8000}, -- Cave Red Coin
+                {x = -1950, y = 1030, z = 100, pitch = 0x1A00, yaw = 0x8000}, -- Cave Red Coin
             },
         },
     }
