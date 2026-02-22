@@ -406,7 +406,7 @@ local function act_pac_roll(m)
     end
 
     set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
-    m.marioObj.header.gfx.animInfo.animAccel = 0x800 * math.sqrt(m.vel.x^2 + m.vel.z^2)
+    m.marioObj.header.gfx.animInfo.animAccel = 0x600 * math.sqrt(m.vel.x^2 + m.vel.y^2 + m.vel.z^2)
 end
 
 ---@param m MarioState
@@ -470,21 +470,18 @@ end
 local function act_pac_rev_roll(m)
     if not m then return 0 end
 
-    local detach = mario_detatch_from_floor(m, gExtrasStates[m.playerIndex], ACT_PAC_REV_ROLL_AIR, m.actionTimer)
-    if detach ~= 0 then
+    local step, detach = perform_ground_step_with_detatch(m, gExtrasStates[m.playerIndex], ACT_PAC_REV_ROLL_AIR, m.actionTimer)
+    if detach ~= nil then
         return detach
     end
 
-    local step = perform_ground_step(m)
     if step == GROUND_STEP_HIT_WALL then
         mario_bonk_reflection(m, 0)
-        m.forwardVel = m.forwardVel * 0.8
-    elseif step == GROUND_STEP_LEFT_GROUND then
-        return set_mario_action(m, ACT_PAC_REV_ROLL_AIR, m.actionTimer)
+        m.forwardVel = m.forwardVel * 0.9
     end
 
     set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
-    m.marioObj.header.gfx.animInfo.animAccel = 0x800 * m.forwardVel
+    m.marioObj.header.gfx.animInfo.animAccel = 0x600 * math.sqrt(m.vel.x^2 + m.vel.y^2 + m.vel.z^2)
 
     if m.actionState == 0 then
         if m.prevAction ~= ACT_PAC_REV_ROLL_AIR then
@@ -493,7 +490,7 @@ local function act_pac_rev_roll(m)
         m.actionTimer = m.actionArg
         m.actionState = m.actionState + 1
     else
-        if m.actionTimer == 0 then
+        if m.actionTimer == 0 or m.forwardVel < 10 then
             if mario_floor_is_slippery(m) ~= 0 then
                 set_mario_action(m, ACT_PAC_ROLL, 0)
             else
@@ -537,7 +534,7 @@ local function act_pac_rev_roll_air(m)
         return set_mario_action(m, ACT_PAC_FREEFALL, 0);
     end
 
-    m.marioObj.header.gfx.animInfo.animAccel = 0x800 * m.forwardVel
+    m.marioObj.header.gfx.animInfo.animAccel = 0x600 * math.sqrt(m.vel.x^2 + m.vel.y^2 + m.vel.z^2)
 
     m.faceAngle.y = m.intendedYaw - approach_s32(math.s16(m.intendedYaw - m.faceAngle.y), 0, 0xA00, 0xA00);
 

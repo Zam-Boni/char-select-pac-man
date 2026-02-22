@@ -29,44 +29,58 @@ function run_func_or_get_var(x, ...)
     end
 end
 
-function get_mario_slope_steepness(m)
+---@param m MarioState
+---@param step integer?
+function get_mario_slope_steepness(m, step)
+    local isWall = false
     local floor = m.floor
     local slopeAngle = atan2s(floor.normal.z, floor.normal.x)
     local angle = math.sqrt(floor.normal.x ^ 2 + floor.normal.z ^ 2)
     if math.abs(math.s16(m.faceAngle.y - slopeAngle)) > 0x4000 then
         angle = angle * -1.0
     end
-    return angle
+    if step == GROUND_STEP_HIT_WALL then
+        angle = -1
+        isWall = true
+    end
+    return angle, isWall
 end
 
 ---@param m MarioState
 ---@param e table ExtraState
-function mario_detatch_from_floor(m, e, airAction, arg)
+function perform_ground_step_with_detatch(m, e, airAction, arg)
     if airAction == nil then airAction = ACT_FREEFALL end
+    
+    local step = perform_ground_step(m)
 
     if e.floorSteep == nil then
-        e.floorSteep = get_mario_slope_steepness(m)
+        local slope, isWall = get_mario_slope_steepness(m, step)
+        e.floorSteep = slope
+        e.floorAngle = m.floorAngle
     end
 
     local prevSlope = e.floorSteep
-    local slope = get_mario_slope_steepness(m)
-    local slopeDif = math.abs(slope - prevSlope)
-    --if slopeDif ~= 0 then
-    --    djui_chat_message_create(tostring(slopeDif))
-    --end
+    local slope, isWall = get_mario_slope_steepness(m, step)
+    local slopeDif = math.abs(prevSlope - slope)
+    local angleDif = math.abs(e.floorAngle - m.floorAngle)
+    if angleDif == 0 and prevSlope^2 == slope^2 then
+        slopeDif = 0
+    end
+    if not isWall then
+        e.floorSteep = slope
+        e.floorAngle = m.floorAngle
+    end
 
-    e.floorSteep = slope
-
-    local velY = m.forwardVel * -prevSlope * (m.forwardVel < 0 and -1 or 1)
-    local velF = m.forwardVel * (1 - math.abs(prevSlope)*0.5) * (m.forwardVel < 0 and -1 or 1)
-    if (slopeDif > 0.4) or (m.pos.y > m.floorHeight + 10) then
+    local velY = math.sqrt(m.vel.x^2 + m.vel.z^2) * -prevSlope
+    local velF = m.forwardVel * (1 - math.abs(prevSlope)*0.7) * (m.forwardVel < 0 and -1 or 1)
+    if (slopeDif > 0.4 and angleDif > 0) or (not isWall and slopeDif > 1) or (isWall and slopeDif < 0.3) or step == GROUND_STEP_LEFT_GROUND then
         m.vel.y = velY
         m.forwardVel = velF
         e.floorSteep = nil
-        return set_mario_action(m, airAction, arg)
+        return GROUND_STEP_LEFT_GROUND, set_mario_action(m, airAction, arg)
     end
 
-    return 0
+    return step, nil
 end
 
 function obj_get_owner_mario(obj)
