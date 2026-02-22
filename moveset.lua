@@ -112,11 +112,11 @@ local function pac_air_action_step(m, landAction, animation, stepArg, capped)
     return stepResult;
 end
 
-ACT_PAC_WALKING = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_WATER_OR_TEXT)
+ACT_PAC_IDLE = allocate_mario_action(ACT_FLAG_STATIONARY | ACT_FLAG_IDLE | ACT_FLAG_ALLOW_FIRST_PERSON | ACT_FLAG_PAUSE_EXIT)
+ACT_PAC_WALKING = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_ALLOW_FIRST_PERSON | ACT_FLAG_WATER_OR_TEXT)
 ACT_PAC_SKID = allocate_mario_action(ACT_GROUP_AIRBORNE)
 ACT_PAC_JUMP = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_WATER_OR_TEXT)
 ACT_PAC_FREEFALL = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR)
-ACT_PAC_KNOCKBACK = allocate_mario_action(ACT_GROUP_CUTSCENE | ACT_FLAG_INVULNERABLE)
 ACT_PAC_KICK = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_ATTACKING)
 ACT_PAC_ROLL = allocate_mario_action(ACT_GROUP_MOVING | ACT_FLAG_SHORT_HITBOX)
 ACT_PAC_ROLL_AIR = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_SHORT_HITBOX)
@@ -128,6 +128,45 @@ ACT_PAC_BUTT_BOUNCE_LAND = allocate_mario_action(ACT_GROUP_MOVING)
 ACT_PAC_POWER_PELLET = allocate_mario_action(ACT_GROUP_AIRBORNE | ACT_FLAG_AIR | ACT_FLAG_INVULNERABLE --[[| ACT_FLAG_FLYING | ACT_FLAG_SWIMMING_OR_FLYING]])
 ACT_PAC_SWIM = allocate_mario_action(ACT_GROUP_SUBMERGED | ACT_FLAG_SWIMMING | ACT_FLAG_SWIMMING_OR_FLYING)
 ACT_PAC_FREEZE = allocate_mario_action(ACT_GROUP_CUTSCENE)
+
+local function check_common_pac_idle_cancels(m)
+    if not m then return 0 end
+    mario_drop_held_object(m);
+    if (m.floor and m.floor.normal.y < 0.29237169) then
+        return mario_push_off_steep_floor(m, ACT_FREEFALL, 0);
+    end
+
+    if (m.input & INPUT_UNKNOWN_10 ~= 0) then
+        return set_mario_action(m, ACT_SHOCKWAVE_BOUNCE, 0);
+    end
+
+    if (m.input & INPUT_A_PRESSED ~= 0) then
+        return set_jumping_action(m, ACT_JUMP, 0);
+    end
+
+    if (m.input & INPUT_OFF_FLOOR ~= 0) then
+        return set_mario_action(m, ACT_FREEFALL, 0);
+    end
+
+    if (m.input & INPUT_ABOVE_SLIDE ~= 0) then
+        return set_mario_action(m, ACT_BEGIN_SLIDING, 0);
+    end
+
+    if (m.input & INPUT_FIRST_PERSON ~= 0) then
+        return set_mario_action(m, ACT_FIRST_PERSON, 0);
+    end
+
+    if (m.input & INPUT_NONZERO_ANALOG ~= 0) then
+        m.faceAngle.y = m.intendedYaw;
+        return set_mario_action(m, ACT_PAC_WALKING, 0);
+    end
+
+    if (m.input & INPUT_B_PRESSED ~= 0) then
+        return set_mario_action(m, ACT_PAC_REV_CHARGE, 0);
+    end
+
+    return 0;
+end
 
 ---@param m MarioState
 ---@param o Object?
@@ -151,6 +190,73 @@ end
 local function pac_butt_bounce_gravity(m)
     if not m then return 0 end
     m.vel.y = m.vel.y - 10
+end
+
+local function act_pac_idle(m)
+    if not m then return 0 end
+    if (m.quicksandDepth > 30.0) then
+        return set_mario_action(m, ACT_IN_QUICKSAND, 0);
+    end
+
+    if (m.input & INPUT_IN_POISON_GAS ~= 0) then
+        return set_mario_action(m, ACT_COUGHING, 0);
+    end
+
+    if (check_common_pac_idle_cancels(m) ~= 0) then
+        return 1
+    end
+
+    local gDjuiInMainMenu = djui_hud_is_pause_menu_created()
+    if (m.actionState == 3) then
+        if (m.area and ((m.area.terrainType & TERRAIN_MASK) == TERRAIN_SNOW)) then
+            --return set_mario_action(m, ACT_SHIVERING, 0);
+        else
+            if (gDjuiInMainMenu) then
+                m.actionState = 0;
+                m.actionTimer = 0;
+            else
+                return set_mario_action(m, ACT_START_SLEEPING, 0);
+            end
+        end
+    end
+
+    if (m.actionArg & 1 ~= 0) then
+        --set_character_animation(m, CHAR_ANIM_STAND_AGAINST_WALL);
+    else
+        if m.actionState == 0 then
+            set_character_animation(m, CHAR_ANIM_IDLE_HEAD_LEFT);
+        elseif m.actionState == 1 then
+            set_character_animation(m, CHAR_ANIM_IDLE_HEAD_RIGHT);
+        elseif m.actionState == 2 then
+            set_character_animation(m, CHAR_ANIM_IDLE_HEAD_CENTER);
+        end
+        if (is_anim_at_end(m) ~= 0) then
+            -- Fall asleep after 10 head turning cycles.
+            -- act_start_sleeping is triggered earlier in the function
+            -- when actionState == 3. This happens when Mario's done
+            -- turning his head back and forth. However, we do some checks
+            -- here to make sure that Mario would be able to sleep here,
+            -- and that he's gone through 10 cycles before sleeping.
+            -- actionTimer is used to track how many cycles have passed.
+            m.actionState = m.actionState + 1
+            if (m.actionState == 3) then
+                local deltaYOfFloorBehindMario = m.pos.y - find_floor_height_relative_polar(m, -0x8000, 60.0);
+                if (deltaYOfFloorBehindMario < -24.0 or 24.0 < deltaYOfFloorBehindMario or (m.floor and (m.floor.flags & SURFACE_FLAG_DYNAMIC ~= 0))) then
+                    m.actionState = 0;
+                else
+                    -- If Mario hasn't turned his head 10 times yet, stay idle instead of going to sleep.
+                    m.actionTimer = m.actionTimer + 1;
+                    if (m.actionTimer < 10) then
+                        m.actionState = 0;
+                    end
+                end
+            end
+        end
+    end
+
+    stationary_ground_step(m);
+
+    return 0;
 end
 
 local function act_pac_walking(m)
@@ -289,7 +395,7 @@ local function act_pac_freefall(m)
     if not m then return 0 end
     local e = gExtrasStates[m.playerIndex]
 
-    local anim = CHAR_ANIM_GENERAL_FALL
+    local anim = nil
     if m.actionArg ~= 1 then
         if (m.input & INPUT_B_PRESSED ~= 0) then
             return set_mario_action(m, ACT_PAC_KICK, 0);
@@ -309,37 +415,6 @@ local function act_pac_freefall(m)
         end
         queue_rumble_data_mario(m, 5, 40);
     end
-    return 0;
-end
-
----@param m MarioState
-local function act_pac_knockback(m)
-    if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
-
-    if m.actionState == 0 then
-        m.vel.y = math.max(m.vel.y, 30)
-        m.actionState = m.actionState + 1
-    end
-
-    local anim = CHAR_ANIM_BACKWARD_AIR_KB
-    if m.health < 0x100 then
-        anim = CHAR_ANIM_DYING_ON_BACK
-        common_death_handler(m, anim, 20)
-    elseif m.actionTimer > 30 then
-        return set_mario_action(m, ACT_PAC_FREEFALL, 0)
-    end
-
-    if m.pos.y < m.floorHeight + 10 and m.vel.y <= 0 then
-        m.vel.x = 0
-        m.vel.y = 0
-        m.vel.z = 0
-        perform_ground_step(m)
-    else
-        perform_air_step(m, AIR_STEP_NONE)
-    end
-    m.actionTimer = m.actionTimer + 1
-    
     return 0;
 end
 
@@ -419,9 +494,9 @@ local function act_pac_roll(m)
         if (koopaObj.oKoopaMovementType ~= KOOPA_BP_UNSHELLED and koopaObj.oKoopaMovementType ~= KOOPA_BP_NORMAL) then
             KTQExists = true
         end
+        koopaObj = obj_get_next_with_same_behavior_id(koopaObj)
     end
     
-    djui_chat_message_create(tostring(level_control_timer_running() ~= 0 and not KTQExists))
     -- Checks for either slide terrain, or a running timer with no Koopa The Quick
     if (m.area.terrainType & TERRAIN_MASK) == TERRAIN_SLIDE or (level_control_timer_running() ~= 0 and not KTQExists) then
         if (m.input & INPUT_A_PRESSED ~= 0) then
@@ -466,8 +541,8 @@ local function act_pac_roll_air(m)
 
         sidewaysSpeed = intendedMag * sins(intendedDYaw)
 
-        m.vel.x = m.vel.x + sidewaysSpeed * sins(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED
-        m.vel.z = m.vel.z + sidewaysSpeed * coss(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED
+        m.vel.x = math.lerp(m.vel.x + sidewaysSpeed * sins(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED, 0, 0.01)
+        m.vel.z = math.lerp(m.vel.z + sidewaysSpeed * coss(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED, 0, 0.01)
     end
 
     m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
@@ -791,11 +866,11 @@ local function act_pac_freeze(m)
     perform_air_step(m, AIR_STEP_NONE)
 end
 
+hook_mario_action(ACT_PAC_IDLE, act_pac_idle)
 hook_mario_action(ACT_PAC_WALKING, act_pac_walking)
 hook_mario_action(ACT_PAC_SKID, {every_frame = act_pac_skid, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_JUMP, {every_frame = act_pac_jump, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_FREEFALL, {every_frame = act_pac_freefall, gravity = pac_gravity})
-hook_mario_action(ACT_PAC_KNOCKBACK, {every_frame = act_pac_knockback, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_KICK, {every_frame = act_pac_kick, gravity = pac_gravity}, INT_KICK)
 hook_mario_action(ACT_PAC_ROLL, act_pac_roll, INT_FAST_ATTACK_OR_SHELL)
 hook_mario_action(ACT_PAC_ROLL_AIR, act_pac_roll_air, INT_FAST_ATTACK_OR_SHELL)
@@ -831,10 +906,6 @@ local function pac_update(m)
         end
         if m.health > 0x100 then
             m.invincTimer = 30
-        else
-            m.vel.x = 0
-            m.vel.y = 0
-            set_mario_action(m, ACT_PAC_KNOCKBACK, 0)
         end
         m.hurtCounter = 0
     end
@@ -874,6 +945,7 @@ local function on_fire_damage(m, nextAct)
 end
 
 local overrideActs = {
+    [ACT_IDLE] = ACT_PAC_IDLE,
     [ACT_JUMP] = ACT_PAC_JUMP,
     [ACT_DOUBLE_JUMP] = ACT_PAC_JUMP,
     [ACT_TRIPLE_JUMP] = ACT_PAC_JUMP,
@@ -913,7 +985,7 @@ local function before_pac_action(m, nextAct)
     e.forceDefaultWalk = false
     if nextAct == ACT_LAVA_BOOST then
         m.health = 0
-        return set_mario_action(m, ACT_PAC_KNOCKBACK, 0)
+        return set_mario_action(m, ACT_STANDING_DEATH, 0)
     end
     if overrideActs[nextAct] then
         if run_func_or_get_var(overrideActs[nextAct], m, nextAct) ~= 0 then
@@ -926,30 +998,10 @@ local function before_pac_action(m, nextAct)
     end
 end
 
-local knockbackActs = {
-    [ACT_FORWARD_AIR_KB] = false,
-    [ACT_FORWARD_GROUND_KB] = false,
-    [ACT_HARD_FORWARD_AIR_KB] = false,
-    [ACT_HARD_FORWARD_GROUND_KB] = false,
-    [ACT_SOFT_FORWARD_GROUND_KB] = false,
-    [ACT_BACKWARD_AIR_KB] = true,
-    [ACT_BACKWARD_GROUND_KB] = true,
-    [ACT_HARD_BACKWARD_AIR_KB] = true,
-    [ACT_HARD_BACKWARD_GROUND_KB] = true,
-    [ACT_SOFT_BACKWARD_GROUND_KB] = true,
-}
-
 local function on_pac_action(m)
     local e = gExtrasStates[m.playerIndex]
     audio_stream_pause(e.revAudio)
     e.floorSteep = nil
-    
-    if knockbackActs[m.action] ~= nil then
-        if not knockbackActs[m.action] then
-            m.faceAngle.y = m.faceAngle.y + 0x8000
-        end
-        set_mario_action(m, ACT_PAC_KNOCKBACK, 0)
-    end
 end
 
 local forceWalkingInteracts = {
@@ -1071,7 +1123,7 @@ end
 
 local function allow_hazard(m, type)
     if type == HAZARD_TYPE_LAVA_FLOOR then
-        if (m.flags & MARIO_METAL_CAP ~= 0) or (m.action == ACT_PAC_KNOCKBACK and m.health < 0x100) then
+        if (m.flags & MARIO_METAL_CAP ~= 0) or (m.action == ACT_STANDING_DEATH and m.health < 0x100) then
             return false
         end
     end

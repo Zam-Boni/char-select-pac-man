@@ -55,26 +55,31 @@ function perform_ground_step_with_detatch(m, e, airAction, arg)
     local step = perform_ground_step(m)
 
     if e.floorSteep == nil then
-        local slope, isWall = get_mario_slope_steepness(m, step)
+        local slope = get_mario_slope_steepness(m, step)
         e.floorSteep = slope
-        e.floorAngle = m.floorAngle
+        e.floorAngle = atan2s(m.floor.normal.z, m.floor.normal.x)
     end
 
     local prevSlope = e.floorSteep
     local slope, isWall = get_mario_slope_steepness(m, step)
     local slopeDif = math.abs(prevSlope - slope)
-    local angleDif = math.abs(e.floorAngle - m.floorAngle)
+    local angleDif = math.abs(e.floorAngle - atan2s(m.floor.normal.z, m.floor.normal.x))
     if angleDif == 0 and prevSlope^2 == slope^2 then
         slopeDif = 0
     end
     if not isWall then
         e.floorSteep = slope
-        e.floorAngle = m.floorAngle
+        e.floorAngle = atan2s(m.floor.normal.z, m.floor.normal.x)
+    end
+
+    if slopeDif ~= 0 then
+        djui_chat_message_create(tostring(slopeDif))
+        djui_chat_message_create(tostring(angleDif))
     end
 
     local velY = math.sqrt(m.vel.x^2 + m.vel.z^2) * -prevSlope
     local velF = m.forwardVel * (1 - math.abs(prevSlope)*0.7) * (m.forwardVel < 0 and -1 or 1)
-    if (slopeDif > 0.4 and angleDif > 0) or (not isWall and slopeDif > 1) or (isWall and slopeDif < 0.3) or step == GROUND_STEP_LEFT_GROUND then
+    if (slopeDif > 0.3 and angleDif > 0) or (not isWall and slopeDif > 1) or (isWall and slopeDif < 0.3) or step == GROUND_STEP_LEFT_GROUND then
         m.vel.y = velY
         m.forwardVel = velF
         e.floorSteep = nil

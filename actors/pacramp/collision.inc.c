@@ -1,8 +1,8 @@
 const Collision pacramp_collision[] = {
 	COL_INIT(),
 	COL_VERTEX_INIT(6),
-	COL_VERTEX(-93, 0, 290),
-	COL_VERTEX(93, 0, 290),
+	COL_VERTEX(-93, 0, 271),
+	COL_VERTEX(93, 0, 271),
 	COL_VERTEX(93, 0, -60),
 	COL_VERTEX(-93, 0, -60),
 	COL_VERTEX(-93, -229, -60),
