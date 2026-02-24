@@ -166,7 +166,7 @@ end
 ---@param m MarioState
 ---@param o Object?
 ---@param vel number
-local function pac_bump_away_from_obj(m, o, vel)
+function pac_bump_away_from_obj(m, o, vel)
     local e = gExtrasStates[m.playerIndex]
     local angle = o and atan2s(m.pos.z - o.oPosZ, m.pos.x - o.oPosX) or m.faceAngle.y + 0x8000
     m.vel.x = sins(angle) * vel
@@ -1008,7 +1008,7 @@ local function on_interact(m, o, type)
     if (o.oInteractStatus & INT_STATUS_WAS_ATTACKED ~= 0) and (determine_interaction(m,o) == INT_KICK) then --object was hit by a kick
         pac_bump_away_from_obj(m, o, 30)
     end
-    if (o.oInteractStatus & INT_STATUS_WAS_ATTACKED ~= 0) and (determine_interaction(m,o) == INT_GROUND_POUND) then --object was hit by a kick
+    if (o.oInteractStatus & INT_STATUS_WAS_ATTACKED ~= 0) and (determine_interaction(m,o) == INT_GROUND_POUND) then --object was hit by a butt bounce
         m.vel.y = 0
         m.invincTimer = 3
         set_mario_action(m, ACT_PAC_BUTT_BOUNCE_LAND, 0)
@@ -1036,6 +1036,12 @@ local revRollInteractions = {
     [id_bhvMips] = function (m, o, type)
         if o.oMipsStarStatus == MIPS_STAR_STATUS_HAVENT_SPAWNED_STAR then
             o.oMipsStarStatus = MIPS_STAR_STATUS_SHOULD_SPAWN_STAR;
+        end
+    end,
+    [id_bhvUkiki] = function(m, o, type)
+        if o.oBehParams2ndByte ~= UKIKI_CAP then
+            o.oUkikiTextState = UKIKI_TEXT_GO_TO_CAGE
+            o.oAction = UKIKI_ACT_GO_TO_CAGE
         end
     end,
 }
@@ -1076,11 +1082,17 @@ local function allow_interact(m, o, type)
 end
 
 local wakaSound = audio_sample_load("zbpm-waka.ogg")
+local wakaWaterSound = audio_sample_load("zbpm-waka-water.ogg")
 local fruitSound = audio_sample_load("zbpm-fruit.ogg")
 local function on_play_sound(sound, pos)
     -- Normal Coins
     if sound == SOUND_GENERAL_COIN then
         audio_sample_play(wakaSound, gMarioStates[0].pos, 1)
+        return NO_SOUND
+    end
+
+    if sound == SOUND_GENERAL_COIN_WATER then
+        audio_sample_play(wakaWaterSound, gMarioStates[0].pos, 1)
         return NO_SOUND
     end
 

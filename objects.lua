@@ -67,3 +67,81 @@ local function on_sync()
 end
 
 hook_event(HOOK_ON_SYNC_VALID, on_sync)
+
+-- Bumpable Metal Boxes
+
+local function bhv_pushable_init(o)
+    network_init_object(o, false, {
+        "oAction",
+        "oMoveAngleYaw",
+        "oForwardVel",
+    })
+    o.oAction = 0
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.collisionData = gGlobalObjectCollisionData.metal_box_seg8_collision_08024C28
+    o.oCollisionDistance = 500
+end
+
+---@param o Object
+local function bhv_new_pushable_loop(o)
+    local marioState = nearest_mario_state_to_object(o);
+    local player = marioState and marioState.marioObj or nil;
+
+    load_object_collision_model()
+
+    if o.oAction == 1 then
+        o.oForwardVel = o.oForwardVel - 2.5
+        if o.oForwardVel < 1 or check_if_moving_over_floor(o.oForwardVel, 150.0) == 0 then
+            djui_chat_message_create("bonk")
+            o.oForwardVel = 0
+            o.oAction = 0
+        else
+            cur_obj_play_sound_2(SOUND_ENV_SLIDING);
+        end
+
+        local boxWidth = 140
+
+        local sp24 = spawn_non_sync_object(id_bhvSmoke, E_MODEL_SMOKE, o.oPosX, o.oPosY, o.oPosZ, function (oSmoke)
+            local angle = (o.oMoveAngleYaw + 0x8000) + 0x2000 * random_float() - 0x1000
+            oSmoke.oPosX = oSmoke.oPosX + sins(o.oMoveAngleYaw + 0x8000)*boxWidth + sins(o.oMoveAngleYaw + 0x4000)*(boxWidth*random_float() - boxWidth*0.5)
+            oSmoke.oPosZ = oSmoke.oPosZ + coss(o.oMoveAngleYaw + 0x8000)*boxWidth + coss(o.oMoveAngleYaw + 0x4000)*(boxWidth*random_float() - boxWidth*0.5)
+            oSmoke.oMoveAngleYaw = angle
+            oSmoke.oForwardVel = 5
+            oSmoke.oVelY = random_float()*5
+        end);
+
+        cur_obj_move_using_fvel_and_gravity()
+    else
+        if marioState.action == ACT_PAC_REV_ROLL then
+            if obj_check_if_collided_with_object(o, player) ~= 0 then
+                o.oMoveAngleYaw = math.round(math.s16(atan2s(o.oPosZ - marioState.pos.z, o.oPosX - marioState.pos.x))/0x4000)*0x4000
+                o.oForwardVel = marioState.forwardVel*0.5
+                o.oAction = 1
+                network_send_object(o, false)
+                pac_bump_away_from_obj(marioState, o, 30)
+            end
+        else
+            bhv_pushable_loop()
+        end
+    end
+    --local marioState = nearest_mario_state_to_object(o);
+    --local player = marioState and marioState.marioObj or nil;
+--
+    --obj_set_hitbox(o, sMetalBoxHitbox);
+    --o.oForwardVel = 0.0f;
+    --if (player) then
+    --    if (obj_check_if_collided_with_object(o, player) && marioState && marioState->flags & MARIO_UNKNOWN_31) {
+    --        local sp1C = obj_angle_to_object(o, player);
+    --        if (abs_angle_diff(sp1C, player.oMoveAngleYaw) > 0x4000) then
+    --            o.oMoveAngleYaw = (s16)((player.oMoveAngleYaw + 0x2000) & 0xc000);
+    --            if (check_if_moving_over_floor(8.0, 150.0)) {
+    --                o.oForwardVel = 4.0;
+    --                cur_obj_play_sound_1(SOUND_ENV_METAL_BOX_PUSH);
+    --            end
+    --        end
+    --    end
+    --end
+    --cur_obj_move_using_fvel_and_gravity();
+end
+
+hook_behavior(id_bhvPushableMetalBox, OBJ_LIST_SURFACE, true, bhv_pushable_init, bhv_new_pushable_loop)
