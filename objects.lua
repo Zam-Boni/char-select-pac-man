@@ -7,6 +7,7 @@ local function bhv_rev_ramp_init(o)
     o.oGravity = 1
     o.oFriction = 0
     o.collisionData = COL_REV_RAMP
+    o.oBuoyancy = 10
 end
 
 ---@param o Object

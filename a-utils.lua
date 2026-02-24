@@ -17,8 +17,6 @@ for i in pairs(gActiveMods) do
     ROMHACK = ROMHACK:gsub(".*[/\\]", "")
 end
 
-log_to_console(ROMHACK, 0)
-
 -- Funcs
 
 function run_func_or_get_var(x, ...)
@@ -72,10 +70,10 @@ function perform_ground_step_with_detatch(m, e, airAction, arg)
         e.floorAngle = atan2s(m.floor.normal.z, m.floor.normal.x)
     end
 
-    if slopeDif ~= 0 then
-        djui_chat_message_create(tostring(slopeDif))
-        djui_chat_message_create(tostring(angleDif))
-    end
+    --if slopeDif ~= 0 then
+    --    djui_chat_message_create(tostring(slopeDif))
+    --    djui_chat_message_create(tostring(angleDif))
+    --end
 
     local velY = math.sqrt(m.vel.x^2 + m.vel.z^2) * -prevSlope
     local velF = m.forwardVel * (1 - math.abs(prevSlope)*0.7) * (m.forwardVel < 0 and -1 or 1)

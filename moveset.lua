@@ -11,7 +11,6 @@ local PAC_HEALTH_SLICE = 0x880/4
 local gExtrasStates = {}
 for i = 0, MAX_PLAYERS - 1 do
     gExtrasStates[i] = {
-        revAudio = audio_stream_load("zbpmsfx-revup.ogg"),
         bounceCount = 0,
         forceDefaultWalk = false,
         faceAngleLerp = 0,
@@ -25,7 +24,6 @@ for i = 0, MAX_PLAYERS - 1 do
         healthSeg2Opacity = 255,
         healthSeg3Opacity = 255,
     }
-    audio_stream_set_looping(gExtrasStates[i].revAudio, true)
 end
 
 local function hook_pac_event(hook, func)
@@ -560,14 +558,6 @@ local function act_pac_rev_charge(m)
         return set_mario_action(m, ACT_PAC_KICK, 0)
     end
 
-    local distFromCam = m.playerIndex == 0 and 0.5 or math.clamp(500/vec3f_dist(m.pos, gLakituState.pos), 0, 0.5)
-    if m.actionState == 0 then
-        audio_stream_play(e.revAudio, true, distFromCam)
-        m.actionState = m.actionState + 1
-    end
-    audio_stream_set_frequency(e.revAudio, 0.9 + (m.actionTimer/150))
-    audio_stream_set_volume(e.revAudio, distFromCam)
-
     perform_ground_step(m)
     set_character_animation(m, CHAR_ANIM_RUNNING_UNUSED)
     m.marioObj.header.gfx.animInfo.animAccel = 0x8000 * m.actionTimer
@@ -979,7 +969,6 @@ local overrideActs = {
 ---@param m MarioState
 local function before_pac_action(m, nextAct)
     local e = gExtrasStates[m.playerIndex]
-    audio_stream_pause(e.revAudio)
     e.floorSteep = nil
     local forceDefaultWalk = e.forceDefaultWalk
     e.forceDefaultWalk = false
@@ -996,12 +985,6 @@ local function before_pac_action(m, nextAct)
             return 1
         end
     end
-end
-
-local function on_pac_action(m)
-    local e = gExtrasStates[m.playerIndex]
-    audio_stream_pause(e.revAudio)
-    e.floorSteep = nil
 end
 
 local forceWalkingInteracts = {
@@ -1131,12 +1114,60 @@ end
 
 hook_pac_event(HOOK_MARIO_UPDATE, pac_update)
 hook_pac_event(HOOK_BEFORE_SET_MARIO_ACTION, before_pac_action)
-hook_pac_event(HOOK_ON_SET_MARIO_ACTION, on_pac_action)
 hook_pac_event(HOOK_ON_INTERACT, on_interact)
 hook_pac_event(HOOK_ALLOW_INTERACT, allow_interact)
 hook_pac_event(HOOK_ON_PLAY_SOUND, on_play_sound)
 hook_pac_event(HOOK_ALLOW_FORCE_WATER_ACTION, force_water)
 hook_pac_event(HOOK_ALLOW_HAZARD_SURFACE, allow_hazard)
+
+local AUDIO_REV_ROLL = audio_stream_load("zbpmsfx-revup.ogg")
+audio_stream_set_looping(AUDIO_REV_ROLL, true)
+
+local marioDists = {}
+local audioPlaying = false
+local function handle_rev_roll()
+    marioDists = {}
+
+    local m = gMarioStates[0]
+    if m.action == ACT_PAC_REV_CHARGE then
+        local volume = math.clamp(1000/vec3f_dist(m.pos, gLakituState.pos), 0, 1)
+        if not audioPlaying then
+            audio_stream_play(AUDIO_REV_ROLL, true, volume)
+            audioPlaying = true
+        end
+        audio_stream_set_volume(AUDIO_REV_ROLL, volume)
+        audio_stream_set_frequency(AUDIO_REV_ROLL, 0.9 + (m.actionTimer/150))
+        return
+    end
+
+    for i = 1, MAX_PLAYERS - 1 do
+        local m = gMarioStates[i]
+        marioDists[i] = {index = i, dist = vec3f_dist(m.pos, gLakituState.pos)}
+    end
+
+    table.sort(marioDists, function(a, b)
+        return a.dist < b.dist
+    end)
+
+    for i = 1, #marioDists do
+        local m = gMarioStates[marioDists[i].index]
+        if m.action == ACT_PAC_REV_CHARGE then
+            local volume = math.clamp(1000/marioDists[i].dist, 0, 1)
+            if not audioPlaying then
+                audio_stream_play(AUDIO_REV_ROLL, true, volume)
+                audioPlaying = true
+            end
+            audio_stream_set_volume(AUDIO_REV_ROLL, volume)
+            audio_stream_set_frequency(AUDIO_REV_ROLL, 0.9 + (m.actionTimer/150))
+            return
+        end
+    end
+
+    audio_stream_stop(AUDIO_REV_ROLL)
+    audioPlaying = false
+end
+
+hook_event(HOOK_UPDATE, handle_rev_roll)
 
 -- Pac Man Objects
 
