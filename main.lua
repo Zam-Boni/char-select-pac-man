@@ -442,12 +442,21 @@ CT_ZBCLYDE = _G.charSelect.character_add(
 -- (Models do not exist in template)
 -- _G.charSelect.character_add_caps(E_MODEL_CHAR, CAPTABLE_CHAR)
 
-_G.charSelect.character_add_menu_instrumental(CT_ZBPACMAN, audio_stream_load("zbpm-tune.ogg"))
-_G.charSelect.character_add_menu_instrumental(CT_ZBMSPACMAN, audio_stream_load("zbpm-tune.ogg"))
-_G.charSelect.character_add_menu_instrumental(CT_ZBBLINKY, audio_stream_load("zbpm-tune.ogg"))
-_G.charSelect.character_add_menu_instrumental(CT_ZBINKY, audio_stream_load("zbpm-tune.ogg"))
-_G.charSelect.character_add_menu_instrumental(CT_ZBPINKY, audio_stream_load("zbpm-tune.ogg"))
-_G.charSelect.character_add_menu_instrumental(CT_ZBCLYDE, audio_stream_load("zbpm-tune.ogg"))
+local MENU_INST = audio_stream_load("zbpm-tune.ogg")
+_G.charSelect.character_add_menu_instrumental(CT_ZBPACMAN, MENU_INST)
+_G.charSelect.character_add_menu_instrumental(CT_ZBMSPACMAN, MENU_INST)
+_G.charSelect.character_add_menu_instrumental(CT_ZBBLINKY, MENU_INST)
+_G.charSelect.character_add_menu_instrumental(CT_ZBINKY, MENU_INST)
+_G.charSelect.character_add_menu_instrumental(CT_ZBPINKY, MENU_INST)
+_G.charSelect.character_add_menu_instrumental(CT_ZBCLYDE, MENU_INST)
+
+local msPacIcons = math.random() >= 0.5
+_G.charSelect.character_set_category(CT_ZBPACMAN, "Pac-Man", not msPacIcons)
+_G.charSelect.character_set_category(CT_ZBMSPACMAN, "Pac-Man", msPacIcons)
+_G.charSelect.character_set_category(CT_ZBBLINKY, "Pac-Man", not msPacIcons)
+_G.charSelect.character_set_category(CT_ZBINKY, "Pac-Man")
+_G.charSelect.character_set_category(CT_ZBPINKY, "Pac-Man", msPacIcons)
+_G.charSelect.character_set_category(CT_ZBCLYDE, "Pac-Man")
 
 -- Adds a voice to your character
 -- (Sounds do not exist in template)
