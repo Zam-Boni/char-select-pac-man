@@ -62,12 +62,9 @@ local function pac_update_air_with_turn(m, capped)
     local intendedDYaw = m.intendedYaw;
     local intendedMag = m.intendedMag / 32.0;
 
-    m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.1)
-    m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, 0.1)
-    if capped then
-        m.vel.x = math.clamp(m.vel.x, -PAC_MAX_SPEED, PAC_MAX_SPEED)
-        m.vel.z = math.clamp(m.vel.z, -PAC_MAX_SPEED, PAC_MAX_SPEED)
-    end
+    local bigSpeed = math.sqrt(m.vel.x^2 + m.vel.z^2) > PAC_MAX_SPEED
+    m.vel.x = math.lerp(m.vel.x, sins(intendedDYaw) * intendedMag * PAC_MAX_SPEED, bigSpeed and 0.15 or 0.1)
+    m.vel.z = math.lerp(m.vel.z, coss(intendedDYaw) * intendedMag * PAC_MAX_SPEED, bigSpeed and 0.15 or 0.1)
 
     m.forwardVel = math.sqrt(m.vel.z^2 + m.vel.x^2)
     
@@ -80,10 +77,10 @@ local function pac_update_air_with_turn(m, capped)
     end
 end
 
-local function pac_air_action_step(m, landAction, animation, stepArg, capped)
+local function pac_air_action_step(m, landAction, animation, stepArg)
     if not m then return 0 end
 
-    pac_update_air_with_turn(m, capped);
+    pac_update_air_with_turn(m);
 
     local stepResult = perform_air_step(m, stepArg);
     if (m.action == ACT_BUBBLED and stepResult == AIR_STEP_HIT_LAVA_WALL) then
@@ -376,7 +373,7 @@ local function act_pac_jump(m)
         m.actionTimer = m.actionTimer + 1
     end
 
-    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, anim, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG, true);
+    pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, anim, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
         if mario_floor_is_slippery(m) ~= 0 then
             set_mario_action(m, ACT_PAC_ROLL, 0)
