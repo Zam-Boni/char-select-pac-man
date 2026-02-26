@@ -50,7 +50,51 @@ local revRampPlacements = {
     }
 }
 
+---@param o Object
+local function bhv_warp_sparkle_init(o)
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    local angle = random_float() * 0x3800;
+    local radius = math.sqrt(random_float()) * 200;
+
+    o.oVelX = coss(angle) * radius;
+    o.oVelY = sins(angle) * radius;
+    o.oVelZ = random_float()*0x10000
+end
+
+---@param o Object
+local function bhv_warp_sparkle_loop(o)
+    local m = nearest_mario_state_to_object(o)
+    o.oDistanceToMario = math.lerp(o.oDistanceToMario, vec3f_dist(m.pos, {x = o.oHomeX, y = o.oHomeY, z = o.oHomeZ}), 0.1)
+    local agression = 1000/o.oDistanceToMario
+    local angle = get_global_timer()*0x600 + o.oVelZ
+
+    o.oPosX = o.oHomeX + sins(angle)*o.oVelX*agression
+    o.oPosY = o.oHomeY + o.oVelY*agression
+    o.oPosZ = o.oHomeZ + coss(angle)*o.oVelX*agression
+
+    o.oOpacity = 0.5
+
+    obj_set_billboard(o)
+end
+
+id_bhvWarpSparkle = hook_behavior(nil, OBJ_LIST_UNIMPORTANT, true, bhv_warp_sparkle_init, bhv_warp_sparkle_loop, "bhvWarpSparkle")
+
 local function on_sync()
+    -- Spawn Warp Sparkles
+    local o = obj_get_first_with_behavior_id(id_bhvFadingWarp)
+    while o ~= nil do
+        for i = 1, 100 do
+            spawn_non_sync_object(id_bhvWarpSparkle, E_MODEL_SPARKLES, o.oPosX, o.oPosY, o.oPosZ, function(oSparkle)
+                oSparkle.oHomeX = o.oPosX
+                oSparkle.oHomeY = o.oPosY
+                oSparkle.oHomeZ = o.oPosZ
+                oSparkle.parentObj = o
+            end)
+        end
+        o = obj_get_next_with_same_behavior_id(o)
+    end
+    
+    -- Spawn Rev Ramps
     local np = gNetworkPlayers[0]
     if not revRampPlacements[ROMHACK] then return end
     if not revRampPlacements[ROMHACK][np.currLevelNum] then return end
@@ -69,24 +113,10 @@ end
 hook_event(HOOK_ON_SYNC_VALID, on_sync)
 
 
----@param o Object
-local function bhv_warp_sparkle_init(o)
-    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
-end
-
----@param o Object
-local function bhv_warp_sparkle_loop(o)
-    
-end
-
 local function spawn_warp_sparkles()
-    local o = obj_get_first_with_behavior_id(id_bhvFadingWarp)
-    while o ~= nil do
-        if random_float() > 0.5 then
-            
-        end
-    end
 end
+
+hook_event(HOOK_UPDATE, spawn_warp_sparkles)
 
 -- Bumpable Metal Boxes
 
