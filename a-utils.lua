@@ -32,16 +32,20 @@ end
 function get_mario_slope_steepness(m, step)
     local isWall = false
     local floor = m.floor
-    local slopeAngle = atan2s(floor.normal.z, floor.normal.x)
-    local angle = math.sqrt(floor.normal.x ^ 2 + floor.normal.z ^ 2)
-    if math.abs(math.s16(m.faceAngle.y - slopeAngle)) > 0x4000 then
-        angle = angle * -1.0
+    if not floor then
+        return 0, isWall
     end
+
+    local angleDiff = math.s16(m.faceAngle.y - atan2s(floor.normal.z, floor.normal.x))
+    local facingFactor = math.cos(math.rad(angleDiff * 360 / 0x10000))
+    local slope = math.sqrt(floor.normal.x^2 + floor.normal.z^2) * facingFactor
+
     if step == GROUND_STEP_HIT_WALL then
-        angle = -1
+        slope = -1
         isWall = true
     end
-    return angle, isWall
+    
+    return slope, isWall
 end
 
 ---@param m MarioState
@@ -49,37 +53,46 @@ end
 function perform_ground_step_with_detatch(m, e, airAction, arg)
     if airAction == nil then airAction = ACT_FREEFALL end
     if arg == nil then arg = 0 end
-    
-    local step = perform_ground_step(m)
 
     if e.floorSteep == nil then
-        local slope = get_mario_slope_steepness(m, step)
+        local slope = get_mario_slope_steepness(m, 0)
         e.floorSteep = slope
         e.floorAngle = atan2s(m.floor.normal.z, m.floor.normal.x)
     end
+
+    local launchSlope = e.floorSteep
+
+    local step = perform_ground_step(m)
 
     local prevSlope = e.floorSteep
     local slope, isWall = get_mario_slope_steepness(m, step)
+
+    local newAngle = atan2s(m.floor.normal.z, m.floor.normal.x)
     local slopeDif = math.abs(prevSlope - slope)
-    local angleDif = math.abs(e.floorAngle - atan2s(m.floor.normal.z, m.floor.normal.x))
-    if angleDif == 0 and prevSlope^2 == slope^2 then
+    local angleDif = math.abs(e.floorAngle - newAngle)
+
+    if angleDif < 50 and math.abs(prevSlope - slope) < 0.01 then
         slopeDif = 0
     end
+
     if not isWall then
         e.floorSteep = slope
-        e.floorAngle = atan2s(m.floor.normal.z, m.floor.normal.x)
+        e.floorAngle = newAngle
     end
 
-    --if slopeDif ~= 0 then
-    --    djui_chat_message_create(tostring(slopeDif))
-    --    djui_chat_message_create(tostring(angleDif))
-    --end
+    if (slopeDif > 0.3 and angleDif > 50)
+        or (not isWall and slopeDif > 1)
+        or (isWall and slopeDif < 0.3)
+        or step == GROUND_STEP_LEFT_GROUND then
 
-    local velY = math.sqrt(m.vel.x^2 + m.vel.z^2) * -prevSlope
-    local velF = m.forwardVel * (1 - math.abs(prevSlope)*0.7) * (m.forwardVel < 0 and -1 or 1)
-    if (slopeDif > 0.3 and angleDif > 0) or (not isWall and slopeDif > 1) or (isWall and slopeDif < 0.3) or step == GROUND_STEP_LEFT_GROUND then
+        local horizontalSpeed = math.sqrt(m.vel.x^2 + m.vel.z^2)
+
+        local velY = horizontalSpeed * -launchSlope
+        local velF = m.forwardVel * (1 - math.abs(launchSlope) * 0.5)
+
         m.vel.y = velY
         m.forwardVel = velF
+
         e.floorSteep = nil
         return GROUND_STEP_LEFT_GROUND, set_mario_action(m, airAction, arg)
     end
