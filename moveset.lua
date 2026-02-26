@@ -88,11 +88,7 @@ local function pac_air_action_step(m, landAction, animation, stepArg)
         stepResult = AIR_STEP_HIT_WALL;
     end
 
-    if stepResult == AIR_STEP_NONE then
-        if animation ~= nil then
-            set_character_animation(m, animation);
-        end
-    elseif stepResult == AIR_STEP_LANDED then
+    if stepResult == AIR_STEP_LANDED then
         if (check_fall_damage_or_get_stuck(m, ACT_HARD_BACKWARD_GROUND_KB) == 0) then
             return set_mario_action(m, landAction, 0);
         end
@@ -103,6 +99,10 @@ local function pac_air_action_step(m, landAction, animation, stepArg)
         set_mario_action(m, ACT_START_HANGING, 0);
     elseif stepResult == AIR_STEP_HIT_LAVA_WALL then
         lava_boost_on_wall(m);
+    else
+        if animation ~= nil then
+            set_character_animation(m, animation);
+        end
     end
 
     return stepResult;
@@ -296,15 +296,15 @@ local function act_pac_walking(m)
     if step == GROUND_STEP_LEFT_GROUND then
         set_mario_action(m, ACT_FREEFALL, 0);
         set_character_animation(m, CHAR_ANIM_GENERAL_FALL);
-    elseif step == GROUND_STEP_NONE then
+    else
         anim_and_audio_for_walk(m);
         if (m.intendedMag - m.forwardVel > 16.0) then
             set_mario_particle_flags(m, PARTICLE_DUST, 0);
         end
     end
 
-    check_ledge_climb_down(m);
-    tilt_body_walking(m, startYaw);
+    --check_ledge_climb_down(m);
+    --tilt_body_walking(m, startYaw);
     return 0;
 end
 
@@ -319,6 +319,8 @@ local function act_pac_skid(m)
 
     set_character_animation(m, CHAR_ANIM_SKID_ON_GROUND)
     set_mario_particle_flags(m, PARTICLE_DUST, 0)
+
+    m.faceAngle.y = m.intendedYaw - approach_s32(math.s16(m.intendedYaw - m.faceAngle.y), 0, 0x500, 0x500);
 
     local speedTarget = m.actionArg == 0 and math.max(PAC_MAX_SPEED * m.intendedMag/32, 1) or 5
     m.forwardVel = math.max(m.forwardVel - 3.5, speedTarget)
