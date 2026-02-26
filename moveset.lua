@@ -570,7 +570,7 @@ local function act_pac_roll(m)
     end
 
     set_character_animation(m, CHAR_ANIM_FORWARD_SPINNING)
-    m.marioObj.header.gfx.animInfo.animAccel = 0x600 * math.sqrt(m.vel.x^2 + m.vel.y^2 + m.vel.z^2)
+    m.marioObj.header.gfx.animInfo.animAccel = 0x600 * math.sqrt(m.vel.x^2 + m.vel.z^2)
 end
 
 
@@ -602,8 +602,8 @@ local function act_pac_roll_air(m)
 
         sidewaysSpeed = intendedMag * sins(intendedDYaw)
 
-        m.vel.x = math.lerp(m.vel.x + sidewaysSpeed * sins(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED, 0, 0.01)
-        m.vel.z = math.lerp(m.vel.z + sidewaysSpeed * coss(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED, 0, 0.01)
+        m.vel.x = math.lerp(m.vel.x + sidewaysSpeed * sins(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED, PAC_MAX_SPEED, 0.01)
+        m.vel.z = math.lerp(m.vel.z + sidewaysSpeed * coss(m.faceAngle.y + 0x4000) * 3*m.forwardVel/PAC_MAX_SPEED, PAC_MAX_SPEED, 0.01)
     end
 
     m.faceAngle.y = atan2s(m.vel.z, m.vel.x)
@@ -755,8 +755,8 @@ local function act_pac_butt_bounce(m)
         if mario_floor_is_slippery(m) ~= 0 then
             m.faceAngle.y = m.floorAngle
             m.forwardVel = math.abs(velY * get_mario_slope_steepness(m))
-            m.vel.x = m.forwardVel*sins(m.faceAngle.y)
-            m.vel.z = m.forwardVel*coss(m.faceAngle.y)
+            m.vel.x = m.vel.x + m.forwardVel*sins(m.faceAngle.y)
+            m.vel.z = m.vel.z + m.forwardVel*coss(m.faceAngle.y)
             set_mario_action(m, ACT_PAC_ROLL, 0)
         end
         queue_rumble_data_mario(m, 5, 40);

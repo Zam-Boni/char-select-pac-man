@@ -68,6 +68,26 @@ end
 
 hook_event(HOOK_ON_SYNC_VALID, on_sync)
 
+
+---@param o Object
+local function bhv_warp_sparkle_init(o)
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+end
+
+---@param o Object
+local function bhv_warp_sparkle_loop(o)
+    
+end
+
+local function spawn_warp_sparkles()
+    local o = obj_get_first_with_behavior_id(id_bhvFadingWarp)
+    while o ~= nil do
+        if random_float() > 0.5 then
+            
+        end
+    end
+end
+
 -- Bumpable Metal Boxes
 
 local function bhv_pushable_init(o)
