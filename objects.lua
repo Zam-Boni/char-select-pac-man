@@ -1,5 +1,5 @@
-local E_MODEL_REV_RAMP = smlua_model_util_get_id("pacramp_geo")
-local COL_REV_RAMP = smlua_collision_util_get("pacramp_collision")
+E_MODEL_REV_RAMP = smlua_model_util_get_id("pacramp_geo")
+COL_REV_RAMP = smlua_collision_util_get("pacramp_collision")
 
 ---@param o Object
 local function bhv_rev_ramp_init(o)
@@ -83,7 +83,7 @@ local function on_sync()
     -- Spawn Warp Sparkles
     local o = obj_get_first_with_behavior_id(id_bhvFadingWarp)
     while o ~= nil do
-        for i = 1, 100 do
+        for i = 1, 50 do
             spawn_non_sync_object(id_bhvWarpSparkle, E_MODEL_SPARKLES, o.oPosX, o.oPosY, o.oPosZ, function(oSparkle)
                 oSparkle.oHomeX = o.oPosX
                 oSparkle.oHomeY = o.oPosY
@@ -94,19 +94,22 @@ local function on_sync()
         o = obj_get_next_with_same_behavior_id(o)
     end
     
-    -- Spawn Rev Ramps
+
     local np = gNetworkPlayers[0]
-    if not revRampPlacements[ROMHACK] then return end
-    if not revRampPlacements[ROMHACK][np.currLevelNum] then return end
-    if not revRampPlacements[ROMHACK][np.currLevelNum][np.currAreaIndex] then return end
-    local ramps = revRampPlacements[ROMHACK][np.currLevelNum][np.currAreaIndex]
-    for i = 1, #ramps do
-        local currRamp = ramps[i]
-        log_to_console(tostring(currRamp))
-        spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, currRamp.x, currRamp.y, currRamp.z, function (o)
-            o.oFaceAngleYaw = currRamp.yaw
-            o.oFaceAnglePitch = -currRamp.pitch
-        end)
+    if revRampPlacements[ROMHACK] then -- Spawn Manual Rev Ramps
+        if not revRampPlacements[ROMHACK][np.currLevelNum] then return end
+        if not revRampPlacements[ROMHACK][np.currLevelNum][np.currAreaIndex] then return end
+        local ramps = revRampPlacements[ROMHACK][np.currLevelNum][np.currAreaIndex]
+        for i = 1, #ramps do
+            local currRamp = ramps[i]
+            log_to_console(tostring(currRamp))
+            spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, currRamp.x, currRamp.y, currRamp.z, function (o)
+                o.oFaceAngleYaw = currRamp.yaw
+                o.oFaceAnglePitch = -currRamp.pitch
+            end)
+        end
+    else -- Spawn Automatic ones
+        
     end
 end
 
@@ -162,7 +165,7 @@ local function bhv_new_pushable_loop(o)
 
         cur_obj_move_using_fvel_and_gravity()
     else
-        if marioState.action == ACT_PAC_REV_ROLL then
+        if marioState and marioState.action == ACT_PAC_REV_ROLL then
             if obj_check_if_collided_with_object(o, player) ~= 0 then
                 o.oMoveAngleYaw = math.round(math.s16(atan2s(o.oPosZ - marioState.pos.z, o.oPosX - marioState.pos.x))/0x4000)*0x4000
                 o.oForwardVel = marioState.forwardVel*0.5
@@ -174,24 +177,6 @@ local function bhv_new_pushable_loop(o)
             bhv_pushable_loop()
         end
     end
-    --local marioState = nearest_mario_state_to_object(o);
-    --local player = marioState and marioState.marioObj or nil;
---
-    --obj_set_hitbox(o, sMetalBoxHitbox);
-    --o.oForwardVel = 0.0f;
-    --if (player) then
-    --    if (obj_check_if_collided_with_object(o, player) && marioState && marioState->flags & MARIO_UNKNOWN_31) {
-    --        local sp1C = obj_angle_to_object(o, player);
-    --        if (abs_angle_diff(sp1C, player.oMoveAngleYaw) > 0x4000) then
-    --            o.oMoveAngleYaw = (s16)((player.oMoveAngleYaw + 0x2000) & 0xc000);
-    --            if (check_if_moving_over_floor(8.0, 150.0)) {
-    --                o.oForwardVel = 4.0;
-    --                cur_obj_play_sound_1(SOUND_ENV_METAL_BOX_PUSH);
-    --            end
-    --        end
-    --    end
-    --end
-    --cur_obj_move_using_fvel_and_gravity();
 end
 
 hook_behavior(id_bhvPushableMetalBox, OBJ_LIST_SURFACE, true, bhv_pushable_init, bhv_new_pushable_loop)
