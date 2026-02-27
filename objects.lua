@@ -79,6 +79,12 @@ end
 
 id_bhvWarpSparkle = hook_behavior(nil, OBJ_LIST_UNIMPORTANT, true, bhv_warp_sparkle_init, bhv_warp_sparkle_loop, "bhvWarpSparkle")
 
+local stopSurfaces = {
+    [SURFACE_DEATH_PLANE] = true,
+    [SURFACE_BURNING] = true,
+    [SURFACE_INSTANT_QUICKSAND] = true,
+}
+
 local function on_sync()
     -- Spawn Warp Sparkles
     local o = obj_get_first_with_behavior_id(id_bhvFadingWarp)
@@ -109,7 +115,80 @@ local function on_sync()
             end)
         end
     else -- Spawn Automatic ones
-        
+    clear_ray_visuals()
+    local rate = 40
+        for x = -rate, rate do
+            local reach = 0x4000/rate
+            local posX = x * reach
+            for z = -rate, rate do
+                local posZ = z * reach
+                local ray = collision_find_surface_on_ray(posX, 0x4000, posZ, 0, -0x8000, 0)
+                while (ray ~= nil and ray.surface ~= nil and not stopSurfaces[ray.surface.type] and (gMarioStates[0].waterLevel == nil or ray.hitPos.y > gMarioStates[0].waterLevel)) do
+                    -- Search for walls
+                    local posY = ray.hitPos.y
+                    if gMarioStates[0].waterLevel ~= nil and posY + 140 < gMarioStates[0].waterLevel then
+                        break
+                    end
+                    for i = 0, 2 do
+                        local angle = i*0x2000
+                        ray_set_color(127, 255, 127)
+                        local wallA = collision_find_surface_on_ray(posX, posY + 600, posZ, math.min(sins(angle)*reach*2, reach), 0, math.min(coss(angle)*reach*2, reach))
+                        if wallA and wallA.surface and math.abs(wallA.surface.normal.y) < 0.1 then
+                            -- Check for reflection
+                            local wallAngleA = atan2s(wallA.surface.normal.z, wallA.surface.normal.x)
+                            local wallPosA = {x = wallA.hitPos.x, y = wallA.hitPos.y, z = wallA.hitPos.z}
+                            ray_set_color(127, 127, 255)
+                            local wallB = collision_find_surface_on_ray(wallPosA.x + sins(wallAngleA)*10, wallPosA.y, wallPosA.z + coss(wallAngleA)*10, sins(wallAngleA)*reach*2, 0, coss(wallAngleA)*reach*2)
+                            if wallB and wallB.surface and math.abs(wallB.surface.normal.y) < 0.1 then
+                                local wallAngleB = atan2s(wallB.surface.normal.z, wallB.surface.normal.x)
+                                local wallPosB = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
+                                if math.s16(wallAngleA - (wallAngleB + 0x8000)) < 0x100 then
+                                    local betweenWalls = {
+                                        x = (wallPosA.x + wallPosB.x)*0.5,
+                                        y = (wallPosA.y + wallPosB.y)*0.5,
+                                        z = (wallPosA.z + wallPosB.z)*0.5,
+                                    }
+                                    -- Align with back wall if possible
+                                    ray_set_color(255, 255, 0)
+                                    local wallC = collision_find_surface_on_ray(betweenWalls.x + sins(wallAngleB)*10, betweenWalls.y, betweenWalls.z + coss(wallAngleB)*10, sins(wallAngleB + 0x4000)*reach, 0, coss(wallAngleB + 0x4000)*reach)
+                                    local wallAngleC = nil
+                                    local rampPos = {
+                                        x = betweenWalls.x,
+                                        y = posY,
+                                        z = betweenWalls.z,
+                                    }
+                                    if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 then
+                                        wallAngleC = atan2s(wallC.surface.normal.z, wallC.surface.normal.x)
+                                        vec3f_copy(rampPos, wallC.hitPos)
+                                    else
+                                        wallC = collision_find_surface_on_ray(betweenWalls.x + sins(wallAngleB)*10, betweenWalls.y, betweenWalls.z + coss(wallAngleB)*10, sins(wallAngleB - 0x4000)*reach, 0, coss(wallAngleB - 0x4000)*reach)
+                                        if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 then
+                                            wallAngleC = atan2s(wallC.surface.normal.z, wallC.surface.normal.x)
+                                            vec3f_copy(rampPos, wallC.hitPos)
+                                        end
+                                    end
+                                    
+                                    if wallAngleC ~= nil and (math.s16(wallAngleC - (wallAngleB + 0x4000)) < 0x100 or math.s16(wallAngleC - (wallAngleB - 0x4000)) < 0x100) then
+                                        djui_chat_message_create("holy shit")
+                                        
+                                        spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, rampPos.x + sins(wallAngleC)*100, rampPos.y, rampPos.z + coss(wallAngleC)*100, function (o)
+                                            o.oFaceAngleYaw = wallAngleC + 0x8000
+                                            o.oFaceAnglePitch = -0x3000
+                                        end)
+                                    end
+                                    break
+                                end
+                            end
+                        end
+                    end
+
+                    -- Get Next Floor
+                    ray_set_color(255, 255, 255)
+                    ray = collision_find_surface_on_ray(posX, posY - 100, posZ, 0, -0x8000, 0)
+                    --clear_last_ray_visual()
+                end
+            end
+        end
     end
 end
 
