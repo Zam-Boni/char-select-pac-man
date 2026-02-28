@@ -24,7 +24,7 @@ id_bhvRevRamp = hook_behavior(nil, OBJ_LIST_SURFACE, true, bhv_rev_ramp_init, bh
 ---@param o Object
 local function bhv_trampoline_init(o)
     o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
-    o.collisionData = COL_REV_RAMP
+    o.collisionData = COL_TRAMPOLINE
     o.oBuoyancy = 10
 
     o.oHomeX = o.oPosX
@@ -37,9 +37,20 @@ local function bhv_trampoline_loop(o)
     o.oPosY = o.oHomeY + math.sin(get_global_timer()/math.pi)*10
 
     load_object_collision_model()
+    o.oWoodenPostMarioPounding = cur_obj_is_mario_ground_pounding_platform()
+    if (o.oWoodenPostMarioPounding ~= 0) then
+        local m = nearest_mario_state_to_object(o)
+        m.vel.y = o.oVelY
+        gPacStates[m.playerIndex].bounceCount = 1
+        set_mario_action(m, ACT_JUMP, 0)
+    end
 
     -- Inverted Pyramid Tilting
-    bhv_tilting_inverted_pyramid_loop()
+    --bhv_tilting_inverted_pyramid_loop()
+end
+
+function bhv_trampoline_switch(o)
+    return 0 --(o.oVelY ~= nil and o.oVelY > 100) and 1 or 0
 end
 
 id_bhvTrampoline = hook_behavior(nil, OBJ_LIST_SURFACE, true, bhv_trampoline_init, bhv_trampoline_loop, "bhvTrampoline")
@@ -142,9 +153,10 @@ local function on_sync()
         end
     else -- Spawn Automatic ones
     clear_ray_visuals()
-    local rate = 40
+    local rate = 50
         for x = -rate, rate do
             local reach = 0x4000/rate
+            local wallJumpDist = 500
             local posX = x * reach
             for z = -rate, rate do
                 local posZ = z * reach
@@ -156,12 +168,18 @@ local function on_sync()
                     if gMarioStates[0].waterLevel ~= nil and posY + 140 < gMarioStates[0].waterLevel then
                         break
                     end
+                    local initNormals = {
+                        x = ray.surface.normal.x or 0,
+                        y = ray.surface.normal.y or 0,
+                        z = ray.surface.normal.z or 0,
+                    }
                     for i = 0, 2 do
                         local angle = i*0x2000
                         ray_set_color(127, 255, 127)
 
                         for h = 0, 1 do
-                            local wallA = collision_find_surface_on_ray(posX, posY + 50 + 800*h, posZ, math.min(sins(angle)*reach*2, reach), 0, math.min(coss(angle)*reach*2, reach))
+                            local wallA = collision_find_surface_on_ray(posX, posY + 50 + 800*h, posZ, math.min(sins(angle)*wallJumpDist*2, wallJumpDist), 0, math.min(coss(angle)*wallJumpDist*2, wallJumpDist))
+                            clear_last_ray_visual()
                             if wallA and wallA.surface and math.abs(wallA.surface.normal.y) < 0.1 then
                                 -- Check for reflection
                                 local lastAngle = atan2s(wallA.surface.normal.z, wallA.surface.normal.x)
@@ -171,31 +189,42 @@ local function on_sync()
                                     y = lastPos.y,
                                     z = lastPos.z,
                                 }
+                                local betweenAngles = lastAngle
                                 ray_set_color(127, 127, 255)
-                                local wallB = collision_find_surface_on_ray(lastPos.x + sins(lastAngle)*10, lastPos.y, lastPos.z + coss(lastAngle)*10, sins(lastAngle)*reach*2, 0, coss(lastAngle)*reach*2)
+                                local wallB = collision_find_surface_on_ray(lastPos.x + sins(lastAngle)*10, lastPos.y, lastPos.z + coss(lastAngle)*10, sins(lastAngle)*wallJumpDist*2, 0, coss(lastAngle)*wallJumpDist*2)
                                 if wallB and wallB.surface and math.abs(wallB.surface.normal.y) < 0.1 then
                                     lastAngle = atan2s(wallB.surface.normal.z, wallB.surface.normal.x) + 0x8000
                                     local dist = vec3f_dist(lastPos, {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z})
+                                    if dist < 250 then
+                                        add_last_ray_lable("Dist Small: " .. math.ceil(dist))
+                                        break
+                                    end
                                     lastPos = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
                                     betweenWalls = {
                                         x = (betweenWalls.x + lastPos.x)*0.5,
                                         y = (betweenWalls.y + lastPos.y)*0.5,
                                         z = (betweenWalls.z + lastPos.z)*0.5,
                                     }
+                                    betweenAngles = (betweenAngles + lastAngle) * 0.5
 
                                     local limit = 10
                                     while wallB and wallB.surface and math.abs(wallB.surface.normal.y) < 0.1 --[[and (math.abs(wallB.surface.normal.y - (lastAngle - 0x8000)) < 0x1000)]] do
                                         lastPos = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
-                                        lastAngle = atan2s(wallB.surface.normal.z, wallB.surface.normal.x) - math.s16(lastAngle - atan2s(wallB.surface.normal.z, wallB.surface.normal.x)) + 0x8000
+                                        kickAngle = atan2s(wallB.surface.normal.z, wallB.surface.normal.x) - math.s16(lastAngle - atan2s(wallB.surface.normal.z, wallB.surface.normal.x)) + 0x8000
+                                        if math.abs(math.s16(kickAngle - lastAngle - 0x8000)) < 0x4000 then
+                                            lastAngle = kickAngle
+                                        else
+                                            add_last_ray_lable("Impossible Angle: " .. num_to_hex(math.abs(math.s16(kickAngle - lastAngle - 0x8000))))
+                                            break
+                                        end
                                         limit = limit - 1
-                                        wallB = collision_find_surface_on_ray(lastPos.x + sins(lastAngle)*10, lastPos.y, lastPos.z + coss(lastAngle)*10, sins(lastAngle)*reach*2, 200, coss(lastAngle)*reach*2)
+                                        wallB = collision_find_surface_on_ray(lastPos.x + sins(lastAngle)*10, lastPos.y, lastPos.z + coss(lastAngle)*10, sins(lastAngle)*dist*1.1, dist, coss(lastAngle)*dist*1.1)
                                     end
-                                    lastPos = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
-
                                     ray_set_color(255, 127, 127)
-                                    upperFloor = collision_find_surface_on_ray(lastPos.x, lastPos.y, lastPos.z, 0, -300, 0)
+                                    lastPos = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
+                                    upperFloor = collision_find_surface_on_ray(lastPos.x, lastPos.y, lastPos.z, 0, posY - lastPos.y, 0, 1)
 
-                                    if upperFloor and upperFloor.surface then
+                                    if upperFloor and upperFloor.surface and wallB.surface.normal.y > 0.1 then
                                         local height = upperFloor.hitPos.y - posY
                                         if height > 600 then
                                             local rampPos = {
@@ -203,22 +232,41 @@ local function on_sync()
                                                 y = posY,
                                                 z = betweenWalls.z,
                                             }
+                                            add_last_ray_lable("Success: " .. math.ceil(height))
                                             if height > 1000 then
-                                                spawn_non_sync_object(id_bhvTrampoline, E_MODEL_TRAMPOLINE, rampPos.x, rampPos.y + 100, rampPos.z, function (o)
-                                                    local scale = dist/300
-                                                    
-                                                end)
+                                                -- Set final pos
+                                                rampPos.x = rampPos.x + initNormals.x*300
+                                                rampPos.y = rampPos.y + 300
+                                                rampPos.z = rampPos.z + initNormals.z*300
+
+                                                -- Check adjacent objects
+                                                local nearby = false
+                                                local o = obj_get_first_with_behavior_id(id_bhvTrampoline)
+                                                while o ~= nil do
+                                                    if vec3f_dist(rampPos, {x = o.oPosX, y = math.abs(rampPos.y - o.oPosY) < 500 and rampPos.y or o.oPosY, z = o.oPosZ}) < 400 then
+                                                        nearby = true
+                                                        break
+                                                    end
+                                                    o = obj_get_next_with_same_behavior_id(o)
+                                                end
+
+                                                if not nearby then
+                                                    spawn_non_sync_object(id_bhvTrampoline, E_MODEL_TRAMPOLINE, rampPos.x, rampPos.y, rampPos.z, function (o)
+                                                        local scale = dist/300
+                                                        o.oVelY = math.sqrt(2 * 4.5 * (height + 100))
+                                                    end)
+                                                end
                                                 break
                                             else    
                                                 -- Align with back wall if possible
                                                 ray_set_color(255, 255, 0)
-                                                local wallC = collision_find_surface_on_ray(betweenWalls.x + sins(lastAngle)*10, posY + 100, betweenWalls.z + coss(lastAngle)*10, sins(lastAngle + 0x4000)*reach*2, 0, coss(lastAngle + 0x4000)*reach*2)
+                                                local wallC = collision_find_surface_on_ray(betweenWalls.x + sins(betweenAngles)*10, posY + 100, betweenWalls.z + coss(betweenAngles)*10, sins(betweenAngles + 0x4000)*dist*1.5, 0, coss(betweenAngles + 0x4000)*dist*1.5)
                                                 local wallAngleC = nil
-                                                if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 then
+                                                if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 and math.s16(atan2s(wallC.surface.normal.z, wallC.surface.normal.x)) then
                                                     wallAngleC = atan2s(wallC.surface.normal.z, wallC.surface.normal.x)
                                                     vec3f_copy(rampPos, wallC.hitPos)
                                                 else
-                                                    wallC = collision_find_surface_on_ray(betweenWalls.x + sins(lastAngle)*10, posY + 100, betweenWalls.z + coss(lastAngle)*10, sins(lastAngle - 0x4000)*reach*2, 0, coss(lastAngle - 0x4000)*reach*2)
+                                                    wallC = collision_find_surface_on_ray(betweenWalls.x + sins(betweenAngles)*10, posY + 100, betweenWalls.z + coss(betweenAngles)*10, sins(betweenAngles - 0x4000)*dist*1.5, 0, coss(betweenAngles - 0x4000)*dist*1.5)
                                                     if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 then
                                                         wallAngleC = atan2s(wallC.surface.normal.z, wallC.surface.normal.x)
                                                         vec3f_copy(rampPos, wallC.hitPos)
@@ -226,21 +274,30 @@ local function on_sync()
                                                 end
                                                 
                                                 if wallAngleC ~= nil then
-                                                    local o = obj_get_first_with_behavior_id(id_bhvRevRamp)
-                                                    while o ~= nil do
-                                                        djui_chat_message_create(tostring(vec3f_dist(rampPos, {x = o.oPosX, y = rampPos.y, z = o.oPosZ})))
-                                                        if vec3f_dist(rampPos, {x = o.oPosX, y = rampPos.y, z = o.oPosZ}) < 300 then
-                                                            return
-                                                        end
-                                                        o = obj_get_next_with_same_behavior_id(o)
-                                                    end
+                                                    local angleCheckC1 = math.abs(math.s16(wallAngleC - (betweenAngles + 0x4000) - 0x8000))
+                                                    local angleCheckC2 = math.abs(math.s16(wallAngleC - (betweenAngles - 0x4000) - 0x8000))
+                                                    if (angleCheckC1 < 0x1000 or angleCheckC2 < 0x1000) then
+                                                        -- Set Final Pos
+                                                        rampPos.x = rampPos.x + sins(wallAngleC)*120
+                                                        rampPos.z = rampPos.z + coss(wallAngleC)*120
 
-                                                    djui_chat_message_create("holy shit")
-                                                    
-                                                    spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, rampPos.x + sins(wallAngleC)*120, rampPos.y, rampPos.z + coss(wallAngleC)*120, function (o)
-                                                        o.oFaceAngleYaw = wallAngleC + 0x8000
-                                                        o.oFaceAnglePitch = -0x3000
-                                                    end)
+                                                        local o = obj_get_first_with_behavior_id(id_bhvRevRamp)
+                                                        while o ~= nil do
+                                                            if vec3f_dist(rampPos, {x = o.oPosX, y = rampPos.y, z = o.oPosZ}) < 300 then
+                                                                break
+                                                            end
+                                                            o = obj_get_next_with_same_behavior_id(o)
+                                                        end
+                                                        
+                                                        spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, rampPos.x, rampPos.y, rampPos.z, function (o)
+                                                            o.oFaceAngleYaw = wallAngleC + 0x8000
+                                                            o.oFaceAnglePitch = -0x3000
+                                                        end)
+                                                    else
+                                                        add_last_ray_lable("Backwall not Expected: " .. num_to_hex(math.min(angleCheckC1, angleCheckC2)))
+                                                    end
+                                                else
+                                                    add_last_ray_lable("Backwall not Found")
                                                 end
                                                 break
                                             end
@@ -250,12 +307,12 @@ local function on_sync()
                             end
                         end
                     end
+                    
 
                     -- Get Next Floor
                     ray_set_color(255, 255, 255)
                     ray = collision_find_surface_on_ray(posX, posY - 100, posZ, 0, -0x8000, 0)
                     clear_last_ray_visual()
-                    --clear_last_ray_visual()
                 end
             end
         end
@@ -294,7 +351,6 @@ local function bhv_new_pushable_loop(o)
     if o.oAction == 1 then
         o.oForwardVel = o.oForwardVel - 2.5
         if o.oForwardVel < 1 or check_if_moving_over_floor(o.oForwardVel, 150.0) == 0 then
-            djui_chat_message_create("bonk")
             o.oForwardVel = 0
             o.oAction = 0
         else

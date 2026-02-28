@@ -8,7 +8,7 @@ const GeoLayout pactramp_Trampoline_Switch_State_opt1[] = {
 const GeoLayout pactramp_geo[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
-		GEO_SWITCH_CASE(0, _),
+		GEO_SWITCH_CASE(0, bhv_trampoline_switch),
 		GEO_OPEN_NODE(),
 			GEO_NODE_START(),
 			GEO_OPEN_NODE(),

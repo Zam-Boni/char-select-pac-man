@@ -8,9 +8,9 @@ local PAC_MAX_SPEED = 35
 
 local PAC_HEALTH_SLICE = 0x880/4
 
-local gExtrasStates = {}
+gPacStates = {}
 for i = 0, MAX_PLAYERS - 1 do
-    gExtrasStates[i] = {
+    gPacStates[i] = {
         bounceCount = 0,
         revRollTimer = 0,
         forceDefaultWalk = false,
@@ -34,7 +34,7 @@ end
 
 local function update_walking_speed(m)
     if not m then return end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     local slipperyFloor = ((m.area.terrainType & TERRAIN_MASK) == TERRAIN_SNOW and (m.floor ~= nil and m.floor.type & SURFACE_CLASS_VERY_SLIPPERY ~= 0 ));
 
@@ -58,7 +58,7 @@ end
 
 local function pac_update_air_with_turn(m, capped)
     if not m then return end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     local intendedDYaw = m.intendedYaw;
     local intendedMag = m.intendedMag / 32.0;
@@ -169,7 +169,7 @@ end
 ---@param o Object?
 ---@param vel number
 function pac_bump_away_from_obj(m, o, vel)
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
     local angle = o and atan2s(m.pos.z - o.oPosZ, m.pos.x - o.oPosX) or m.faceAngle.y + 0x8000
     m.vel.x = sins(angle) * vel
     m.vel.z = coss(angle) * vel
@@ -339,7 +339,7 @@ end
 ---@param m MarioState
 local function act_pac_jump(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     local anim = m.vel.y > 10 and CHAR_ANIM_DOUBLE_JUMP_RISE or CHAR_ANIM_DOUBLE_JUMP_FALL
     if e.bounceCount > 0 then
@@ -394,7 +394,7 @@ end
 ---@param m MarioState
 local function act_pac_freefall(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     local anim = nil
     if m.actionArg ~= 1 then
@@ -507,7 +507,7 @@ end
 local function act_pac_roll(m)
     if not m then return 0 end
 
-    local step, detach = perform_ground_step_with_detatch(m, gExtrasStates[m.playerIndex], ACT_PAC_ROLL_AIR)
+    local step, detach = perform_ground_step_with_detatch(m, gPacStates[m.playerIndex], ACT_PAC_ROLL_AIR)
     if detach ~= nil then
         return detach
     end
@@ -618,7 +618,7 @@ end
 ---@param m MarioState
 local function act_pac_rev_charge(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
     if m.pos.y > m.floorHeight + 10 then
         return set_mario_action(m, ACT_PAC_KICK, 0)
     end
@@ -668,9 +668,9 @@ end
 ---@param m MarioState
 local function act_pac_rev_roll(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
-    local step, detach = perform_ground_step_with_detatch(m, gExtrasStates[m.playerIndex], ACT_PAC_REV_ROLL_AIR, 0)
+    local step, detach = perform_ground_step_with_detatch(m, gPacStates[m.playerIndex], ACT_PAC_REV_ROLL_AIR, 0)
     if detach ~= nil then
         return detach
     end
@@ -713,7 +713,7 @@ end
 ---@param m MarioState
 local function act_pac_rev_roll_air(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     if e.revRollTimer == 0 then
         set_mario_action(m, ACT_PAC_SKID, 0)
@@ -742,7 +742,7 @@ end
 ---@param m MarioState
 local function act_pac_butt_bounce(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     if m.actionState == 0 then
         m.actionState = m.actionState + 1
@@ -770,7 +770,7 @@ end
 ---@param m MarioState
 local function act_pac_butt_bounce_land(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
     e.bounceCount = e.bounceCount + 1
 
     local forwardVel = m.forwardVel
@@ -786,7 +786,7 @@ local POWER_PELLET_ACTIVE_STATE = 3
 ---@param m MarioState
 local function act_pac_power_pellet(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
     
     if m.actionState == 0 then
         e.pelletPath[0] = {x = m.pos.x, y = m.pos.y, z = m.pos.z}
@@ -939,7 +939,7 @@ hook_mario_action(ACT_PAC_FREEZE, act_pac_freeze)
 ---@param m MarioState
 local function pac_update(m)
     if not m then return 0 end
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     if m.playerIndex == 0 then
         --djui_chat_message_create(tostring(m.action == ACT_PAC_SKID))
@@ -1004,7 +1004,7 @@ end
 
 local function on_fire_damage(m, nextAct)
     m.hurtCounter = 4
-    gExtrasStates[m.playerIndex].burnTimer = 30
+    gPacStates[m.playerIndex].burnTimer = 30
     return 0
 end
 
@@ -1043,7 +1043,7 @@ local overrideActs = {
 
 ---@param m MarioState
 local function before_pac_action(m, nextAct)
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
     e.floorSteep = nil
     local forceDefaultWalk = e.forceDefaultWalk
     e.forceDefaultWalk = false
@@ -1075,7 +1075,7 @@ local forceWalkingInteracts = {
 ---@param o Object
 ---@param type InteractionType
 local function on_interact(m, o, type)
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
     local bhvID = get_id_from_behavior(o.behavior)
     if forceWalkingInteracts[bhvID] and m.action == ACT_PAC_WALKING then
         e.forceDefaultWalk = true
@@ -1128,7 +1128,7 @@ local revRollInteractions = {
 ---@param o Object
 ---@param type InteractionType
 local function allow_interact(m, o, type)
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
     if m.action == ACT_PAC_POWER_PELLET and m.actionState < POWER_PELLET_ACTIVE_STATE then
         return false
     end
@@ -1272,7 +1272,7 @@ hook_event(HOOK_UPDATE, handle_rev_roll)
 ---@param o Object
 local function bhv_trail_pellet_init(o)
     local m = obj_get_owner_mario(o)
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
     o.oGravity = 0
@@ -1282,7 +1282,7 @@ end
 ---@param o Object
 local function bhv_trail_pellet_loop(o)
     local m = obj_get_owner_mario(o)
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     if m.action ~= ACT_PAC_POWER_PELLET then
         obj_mark_for_deletion(o)
@@ -1303,7 +1303,7 @@ id_bhvTrailPellet = hook_behavior(nil, OBJ_LIST_DEFAULT, true, bhv_trail_pellet_
 ---@param o Object
 local function bhv_aim_pellet_init(o)
     local m = obj_get_owner_mario(o)
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
     o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
     o.oGravity = 0
     o.oFriction = 0
@@ -1326,7 +1326,7 @@ local pelletTurnRadius = 0x300
 ---@param o Object
 local function bhv_aim_pellet_loop(o)
     local m = obj_get_owner_mario(o)
-    local e = gExtrasStates[m.playerIndex]
+    local e = gPacStates[m.playerIndex]
 
     if m.action ~= ACT_PAC_POWER_PELLET then
         obj_mark_for_deletion(o)
@@ -1400,7 +1400,7 @@ local TEX_METER_SEG_2 = get_texture_info("zbpm-meter-2")
 local TEX_METER_SEG_3 = get_texture_info("zbpm-meter-3")
 local meterScale = 0.7
 local function pac_health_meter(localIndex, health, prevX, prevY, prevScaleW, prevScaleH, x, y, scaleW, scaleH)
-    local e = gExtrasStates[localIndex]
+    local e = gPacStates[localIndex]
 
     local djuiFilter = djui_hud_get_filter()
     local djuiColor = djui_hud_get_color()

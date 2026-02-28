@@ -128,3 +128,26 @@ function catmullRom(p0, p1, p2, p3, t)
         (-p0 + 3*p1 - 3*p2 + p3) * t^3
     )
 end
+
+function num_to_hex(num)
+    if num == 0 then
+        return '0'
+    end
+    local neg = false
+    if num < 0 then
+        neg = true
+        num = num * -1
+    end
+    local hexstr = "0123456789ABCDEF"
+    local result = ""
+    while num > 0 do
+        local n = (num%16)
+        result = string.sub(hexstr, n + 1, n + 1) .. result
+        num = math.floor(num / 16)
+    end
+    result = '0x'..result
+    if neg then
+        result = '-' .. result
+    end
+    return result
+end
