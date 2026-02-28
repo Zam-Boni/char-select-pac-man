@@ -1,5 +1,8 @@
 E_MODEL_REV_RAMP = smlua_model_util_get_id("pacramp_geo")
+E_MODEL_TRAMPOLINE = smlua_model_util_get_id("pactramp_geo")
+
 COL_REV_RAMP = smlua_collision_util_get("pacramp_collision")
+COL_TRAMPOLINE = smlua_collision_util_get("pactramp_collision")
 
 ---@param o Object
 local function bhv_rev_ramp_init(o)
@@ -17,6 +20,29 @@ local function bhv_rev_ramp_loop(o)
 end
 
 id_bhvRevRamp = hook_behavior(nil, OBJ_LIST_SURFACE, true, bhv_rev_ramp_init, bhv_rev_ramp_loop, "bhvRevRamp")
+
+---@param o Object
+local function bhv_trampoline_init(o)
+    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.collisionData = COL_REV_RAMP
+    o.oBuoyancy = 10
+
+    o.oHomeX = o.oPosX
+    o.oHomeY = o.oPosY
+    o.oHomeZ = o.oPosZ
+end
+
+---@param o Object
+local function bhv_trampoline_loop(o)
+    o.oPosY = o.oHomeY + math.sin(get_global_timer()/math.pi)*10
+
+    load_object_collision_model()
+
+    -- Inverted Pyramid Tilting
+    bhv_tilting_inverted_pyramid_loop()
+end
+
+id_bhvTrampoline = hook_behavior(nil, OBJ_LIST_SURFACE, true, bhv_trampoline_init, bhv_trampoline_loop, "bhvTrampoline")
 
 local revRampPlacements = {
     ["sm64"] = {
@@ -149,6 +175,7 @@ local function on_sync()
                                 local wallB = collision_find_surface_on_ray(lastPos.x + sins(lastAngle)*10, lastPos.y, lastPos.z + coss(lastAngle)*10, sins(lastAngle)*reach*2, 0, coss(lastAngle)*reach*2)
                                 if wallB and wallB.surface and math.abs(wallB.surface.normal.y) < 0.1 then
                                     lastAngle = atan2s(wallB.surface.normal.z, wallB.surface.normal.x) + 0x8000
+                                    local dist = vec3f_dist(lastPos, {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z})
                                     lastPos = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
                                     betweenWalls = {
                                         x = (betweenWalls.x + lastPos.x)*0.5,
@@ -171,44 +198,52 @@ local function on_sync()
                                     if upperFloor and upperFloor.surface then
                                         local height = upperFloor.hitPos.y - posY
                                         if height > 600 then
-                                            -- Align with back wall if possible
-                                            ray_set_color(255, 255, 0)
-                                            local wallC = collision_find_surface_on_ray(betweenWalls.x + sins(lastAngle)*10, posY + 100, betweenWalls.z + coss(lastAngle)*10, sins(lastAngle + 0x4000)*reach*2, 0, coss(lastAngle + 0x4000)*reach*2)
-                                            local wallAngleC = nil
                                             local rampPos = {
                                                 x = betweenWalls.x,
                                                 y = posY,
                                                 z = betweenWalls.z,
                                             }
-                                            if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 then
-                                                wallAngleC = atan2s(wallC.surface.normal.z, wallC.surface.normal.x)
-                                                vec3f_copy(rampPos, wallC.hitPos)
-                                            else
-                                                wallC = collision_find_surface_on_ray(betweenWalls.x + sins(lastAngle)*10, posY + 100, betweenWalls.z + coss(lastAngle)*10, sins(lastAngle - 0x4000)*reach*2, 0, coss(lastAngle - 0x4000)*reach*2)
+                                            if height > 1000 then
+                                                spawn_non_sync_object(id_bhvTrampoline, E_MODEL_TRAMPOLINE, rampPos.x, rampPos.y + 100, rampPos.z, function (o)
+                                                    local scale = dist/300
+                                                    
+                                                end)
+                                                break
+                                            else    
+                                                -- Align with back wall if possible
+                                                ray_set_color(255, 255, 0)
+                                                local wallC = collision_find_surface_on_ray(betweenWalls.x + sins(lastAngle)*10, posY + 100, betweenWalls.z + coss(lastAngle)*10, sins(lastAngle + 0x4000)*reach*2, 0, coss(lastAngle + 0x4000)*reach*2)
+                                                local wallAngleC = nil
                                                 if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 then
                                                     wallAngleC = atan2s(wallC.surface.normal.z, wallC.surface.normal.x)
                                                     vec3f_copy(rampPos, wallC.hitPos)
-                                                end
-                                            end
-                                            
-                                            if wallAngleC ~= nil then
-                                                local o = obj_get_first_with_behavior_id(id_bhvRevRamp)
-                                                while o ~= nil do
-                                                    djui_chat_message_create(tostring(vec3f_dist(rampPos, {x = o.oPosX, y = rampPos.y, z = o.oPosZ})))
-                                                    if vec3f_dist(rampPos, {x = o.oPosX, y = rampPos.y, z = o.oPosZ}) < 300 then
-                                                        return
+                                                else
+                                                    wallC = collision_find_surface_on_ray(betweenWalls.x + sins(lastAngle)*10, posY + 100, betweenWalls.z + coss(lastAngle)*10, sins(lastAngle - 0x4000)*reach*2, 0, coss(lastAngle - 0x4000)*reach*2)
+                                                    if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 then
+                                                        wallAngleC = atan2s(wallC.surface.normal.z, wallC.surface.normal.x)
+                                                        vec3f_copy(rampPos, wallC.hitPos)
                                                     end
-                                                    o = obj_get_next_with_same_behavior_id(o)
                                                 end
-
-                                                djui_chat_message_create("holy shit")
                                                 
-                                                spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, rampPos.x + sins(wallAngleC)*120, rampPos.y, rampPos.z + coss(wallAngleC)*120, function (o)
-                                                    o.oFaceAngleYaw = wallAngleC + 0x8000
-                                                    o.oFaceAnglePitch = -0x3000
-                                                end)
+                                                if wallAngleC ~= nil then
+                                                    local o = obj_get_first_with_behavior_id(id_bhvRevRamp)
+                                                    while o ~= nil do
+                                                        djui_chat_message_create(tostring(vec3f_dist(rampPos, {x = o.oPosX, y = rampPos.y, z = o.oPosZ})))
+                                                        if vec3f_dist(rampPos, {x = o.oPosX, y = rampPos.y, z = o.oPosZ}) < 300 then
+                                                            return
+                                                        end
+                                                        o = obj_get_next_with_same_behavior_id(o)
+                                                    end
+
+                                                    djui_chat_message_create("holy shit")
+                                                    
+                                                    spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, rampPos.x + sins(wallAngleC)*120, rampPos.y, rampPos.z + coss(wallAngleC)*120, function (o)
+                                                        o.oFaceAngleYaw = wallAngleC + 0x8000
+                                                        o.oFaceAnglePitch = -0x3000
+                                                    end)
+                                                end
+                                                break
                                             end
-                                            break
                                         end
                                     end
                                 end
