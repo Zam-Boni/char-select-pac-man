@@ -253,7 +253,7 @@ local function on_sync()
                                                 if not nearby then
                                                     spawn_non_sync_object(id_bhvTrampoline, E_MODEL_TRAMPOLINE, rampPos.x, rampPos.y, rampPos.z, function (o)
                                                         local scale = dist/300
-                                                        o.oVelY = math.sqrt(2 * 4.5 * (height + 100))
+                                                        o.oVelY = math.sqrt(2 * 4.5 * height)
                                                     end)
                                                 end
                                                 break

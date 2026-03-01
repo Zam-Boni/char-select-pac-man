@@ -1,74 +1,134 @@
 if not _G.charSelectExists then return 0 end
 
-local RAYCAST_TOGGLE = charSelect.add_option("Debug Raycasts", 0, 1, nil, {"Toggles rendering raycasts", "for spawning Rom Hack", "Rev Roll Ramps"}, true)
+local RAYCAST_TOGGLE = charSelect.add_option(
+    "Debug Raycasts", 0, 1, nil,
+    {"Toggles rendering raycasts", "for spawning Rom Hack", "Rev Roll Ramps"},
+    true
+)
+
+-- Localize funcs for optimization :nerd:
+local og_find_ray = collision_find_surface_on_ray
+local vec_copy    = vec3f_copy
+local vec_dist    = vec3f_dist
+local clamp       = math.clamp
+local min         = math.min
+local mario       = gMarioStates[0]
+
+local hud_set_res   = djui_hud_set_resolution
+local hud_set_color = djui_hud_set_color
+local hud_world_to_screen = djui_hud_world_pos_to_screen_pos
+local hud_render_line = djui_hud_render_line
+local hud_print     = djui_hud_print_text
 
 local rayList = {}
-local og_collision_find_surface_on_ray = collision_find_surface_on_ray
+local rayCount = 0
 
 function clear_ray_visuals()
-    rayList = {}
+    for i = 1, rayCount do
+        rayList[i] = nil
+    end
+    rayCount = 0
 end
 
 function clear_last_ray_visual()
-    rayList[#rayList] = nil
+    if rayCount > 0 then
+        rayList[rayCount] = nil
+        rayCount = rayCount - 1
+    end
 end
 
-function add_last_ray_lable(lable)
-    rayList[#rayList].lable = lable
+function add_last_ray_lable(label)
+    if rayCount > 0 then
+        rayList[rayCount].label = label
+    end
 end
 
-local rayR = 255
-local rayG = 255
-local rayB = 255
+local rayR, rayG, rayB = 255, 255, 255
 function ray_set_color(r, g, b)
-    rayR = r
-    rayG = g
-    rayB = b
+    rayR, rayG, rayB = r, g, b
 end
 
 function collision_find_surface_on_ray(startX, startY, startZ, dirX, dirY, dirZ, precision)
-    local ray = og_collision_find_surface_on_ray(startX, startY, startZ, dirX, dirY, dirZ, precision or 50)
-    local hitPos = {x = startX + dirX, y = startY + dirY, z = startZ + dirZ}
-    if ray ~= nil and ray.surface ~= nil then
-        vec3f_copy(hitPos, ray.hitPos)
+
+    local ray = og_find_ray(startX, startY, startZ, dirX, dirY, dirZ, precision or 50)
+
+    rayCount = rayCount + 1
+    local entry = rayList[rayCount]
+    if entry == nil then
+        entry = {}
+        rayList[rayCount] = entry
     end
-    rayList[#rayList + 1] = {
-        start = {x = startX, y = startY, z = startZ},
-        hit = hitPos,
-        color = {r = rayR, g = rayG, b = rayB},
-        surface = ray.surface
-    }
+
+    -- reuse sub tables
+    entry.start = entry.start or {}
+    entry.hit   = entry.hit   or {}
+    entry.color = entry.color or {}
+
+    entry.start.x = startX
+    entry.start.y = startY
+    entry.start.z = startZ
+
+    entry.hit.x = startX + dirX
+    entry.hit.y = startY + dirY
+    entry.hit.z = startZ + dirZ
+
+    if ray and ray.surface then
+        vec_copy(entry.hit, ray.hitPos)
+        entry.surface = ray.surface
+    else
+        entry.surface = nil
+    end
+
+    entry.color.r = rayR
+    entry.color.g = rayG
+    entry.color.b = rayB
+    entry.label = nil
+
     return ray
 end
+
+local p1 = {x=0,y=0,z=0}
+local p2 = {x=0,y=0,z=0}
+local renderDist = 1000
 
 local function hud_render()
     if charSelect.get_options_status(RAYCAST_TOGGLE) == 0 then return end
 
-    djui_hud_set_resolution(RESOLUTION_N64)
-    for i = 1, #rayList do
-        ray = rayList[i]
+    hud_set_res(RESOLUTION_N64)
 
-        local mPos = gMarioStates[0].pos
-        if ray ~= nil then
-            local opacity = 255 * math.clamp(500/math.min(vec3f_dist(mPos, ray.start), vec3f_dist(mPos, ray.hit))*3 - 1, 0, 1)
+    local mPos = mario.pos
 
-            if opacity > 20 then
-                djui_hud_set_color(ray.color.r, ray.color.g, ray.color.b, opacity)
-                local p1 = {x = ray.start.x, y = ray.start.y, z = ray.start.z}
-                local p2 = {x = ray.hit.x, y = ray.hit.y, z = ray.hit.z}
-                djui_hud_world_pos_to_screen_pos(p1, p1)
-                djui_hud_world_pos_to_screen_pos(p2, p2)
-                djui_hud_render_line(p1.x, p1.y, p2.x, p2.y, 1)
+    for i = 1, rayCount do
+        local ray = rayList[i]
+        if ray then
 
-                --djui_hud_set_color(0, 255, 0, opacity)
-                --djui_hud_render_rect(p1.x - 1, p1.y - 1, 4, 4)
+            local d1 = vec_dist(mPos, ray.start)
+            local d2 = vec_dist(mPos, ray.hit)
+            local closest = min(d1, d2)
 
-                --djui_hud_set_color(255, 0, 0, opacity)
-                --djui_hud_render_rect(p2.x - 1, p2.y - 1, 4, 4)
+            if closest > 0 then
+                local opacity = 255 * clamp((renderDist / closest) * 3 - 1, 0, 1)
 
-                if ray.lable ~= nil then
-                    djui_hud_set_color(255, 255, 255, opacity)
-                    djui_hud_print_text(tostring(ray.lable), p2.x, p2.y, 0.5)
+                if opacity > 20 then
+                    hud_set_color(ray.color.r, ray.color.g, ray.color.b, opacity)
+
+                    p1.x = math.clamp(ray.start.x, mPos.x - renderDist*2, mPos.x + renderDist*2)
+                    p1.y = math.clamp(ray.start.y, mPos.y - renderDist*2, mPos.y + renderDist*2)
+                    p1.z = math.clamp(ray.start.z, mPos.z - renderDist*2, mPos.z + renderDist*2)
+
+                    p2.x = math.clamp(ray.hit.x, mPos.x - renderDist*2, mPos.x + renderDist*2)
+                    p2.y = math.clamp(ray.hit.y, mPos.y - renderDist*2, mPos.y + renderDist*2)
+                    p2.z = math.clamp(ray.hit.z, mPos.z - renderDist*2, mPos.z + renderDist*2)
+
+                    hud_world_to_screen(p1, p1)
+                    hud_world_to_screen(p2, p2)
+
+                    hud_render_line(p1.x, p1.y, p2.x, p2.y, 1)
+
+                    if ray.label ~= nil then
+                        hud_set_color(255,255,255,opacity)
+                        hud_print(tostring(ray.label), p2.x, p2.y, 0.5)
+                    end
                 end
             end
         end
