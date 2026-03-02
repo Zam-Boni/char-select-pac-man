@@ -352,7 +352,9 @@ local function act_pac_jump(m)
             audio_sample_play(SAMPLE_BOUNCE, m.pos, 0.5)
         end
     else
-        play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAH_WAH_HOO);
+        if m.actionState == 0 then
+            play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, CHAR_SOUND_YAH_WAH_HOO);
+        end
     end
 
     -- Fall Damage
@@ -1249,7 +1251,7 @@ local function handle_rev_roll()
 
     for i = 1, #marioDists do
         local m = gMarioStates[marioDists[i].index]
-        if m.action == ACT_PAC_REV_CHARGE then
+        if is_player_active(m) ~= 0 and m.action == ACT_PAC_REV_CHARGE then
             local volume = math.clamp(1000/marioDists[i].dist, 0, 1)
             if not audioPlaying then
                 audio_stream_play(AUDIO_REV_ROLL, true, volume)
