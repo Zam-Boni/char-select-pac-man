@@ -77,7 +77,7 @@ local revRampPlacements = {
     ["sm64"] = {
         [LEVEL_CASTLE_GROUNDS] = {
             [1] = {
-                {x = 0, y = 1000, z = 0, pitch = 0x1000, yaw = 0x8000}, -- Testing
+                {x = 0, y = 1000, z = 0, pitch = 0x2000, yaw = 0x8000}, -- Testing
                 {x = -4400, y = -500, z = -1200, pitch = 0x3000, yaw = -0x28C8}, -- Testing
             },
         },
