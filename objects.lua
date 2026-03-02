@@ -4,6 +4,20 @@ E_MODEL_TRAMPOLINE = smlua_model_util_get_id("pactramp_geo")
 COL_REV_RAMP = smlua_collision_util_get("pacramp_collision")
 COL_TRAMPOLINE = smlua_collision_util_get("pactramp_collision")
 
+
+local function visible_to_pacman(o)
+	char = _G.charSelect.character_get_current_number()
+	if char ~= CT_ZBPACMAN and char ~= CT_ZBMSPACMAN then
+		o.oOpacity = 100
+		cur_obj_become_intangible()
+		return false
+	else
+		o.oOpacity = 255
+		cur_obj_become_tangible()
+		return true
+	end
+end
+
 ---@param o Object
 local function bhv_rev_ramp_init(o)
     o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
@@ -16,7 +30,9 @@ end
 ---@param o Object
 local function bhv_rev_ramp_loop(o)
     object_step_without_floor_orient()
-    load_object_collision_model()
+    if visible_to_pacman(o) then
+        load_object_collision_model()
+    end
 end
 
 id_bhvRevRamp = hook_behavior(nil, OBJ_LIST_SURFACE, true, bhv_rev_ramp_init, bhv_rev_ramp_loop, "bhvRevRamp")
@@ -36,7 +52,9 @@ end
 local function bhv_trampoline_loop(o)
     o.oPosY = o.oHomeY + math.sin(get_global_timer()/math.pi)*10
 
-    load_object_collision_model()
+    if visible_to_pacman(o) then
+        load_object_collision_model()
+    end
     o.oWoodenPostMarioPounding = cur_obj_is_mario_ground_pounding_platform()
     if (o.oWoodenPostMarioPounding ~= 0) then
         local m = nearest_mario_state_to_object(o)
