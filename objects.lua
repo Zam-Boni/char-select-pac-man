@@ -50,7 +50,7 @@ end
 
 ---@param o Object
 local function bhv_trampoline_loop(o)
-    o.oPosY = o.oHomeY + math.sin(get_global_timer()/math.pi)*10
+    o.oPosY = o.oHomeY + math.sin((get_global_timer()*0.1)/math.pi)*10
 
     if visible_to_pacman(o) then
         load_object_collision_model()
@@ -59,6 +59,8 @@ local function bhv_trampoline_loop(o)
     if o.oDamageOrCoinValue == 1 then
         obj_mark_for_deletion(o)
     end
+
+    smlua_anim_util_set_animation(o, ANIM_TRAMPOLINE_IDLE)
 
     o.oWoodenPostMarioPounding = cur_obj_is_mario_ground_pounding_platform()
     if (o.oWoodenPostMarioPounding ~= 0) then

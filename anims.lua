@@ -1,3 +1,18 @@
+-- Objects
+ANIM_TRAMPOLINE_IDLE = "ANIM_TRAMPOLINE_IDLE"
+smlua_anim_util_register_animation(ANIM_TRAMPOLINE_IDLE, 0, 0, 0, 0, 17, { 
+	0, 0, 0, 0, 62597, 905, 4748, 8591, 12434, 
+	16277, 20120, 23963, 27806, 31650, 35493, 39336, 43179, 47022, 
+	50865, 54708, 58551, 62394, 0, 0, 0, 0, 
+
+},{ 
+	1, 0, 1, 1, 1, 2, 1, 3, 18, 
+	4, 1, 22, 1, 23, 1, 24, 1, 25, 
+	
+
+});
+
+-- Pac Man
 ANIM_PAC_BUTT_BOUNCE = "ANIM_PAC_BUTT_BOUNCE"
 smlua_anim_util_register_animation(ANIM_PAC_BUTT_BOUNCE, 257, 0, 0, 0, 0, { 
 	0, 28, 0, 0, 16383, 0, 0, 0, 0, 

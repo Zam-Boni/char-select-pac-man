@@ -1,6 +1,7 @@
 const GeoLayout pactramp_Opacity_Switch_opt1_Trampoline_Switch_State_opt1[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
+		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, -117, 0, pactramp_Trampoline_Blade_mesh_layer_1_mat_override_pactramp2_0),
 		GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, 0, 0, pactramp_Trampoline_Body_mesh_layer_1_mat_override_pactramp2_0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
@@ -12,6 +13,7 @@ const GeoLayout pactramp_Opacity_Switch_opt1[] = {
 		GEO_OPEN_NODE(),
 			GEO_NODE_START(),
 			GEO_OPEN_NODE(),
+				GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, -117, 0, pactramp_Trampoline_Blade_mesh_layer_1),
 				GEO_ANIMATED_PART(LAYER_TRANSPARENT, 0, 0, 0, pactramp_Trampoline_Body_mesh_layer_1),
 			GEO_CLOSE_NODE(),
 			GEO_BRANCH(1, pactramp_Opacity_Switch_opt1_Trampoline_Switch_State_opt1),
@@ -22,6 +24,7 @@ const GeoLayout pactramp_Opacity_Switch_opt1[] = {
 const GeoLayout pactramp_Opacity_Switch_opt0_Trampoline_Switch_State_opt1[] = {
 	GEO_NODE_START(),
 	GEO_OPEN_NODE(),
+		GEO_ANIMATED_PART(LAYER_OPAQUE, 0, -117, 0, pactramp_Trampoline_Blade_mesh_layer_1_mat_override_pactramp2_0),
 		GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, pactramp_Trampoline_Body_mesh_layer_1_mat_override_pactramp2_0),
 	GEO_CLOSE_NODE(),
 	GEO_RETURN(),
@@ -40,6 +43,7 @@ const GeoLayout pactramp_geo[] = {
 					GEO_OPEN_NODE(),
 						GEO_NODE_START(),
 						GEO_OPEN_NODE(),
+							GEO_ANIMATED_PART(LAYER_OPAQUE, 0, -117, 0, pactramp_Trampoline_Blade_mesh_layer_1),
 							GEO_ANIMATED_PART(LAYER_OPAQUE, 0, 0, 0, pactramp_Trampoline_Body_mesh_layer_1),
 						GEO_CLOSE_NODE(),
 						GEO_BRANCH(1, pactramp_Opacity_Switch_opt0_Trampoline_Switch_State_opt1),
