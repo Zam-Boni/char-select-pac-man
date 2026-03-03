@@ -55,6 +55,11 @@ local function bhv_trampoline_loop(o)
     if visible_to_pacman(o) then
         load_object_collision_model()
     end
+
+    if o.oDamageOrCoinValue == 1 then
+        obj_mark_for_deletion(o)
+    end
+
     o.oWoodenPostMarioPounding = cur_obj_is_mario_ground_pounding_platform()
     if (o.oWoodenPostMarioPounding ~= 0) then
         local m = nearest_mario_state_to_object(o)
@@ -67,7 +72,16 @@ local function bhv_trampoline_loop(o)
     --bhv_tilting_inverted_pyramid_loop()
 end
 
-function bhv_trampoline_switch(o)
+function bhv_trampoline_switch(node, matStackIndex)
+    local asSwitchNode = cast_graph_node(node)
+    local o = geo_get_current_object()
+    local toNode = 0
+    if o.oVelY > math.sqrt(2 * 4.5 * 2500) then
+        toNode = 1
+    else
+        toNode = 0
+    end
+    asSwitchNode.selectedCase = toNode
     return 0 --(o.oVelY ~= nil and o.oVelY > 100) and 1 or 0
 end
 
@@ -236,7 +250,7 @@ local function on_sync()
                                             break
                                         end
                                         limit = limit - 1
-                                        wallB = collision_find_surface_on_ray(lastPos.x + sins(lastAngle)*10, lastPos.y, lastPos.z + coss(lastAngle)*10, sins(lastAngle)*dist*1.1, dist, coss(lastAngle)*dist*1.1)
+                                        wallB = collision_find_surface_on_ray(lastPos.x + sins(lastAngle)*10, lastPos.y, lastPos.z + coss(lastAngle)*10, sins(lastAngle)*dist*1.1, dist*0.82, coss(lastAngle)*dist*1.1)
                                     end
                                     ray_set_color(255, 127, 127)
                                     lastPos = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
@@ -251,27 +265,46 @@ local function on_sync()
                                                 z = betweenWalls.z,
                                             }
                                             add_last_ray_lable("Success: " .. math.ceil(height))
-                                            if height > 1000 then
+                                            if height > 1200 then
+
+                                                -- Push away from back wall
+                                                ray_set_color(255, 255, 0)
+                                                local wallC = collision_find_surface_on_ray(betweenWalls.x + sins(betweenAngles)*10, posY + 100, betweenWalls.z + coss(betweenAngles)*10, sins(betweenAngles + 0x4000)*dist*1.1, 0, coss(betweenAngles + 0x4000)*dist*1.1)
+                                                local wallAngleC = nil
+                                                if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 and math.s16(atan2s(wallC.surface.normal.z, wallC.surface.normal.x)) then
+                                                    wallAngleC = atan2s(wallC.surface.normal.z, wallC.surface.normal.x)
+                                                    vec3f_copy(rampPos, wallC.hitPos)
+                                                else
+                                                    wallC = collision_find_surface_on_ray(betweenWalls.x + sins(betweenAngles)*10, posY + 100, betweenWalls.z + coss(betweenAngles)*10, sins(betweenAngles - 0x4000)*dist*1.1, 0, coss(betweenAngles - 0x4000)*dist*1.1)
+                                                    if wallC and wallC.surface and math.abs(wallC.surface.normal.y) < 0.1 then
+                                                        wallAngleC = atan2s(wallC.surface.normal.z, wallC.surface.normal.x)
+                                                        vec3f_copy(rampPos, wallC.hitPos)
+                                                    end
+                                                end
                                                 -- Set final pos
-                                                rampPos.x = rampPos.x + initNormals.x*300
+                                                rampPos.x = rampPos.x + initNormals.x*300 + (wallAngleC and sins(wallAngleC)*dist*0.5 or 0)
                                                 rampPos.y = rampPos.y + 300
-                                                rampPos.z = rampPos.z + initNormals.z*300
+                                                rampPos.z = rampPos.z + initNormals.z*300 + (wallAngleC and coss(wallAngleC)*dist*0.5 or 0)
 
                                                 -- Check adjacent objects
                                                 local nearby = false
+                                                local velY = math.sqrt(2 * 4.5 * height)
                                                 local o = obj_get_first_with_behavior_id(id_bhvTrampoline)
                                                 while o ~= nil do
                                                     if vec3f_dist(rampPos, {x = o.oPosX, y = math.abs(rampPos.y - o.oPosY) < 500 and rampPos.y or o.oPosY, z = o.oPosZ}) < 400 then
-                                                        nearby = true
-                                                        break
+                                                        if velY > o.oVelY then
+                                                            o.oDamageOrCoinValue = 1
+                                                        else
+                                                            nearby = true
+                                                            break
+                                                        end
                                                     end
                                                     o = obj_get_next_with_same_behavior_id(o)
                                                 end
 
                                                 if not nearby then
                                                     spawn_non_sync_object(id_bhvTrampoline, E_MODEL_TRAMPOLINE, rampPos.x, rampPos.y, rampPos.z, function (o)
-                                                        local scale = dist/300
-                                                        o.oVelY = math.sqrt(2 * 4.5 * height)
+                                                        o.oVelY = velY
                                                     end)
                                                 end
                                                 break

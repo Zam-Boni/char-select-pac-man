@@ -1,8 +1,8 @@
-Lights1 pacramp_wood2_layer1_lights = gdSPDefLights1(
+Lights1 pacramp_wood2_lights = gdSPDefLights1(
 	0x32, 0x1C, 0xB,
 	0x6B, 0x42, 0x21, 0x28, 0x28, 0x28);
 
-Lights1 pacramp_wood1_layer1_lights = gdSPDefLights1(
+Lights1 pacramp_wood1_lights = gdSPDefLights1(
 	0x32, 0x1C, 0xB,
 	0x6B, 0x42, 0x21, 0x28, 0x28, 0x28);
 
@@ -617,16 +617,15 @@ Gfx pacramp_Ramp_Animated_Part_mesh_layer_5_tri_0[] = {
 };
 
 
-Gfx mat_pacramp_wood2_layer1[] = {
+Gfx mat_pacramp_wood2[] = {
 	gsSPSetGeometryMode(G_FOG),
-	gsSPSetLights1(pacramp_wood2_layer1_lights),
+	gsSPSetLights1(pacramp_wood2_lights),
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
 	gsDPSetFogColor(0, 0, 0, 255),
 	gsSPFogPosition(985, 3000),
 	gsDPSetAlphaDither(G_AD_NOISE),
 	gsDPSetCycleType(G_CYC_2CYCLE),
-	gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_I, G_IM_SIZ_8b_LOAD_BLOCK, 1, pacramp_wood2_i8),
 	gsDPSetTile(G_IM_FMT_I, G_IM_SIZ_8b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
@@ -636,25 +635,23 @@ Gfx mat_pacramp_wood2_layer1[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_pacramp_wood2_layer1[] = {
+Gfx mat_revert_pacramp_wood2[] = {
 	gsSPClearGeometryMode(G_FOG),
 	gsDPPipeSync(),
 	gsDPSetAlphaDither(G_AD_DISABLE),
 	gsDPSetCycleType(G_CYC_1CYCLE),
-	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_pacramp_wood1_layer1[] = {
+Gfx mat_pacramp_wood1[] = {
 	gsSPSetGeometryMode(G_FOG),
-	gsSPSetLights1(pacramp_wood1_layer1_lights),
+	gsSPSetLights1(pacramp_wood1_lights),
 	gsDPPipeSync(),
 	gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, ENVIRONMENT, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
 	gsDPSetFogColor(0, 0, 0, 255),
 	gsSPFogPosition(985, 1000),
 	gsDPSetAlphaDither(G_AD_NOISE),
 	gsDPSetCycleType(G_CYC_2CYCLE),
-	gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2),
 	gsSPTexture(65535, 65535, 0, 0, 1),
 	gsDPSetTextureImage(G_IM_FMT_I, G_IM_SIZ_8b_LOAD_BLOCK, 1, pacramp_wood1_i8),
 	gsDPSetTile(G_IM_FMT_I, G_IM_SIZ_8b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
@@ -664,12 +661,11 @@ Gfx mat_pacramp_wood1_layer1[] = {
 	gsSPEndDisplayList(),
 };
 
-Gfx mat_revert_pacramp_wood1_layer1[] = {
+Gfx mat_revert_pacramp_wood1[] = {
 	gsSPClearGeometryMode(G_FOG),
 	gsDPPipeSync(),
 	gsDPSetAlphaDither(G_AD_DISABLE),
 	gsDPSetCycleType(G_CYC_1CYCLE),
-	gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
 	gsSPEndDisplayList(),
 };
 
@@ -690,19 +686,12 @@ Gfx mat_revert_pacramp_arrow[] = {
 };
 
 Gfx pacramp_Ramp_Animated_Part_mesh_layer_1[] = {
-	gsSPDisplayList(mat_pacramp_wood2_layer1),
+	gsSPDisplayList(mat_pacramp_wood2),
 	gsSPDisplayList(pacramp_Ramp_Animated_Part_mesh_layer_1_tri_0),
-	gsSPDisplayList(mat_revert_pacramp_wood2_layer1),
-	gsSPDisplayList(mat_pacramp_wood1_layer1),
+	gsSPDisplayList(mat_revert_pacramp_wood2),
+	gsSPDisplayList(mat_pacramp_wood1),
 	gsSPDisplayList(pacramp_Ramp_Animated_Part_mesh_layer_1_tri_1),
-	gsSPDisplayList(mat_revert_pacramp_wood1_layer1),
-	gsDPPipeSync(),
-	gsSPSetGeometryMode(G_LIGHTING),
-	gsSPClearGeometryMode(G_TEXTURE_GEN),
-	gsDPSetCombineLERP(0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT, 0, 0, 0, SHADE, 0, 0, 0, ENVIRONMENT),
-	gsSPTexture(65535, 65535, 0, 0, 0),
-	gsDPSetEnvColor(255, 255, 255, 255),
-	gsDPSetAlphaCompare(G_AC_NONE),
+	gsSPDisplayList(mat_revert_pacramp_wood1),
 	gsSPEndDisplayList(),
 };
 
@@ -710,6 +699,10 @@ Gfx pacramp_Ramp_Animated_Part_mesh_layer_5[] = {
 	gsSPDisplayList(mat_pacramp_arrow),
 	gsSPDisplayList(pacramp_Ramp_Animated_Part_mesh_layer_5_tri_0),
 	gsSPDisplayList(mat_revert_pacramp_arrow),
+	gsSPEndDisplayList(),
+};
+
+Gfx pacramp_material_revert_render_settings[] = {
 	gsDPPipeSync(),
 	gsSPSetGeometryMode(G_LIGHTING),
 	gsSPClearGeometryMode(G_TEXTURE_GEN),
@@ -717,6 +710,16 @@ Gfx pacramp_Ramp_Animated_Part_mesh_layer_5[] = {
 	gsSPTexture(65535, 65535, 0, 0, 0),
 	gsDPSetEnvColor(255, 255, 255, 255),
 	gsDPSetAlphaCompare(G_AC_NONE),
+	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, 0),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 0, 7, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP  | G_TX_NOMIRROR, 0, 0),
+	gsDPLoadBlock(7, 0, 0, 1023, 256),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, 0, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0),
+	gsDPSetTileSize(0, 0, 0, 124, 124),
+	gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 1, 0),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b_LOAD_BLOCK, 0, 256, 6, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0, G_TX_WRAP | G_TX_NOMIRROR, 0, 0),
+	gsDPLoadBlock(6, 0, 0, 1023, 256),
+	gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 256, 1, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0, G_TX_CLAMP | G_TX_NOMIRROR, 5, 0),
+	gsDPSetTileSize(1, 0, 0, 124, 124),
 	gsSPEndDisplayList(),
 };
 
