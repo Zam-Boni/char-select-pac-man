@@ -1055,7 +1055,7 @@ local function before_pac_action(m, nextAct)
     end
     if overrideActs[nextAct] then
         if run_func_or_get_var(overrideActs[nextAct], m, nextAct) ~= 0 then
-            if nextAct ~= ACT_WALKING or not forceDefaultWalk then
+            if (nextAct ~= ACT_WALKING and nextAct ~= ACT_FREEFALL) or not forceDefaultWalk then
                 return set_mario_action(m, overrideActs[nextAct], 0)
             end
         else
@@ -1082,6 +1082,12 @@ local function on_interact(m, o, type)
     if forceWalkingInteracts[bhvID] and m.action == ACT_PAC_WALKING then
         e.forceDefaultWalk = true
         set_mario_action(m, ACT_WALKING, 0)
+    end
+
+    -- Failsafe if Action IDs are too high
+    if bhvID == id_bhvPoleGrabbing and m.action & ACT_FLAG_AIR ~= 0 and m.prevAction & ACT_FLAG_ON_POLE == 0 then
+        e.forceDefaultWalk = true
+        set_mario_action(m, ACT_FREEFALL, 0)
     end
 
     -- Basic Bump Interactions
