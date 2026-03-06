@@ -33,6 +33,10 @@ local function bhv_rev_ramp_loop(o)
     if visible_to_pacman(o) then
         load_object_collision_model()
     end
+
+    --if o.oFloorHeight < o.oPosY - 1000 then
+    --    obj_mark_for_deletion(o)
+    --end
 end
 
 id_bhvRevRamp = hook_behavior(nil, OBJ_LIST_SURFACE, true, bhv_rev_ramp_init, bhv_rev_ramp_loop, "bhvRevRamp")
@@ -50,7 +54,7 @@ end
 
 ---@param o Object
 local function bhv_trampoline_loop(o)
-    o.oPosY = o.oHomeY + math.sin((get_global_timer()*0.1)/math.pi)*10
+    o.oPosY = o.oHomeY + math.sin((get_global_timer()*0.25)/math.pi)*10
 
     if visible_to_pacman(o) then
         load_object_collision_model()
@@ -212,6 +216,16 @@ local function on_sync()
                         ray_set_color(127, 255, 127)
 
                         for h = 0, 1 do
+                            if h == 1 then
+                                ray_set_color(255, 127, 0)
+                                local ceilingCheck = collision_find_surface_on_ray(posX, posY, posZ, 0, 800, 0)
+                                clear_last_ray_visual()
+                                if ceilingCheck.surface ~= nil then
+                                    break
+                                end
+                            end
+
+
                             local wallA = collision_find_surface_on_ray(posX, posY + 50 + 800*h, posZ, math.min(sins(angle)*wallJumpDist*2, wallJumpDist), 0, math.min(coss(angle)*wallJumpDist*2, wallJumpDist))
                             clear_last_ray_visual()
                             if wallA and wallA.surface and math.abs(wallA.surface.normal.y) < 0.1 then
@@ -258,7 +272,7 @@ local function on_sync()
                                     lastPos = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
                                     upperFloor = collision_find_surface_on_ray(lastPos.x, lastPos.y, lastPos.z, 0, posY - lastPos.y, 0, 1)
 
-                                    if upperFloor and upperFloor.surface and wallB.surface.normal.y > 0.1 then
+                                    if upperFloor and upperFloor.surface and wallB.surface.normal.y > 0.8 then
                                         local height = upperFloor.hitPos.y - posY
                                         if height > 600 then
                                             local rampPos = {
@@ -266,7 +280,7 @@ local function on_sync()
                                                 y = posY,
                                                 z = betweenWalls.z,
                                             }
-                                            add_last_ray_lable("Success: " .. math.ceil(height))
+                                            add_last_ray_lable("Success: " .. math.ceil(height) .. " | " .. math.round(wallB.surface.normal.y*100)*0.01)
                                             if height > 1200 then
 
                                                 -- Push away from back wall
@@ -285,7 +299,7 @@ local function on_sync()
                                                 end
                                                 -- Set final pos
                                                 rampPos.x = rampPos.x + initNormals.x*300 + (wallAngleC and sins(wallAngleC)*dist*0.5 or 0)
-                                                rampPos.y = rampPos.y + 300
+                                                rampPos.y = rampPos.y + 150
                                                 rampPos.z = rampPos.z + initNormals.z*300 + (wallAngleC and coss(wallAngleC)*dist*0.5 or 0)
 
                                                 -- Check adjacent objects
@@ -293,10 +307,16 @@ local function on_sync()
                                                 local velY = math.sqrt(2 * 4.5 * height)
                                                 local o = obj_get_first_with_behavior_id(id_bhvTrampoline)
                                                 while o ~= nil do
-                                                    if vec3f_dist(rampPos, {x = o.oPosX, y = math.abs(rampPos.y - o.oPosY) < 500 and rampPos.y or o.oPosY, z = o.oPosZ}) < 400 then
+                                                    if vec3f_dist(rampPos, {x = o.oPosX, y = o.oPosY, z = o.oPosZ}) < 1000 then
                                                         if velY > o.oVelY then
+                                                            rampPos.x = (o.oPosX + rampPos.x)*0.5
+                                                            rampPos.y = (o.oPosY + rampPos.y)*0.5
+                                                            rampPos.z = (o.oPosZ + rampPos.z)*0.5
                                                             o.oDamageOrCoinValue = 1
                                                         else
+                                                            o.oPosX = (o.oPosX + rampPos.x)*0.5
+                                                            o.oPosY = (o.oPosY + rampPos.y)*0.5
+                                                            o.oPosZ = (o.oPosZ + rampPos.z)*0.5
                                                             nearby = true
                                                             break
                                                         end
