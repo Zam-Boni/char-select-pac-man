@@ -34,9 +34,9 @@ local function bhv_rev_ramp_loop(o)
         load_object_collision_model()
     end
 
-    --if o.oFloorHeight < o.oPosY - 1000 then
-    --    obj_mark_for_deletion(o)
-    --end
+    if o.oDamageOrCoinValue == 1 then
+        obj_mark_for_deletion(o)
+    end
 end
 
 id_bhvRevRamp = hook_behavior(nil, OBJ_LIST_SURFACE, true, bhv_rev_ramp_init, bhv_rev_ramp_loop, "bhvRevRamp")
@@ -268,11 +268,18 @@ local function on_sync()
                                         limit = limit - 1
                                         wallB = collision_find_surface_on_ray(lastPos.x + sins(lastAngle)*10, lastPos.y, lastPos.z + coss(lastAngle)*10, sins(lastAngle)*dist*1.1, dist*0.82, coss(lastAngle)*dist*1.1)
                                     end
-                                    ray_set_color(255, 127, 127)
+                                    local hitCeil = (wallB.surface and wallB.surface.normal.y < -0.8)
                                     lastPos = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
+                                    if hitCeil then
+                                        add_last_ray_lable("Ceiling Hit | " .. math.round(wallB.surface.normal.y*100)*0.01)
+                                        ray_set_color(255, 127, 255)
+                                        wallB = collision_find_surface_on_ray(lastPos.x + sins(lastAngle)*10, lastPos.y, lastPos.z + coss(lastAngle)*10, sins(lastAngle)*dist*1.1, -dist*0.82, coss(lastAngle)*dist*1.1)
+                                        lastPos = {x = wallB.hitPos.x, y = wallB.hitPos.y, z = wallB.hitPos.z}
+                                    end
+                                    ray_set_color(255, 127, 127)
                                     upperFloor = collision_find_surface_on_ray(lastPos.x, lastPos.y, lastPos.z, 0, posY - lastPos.y, 0, 1)
 
-                                    if upperFloor and upperFloor.surface and wallB.surface.normal.y > 0.8 then
+                                    if upperFloor and upperFloor.surface and (wallB.surface.normal.y > 0.8 or wallB.surface.normal.y < -0.8) then
                                         local height = upperFloor.hitPos.y - posY
                                         if height > 600 then
                                             local rampPos = {
@@ -350,22 +357,39 @@ local function on_sync()
                                                     local angleCheckC1 = math.abs(math.s16(wallAngleC - (betweenAngles + 0x4000) - 0x8000))
                                                     local angleCheckC2 = math.abs(math.s16(wallAngleC - (betweenAngles - 0x4000) - 0x8000))
                                                     if (angleCheckC1 < 0x1000 or angleCheckC2 < 0x1000) then
-                                                        -- Set Final Pos
+                                                        -- Set final pos
                                                         rampPos.x = rampPos.x + sins(wallAngleC)*120
                                                         rampPos.z = rampPos.z + coss(wallAngleC)*120
 
-                                                        local o = obj_get_first_with_behavior_id(id_bhvRevRamp)
+                                                        -- Check adjacent objects
+                                                        local nearby = false
+                                                        local velY = math.sqrt(2 * 4.5 * height)
+                                                        local o = obj_get_first_with_behavior_id(id_bhvTrampoline)
                                                         while o ~= nil do
-                                                            if vec3f_dist(rampPos, {x = o.oPosX, y = rampPos.y, z = o.oPosZ}) < 300 then
-                                                                break
+                                                            if vec3f_dist(rampPos, {x = o.oPosX, y = o.oPosY, z = o.oPosZ}) < 1000 then
+                                                                if velY > o.oVelY then
+                                                                    rampPos.x = (o.oPosX + rampPos.x)*0.5
+                                                                    rampPos.y = (o.oPosY + rampPos.y)*0.5
+                                                                    rampPos.z = (o.oPosZ + rampPos.z)*0.5
+                                                                    o.oDamageOrCoinValue = 1
+                                                                else
+                                                                    o.oPosX = (o.oPosX + rampPos.x)*0.5
+                                                                    o.oPosY = (o.oPosY + rampPos.y)*0.5
+                                                                    o.oPosZ = (o.oPosZ + rampPos.z)*0.5
+                                                                    nearby = true
+                                                                    break
+                                                                end
                                                             end
                                                             o = obj_get_next_with_same_behavior_id(o)
                                                         end
-                                                        
-                                                        spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, rampPos.x, rampPos.y, rampPos.z, function (o)
-                                                            o.oFaceAngleYaw = wallAngleC + 0x8000
-                                                            o.oFaceAnglePitch = -0x3000
-                                                        end)
+
+                                                        if not nearby then
+                                                            spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, rampPos.x, rampPos.y, rampPos.z, function (o)
+                                                                o.oFaceAngleYaw = wallAngleC + 0x8000
+                                                                o.oFaceAnglePitch = -0x3000
+                                                            end)
+                                                        end
+                                                        break
                                                     else
                                                         add_last_ray_lable("Backwall not Expected: " .. num_to_hex(math.min(angleCheckC1, angleCheckC2)))
                                                     end
