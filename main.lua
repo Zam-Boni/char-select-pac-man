@@ -154,11 +154,12 @@ local CAPTABLE_CHAR = {
 local PALETTES_ZBPACMAN = {
     {
         name = "Pac-Man",
-        [PANTS]  = "ff003b",
+        [PANTS]  = "0D00FF",
         [SHIRT]  = "ffbe00",
         [GLOVES] = "ff5f00",
         [CAP]    = "ffbe00",
         [EMBLEM] = "000000",
+        [SHOES]  = "ff003b",
     },
     {
         name = "Blinky",
@@ -167,6 +168,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "ff5f00",
         [CAP]    = "FF2100",
         [EMBLEM] = "000000",
+        [SHOES]  = "ff5f00",
     },
     {
         name = "Inky",
@@ -175,6 +177,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "ff5f00",
         [CAP]    = "1DC1FF",
         [EMBLEM] = "000000",
+        [SHOES]  = "ff5f00",
     },
     {
         name = "Pinky",
@@ -183,6 +186,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "ff5f00",
         [CAP]    = "FF6CFA",
         [EMBLEM] = "000000",
+        [SHOES]  = "ff5f00",
     },
     {
         name = "Clyde",
@@ -191,6 +195,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "FF2100",
         [CAP]    = "ff5f00",
         [EMBLEM] = "000000",
+        [SHOES]  = "FF2100",
     },
     {
         name = "Sue",
@@ -199,6 +204,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "ff5f00",
         [CAP]    = "6d00ff",
         [EMBLEM] = "000000",
+        [SHOES]  = "ff5f00",
     },
     {
         name = "Funky",
@@ -207,6 +213,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "FF2100",
         [CAP]    = "049300",
         [EMBLEM] = "000000",
+        [SHOES]  = "FF2100",
     },
     {
         name = "Kinzo",
@@ -215,6 +222,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "FFFFFF",
         [CAP]    = "ffbe00",
         [EMBLEM] = "000000",
+        [SHOES]  = "FFFFFF",
     },
     {
         name = "Orson",
@@ -223,6 +231,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "007754",
         [CAP]    = "6d9a73",
         [EMBLEM] = "000000",
+        [SHOES] = "007754",
     },
     {
         name = "TURN-TO-BLUE",
@@ -231,6 +240,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "0D00FF",
         [CAP]    = "0D00FF",
         [EMBLEM] = "FFB7AE",
+        [SHOES]  = "0D00FF",
     },
     {
         name = "Miru",
@@ -239,14 +249,16 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "FF24BE",
         [CAP]    = "26D24E",
         [EMBLEM] = "000000",
+        [SHOES]  = "FF24BE",
     },
     {
         name = "Sir Cumference",
-        [PANTS]  = "382836",
+        [PANTS]  = "B9B9B9",
         [SHIRT]  = "A9FF42",
         [GLOVES] = "382836",
         [CAP]    = "A9FF42",
         [EMBLEM] = "000000",
+        [SHOES]  = "382836",
     },
     {
         name = "Betrayus",
@@ -255,22 +267,25 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "FF4345",
         [CAP]    = "FFFFFF",
         [EMBLEM] = "FF4345",
+        [SHOES]  = "FF4345",
     },
     {
         name = "Shadow Labyrinth",
-        [PANTS]  = "000000",
+        [PANTS]  = "FF634D",
         [SHIRT]  = "000000",
         [GLOVES] = "000000",
         [CAP]    = "000000",
         [EMBLEM] = "FF634D",
+        [SHOES]  = "000000",
     },
     {
         name = "Pooka",
-        [PANTS]  = "ff0032",
+        [PANTS]  = "FFFFFF",
         [SHIRT]  = "ffd800",
         [GLOVES] = "ff0032",
         [CAP]    = "ff0032",
         [EMBLEM] = "000000",
+        [SHOES]  = "ff0032",
     },
     {
         name = "Fygar",
@@ -279,6 +294,7 @@ local PALETTES_ZBPACMAN = {
         [GLOVES] = "ff1d00",
         [CAP]    = "00be21",
         [EMBLEM] = "000000",
+        [SHOES]  = "ff1d00",
     },
 }
 

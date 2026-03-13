@@ -304,7 +304,7 @@ local function act_pac_walking(m)
     end
 
     if m.forwardVel < 15 then
-        e.eyeState = 4
+        e.eyeState = 8
     end
 
     --check_ledge_climb_down(m);
