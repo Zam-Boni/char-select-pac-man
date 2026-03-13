@@ -153,14 +153,6 @@ local CAPTABLE_CHAR = {
 
 local PALETTES_ZBPACMAN = {
     {
-        name = "Default",
-        [PANTS]  = "ff003b",
-        [SHIRT]  = "ffbe00",
-        [GLOVES] = "ff5f00",
-        [CAP]    = "ffbe00",
-        [EMBLEM] = "000000",
-    },
-    {
         name = "Pac-Man",
         [PANTS]  = "ff003b",
         [SHIRT]  = "ffbe00",
@@ -177,19 +169,19 @@ local PALETTES_ZBPACMAN = {
         [EMBLEM] = "000000",
     },
     {
-        name = "Pinky",
-        [PANTS]  = "0D00FF",
-        [SHIRT]  = "FF6CFA",
-        [GLOVES] = "ff5f00",
-        [CAP]    = "FF6CFA",
-        [EMBLEM] = "000000",
-    },
-    {
         name = "Inky",
         [PANTS]  = "0D00FF",
         [SHIRT]  = "1DC1FF",
         [GLOVES] = "ff5f00",
         [CAP]    = "1DC1FF",
+        [EMBLEM] = "000000",
+    },
+    {
+        name = "Pinky",
+        [PANTS]  = "0D00FF",
+        [SHIRT]  = "FF6CFA",
+        [GLOVES] = "ff5f00",
+        [CAP]    = "FF6CFA",
         [EMBLEM] = "000000",
     },
     {
@@ -291,6 +283,8 @@ local PALETTES_ZBPACMAN = {
 }
 
 CHAR_ANIM_SPECIAL_GROUND_POUND = CHAR_ANIM_MAX + 2
+CHAR_ANIM_CLIMB_LEFT_LEDGE = CHAR_ANIM_MAX + 3
+CHAR_ANIM_CLIMB_RIGHT_LEDGE = CHAR_ANIM_MAX + 3
 local ANIMS_PACMAN = {
     [CHAR_ANIM_RUNNING] = ANIM_PAC_RUNNING,
     [CHAR_ANIM_FIRST_PERSON] = ANIM_PAC_IDLE,
@@ -308,6 +302,8 @@ local ANIMS_PACMAN = {
     [CHAR_ANIM_GROUND_KICK] = ANIM_PAC_FLIP_KICK,
     [CHAR_ANIM_RUNNING_UNUSED] = ANIM_PAC_REV_CHARGE,
     [CHAR_ANIM_FORWARD_SPINNING] = ANIM_PAC_REV_ROLL,
+    [CHAR_ANIM_CLIMB_LEFT_LEDGE] = ANIM_PAC_LEDGELEFT,
+    [CHAR_ANIM_CLIMB_RIGHT_LEDGE] = ANIM_PAC_LEDGERIGHT,
 }
 
 local ANIMS_BLINKY = {
@@ -491,6 +487,19 @@ _G.charSelect.character_add_animations(E_MODEL_ZBCLYDER, ANIMS_CLYDE)
 --_G.charSelect.character_add_celebration_star(E_MODEL_CHAR, E_MODEL_CHAR_STAR, TEX_CHAR_STAR_ICON)
 
 -- Adds a palette to your character
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBPACMAN, PALETTES_ZBPACMAN[1], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBPACMANR, PALETTES_ZBPACMAN[1], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBMSPACMAN, PALETTES_ZBPACMAN[1], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBMSPACMANR, PALETTES_ZBPACMAN[1], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBBLINKY, PALETTES_ZBPACMAN[2], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBBLINKYR, PALETTES_ZBPACMAN[2], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBINKY, PALETTES_ZBPACMAN[3], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBINKYR, PALETTES_ZBPACMAN[3], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBPINKY, PALETTES_ZBPACMAN[4], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBPINKYR, PALETTES_ZBPACMAN[4], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBCLYDE, PALETTES_ZBPACMAN[5], "Default")
+_G.charSelect.character_add_palette_preset(E_MODEL_ZBCLYDER, PALETTES_ZBPACMAN[5], "Default")
+
 for i = 1, #PALETTES_ZBPACMAN do
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBPACMAN, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)
     _G.charSelect.character_add_palette_preset(E_MODEL_ZBPACMANR, PALETTES_ZBPACMAN[i], PALETTES_ZBPACMAN[i].name)

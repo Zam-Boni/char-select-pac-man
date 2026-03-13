@@ -1,12 +1,10 @@
 SAMPLE_BOUNCE = audio_sample_load("zbpmsfx-bounce.ogg")
 SAMPLE_TAKE_OFF = audio_sample_load("zbpmsfx-takeoff.ogg")
 
-local E_MODEL_PACDOT =      smlua_model_util_get_id("pacdot_geo")
-local E_MODEL_PACPELLET =      smlua_model_util_get_id("pacpellet_geo")
+local E_MODEL_PACDOT = smlua_model_util_get_id("pacdot_geo")
+local E_MODEL_PACPELLET = smlua_model_util_get_id("pacpellet_geo")
 
 local PAC_MAX_SPEED = 35
-
-local PAC_HEALTH_SLICE = 0x880/4
 
 gPacStates = {}
 for i = 0, MAX_PLAYERS - 1 do
@@ -20,6 +18,7 @@ for i = 0, MAX_PLAYERS - 1 do
         overrideVel = {x = 0, y = 0, z = 0},
         pelletPathStart = {},
         pelletPath = {},
+        eyeState = MARIO_EYES_OPEN,
 
         healthSeg1Opacity = 255,
         healthSeg2Opacity = 255,
@@ -258,6 +257,7 @@ end
 
 local function act_pac_walking(m)
     if not m then return 0 end
+    local e = gPacStates[m.playerIndex]
     local startPos = {x = 0, y = 0, z = 0}
     local startYaw = m.faceAngle.y;
 
@@ -301,6 +301,10 @@ local function act_pac_walking(m)
         if (m.intendedMag - m.forwardVel > 16.0) then
             set_mario_particle_flags(m, PARTICLE_DUST, 0);
         end
+    end
+
+    if m.forwardVel < 15 then
+        e.eyeState = 4
     end
 
     --check_ledge_climb_down(m);
@@ -364,7 +368,7 @@ local function act_pac_jump(m)
 
     if m.actionState == 0 then
         if m.actionArg ~= 1 then
-            set_mario_y_vel_based_on_fspeed(m, math.max(65.0, m.vel.y), 0.0)
+            set_mario_y_vel_based_on_fspeed(m, math.max(65.0 + math.clamp(e.bounceCount, 0, 3)*2, m.vel.y), 0.0)
         end
         m.actionState = m.actionState + 1
     end
@@ -405,6 +409,11 @@ local function act_pac_freefall(m)
         end
     else
         anim = CHAR_ANIM_FALL_OVER_BACKWARDS
+    end
+
+    -- Fall Damage
+    if m.pos.y < m.peakHeight - 1000 then
+        return set_mario_action(m, ACT_PAC_FREEFALL, 1)
     end
 
     local arg = m.actionArg
@@ -477,7 +486,13 @@ local function act_pac_ledge_grab(m)
         m.pos.z = nextZ
     end
 
-    set_character_animation(m, CHAR_ANIM_IDLE_ON_LEDGE);
+    if sidewaysSpeed > 0.1 then
+        set_character_animation(m, CHAR_ANIM_CLIMB_LEFT_LEDGE);
+    elseif sidewaysSpeed < -0.1 then
+        set_character_animation(m, CHAR_ANIM_CLIMB_RIGHT_LEDGE);
+    else
+        set_character_animation(m, CHAR_ANIM_IDLE_ON_LEDGE);
+    end
 
     return 0;
 end
@@ -745,6 +760,7 @@ end
 local function act_pac_butt_bounce(m)
     if not m then return 0 end
     local e = gPacStates[m.playerIndex]
+    m.peakHeight = m.pos.y
 
     if m.actionState == 0 then
         m.actionState = m.actionState + 1
@@ -943,10 +959,6 @@ local function pac_update(m)
     if not m then return 0 end
     local e = gPacStates[m.playerIndex]
 
-    if m.playerIndex == 0 then
-        --djui_chat_message_create(tostring(m.action == ACT_PAC_SKID))
-    end
-
     if m.action & ACT_FLAG_AIR == 0 and m.action ~= ACT_PAC_BUTT_BOUNCE_LAND then
         e.bounceCount = 0
     end
@@ -977,10 +989,6 @@ local function pac_update(m)
         m.healCounter = 0
     end
 
-    if m.action ~= ACT_PAC_JUMP then
-        m.peakHeight = m.pos.y
-    end
-
     if m.action == ACT_LAVA_BOOST then
         m.health = 0
     end
@@ -990,6 +998,12 @@ local function pac_update(m)
     if m.action == ACT_PAC_WALKING or m.action == ACT_PAC_FREEFALL or m.action == ACT_PAC_SKID or (m.action == ACT_PAC_JUMP and e.bounceCount == 0) then
         m.marioObj.header.gfx.angle.y = e.faceAngleLerp
         m.marioBodyState.headAngle.z = math.clamp(math.s16(e.faceAngleLerp - m.intendedYaw), -0x2000, 0x2000)*0.7
+    end
+
+    -- Update Face Visuals
+    if e.eyeState ~= MARIO_EYES_OPEN then
+        m.marioBodyState.eyeState = e.eyeState
+        e.eyeState = MARIO_EYES_OPEN
     end
 
     if m.action ~= ACT_PAC_POWER_PELLET then
@@ -1111,7 +1125,7 @@ local revRollInteractions = {
             target.oSubAction = 0
             target.oAction = 1
             target.oVelY = 80
-            target.oForwardVel = -m.forwardVel*1.2
+            target.oForwardVel = -m.forwardVel*1.3
             if target.oSyncID ~= 0 then
                 network_send_object(target, true)
             end

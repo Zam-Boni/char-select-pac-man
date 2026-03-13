@@ -279,9 +279,9 @@ local function on_sync()
                                     ray_set_color(255, 127, 127)
                                     upperFloor = collision_find_surface_on_ray(lastPos.x, lastPos.y, lastPos.z, 0, posY - lastPos.y, 0, 1)
 
-                                    if upperFloor and upperFloor.surface and (wallB.surface.normal.y > 0.8 or wallB.surface.normal.y < -0.8) then
+                                    if upperFloor and upperFloor.surface --[[and (wallB.surface.normal.y > 0.8 or wallB.surface.normal.y < -0.8)]] then
                                         local height = upperFloor.hitPos.y - posY
-                                        if height > 600 then
+                                        if height > 700 then
                                             local rampPos = {
                                                 x = betweenWalls.x,
                                                 y = posY,
