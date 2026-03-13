@@ -7,14 +7,14 @@ COL_TRAMPOLINE = smlua_collision_util_get("pactramp_collision")
 
 local function visible_to_pacman(o)
 	char = _G.charSelect.character_get_current_number()
-	if char ~= CT_ZBPACMAN and char ~= CT_ZBMSPACMAN then
-		o.oOpacity = 100
-		cur_obj_become_intangible()
-		return false
-	else
+	if (char == CT_ZBPACMAN or char == CT_ZBMSPACMAN) and charSelect.gCSPlayers[0].movesetToggle then
 		o.oOpacity = 255
 		cur_obj_become_tangible()
 		return true
+	else
+		o.oOpacity = 100
+		cur_obj_become_intangible()
+		return false
 	end
 end
 
@@ -43,22 +43,20 @@ id_bhvRevRamp = hook_behavior(nil, OBJ_LIST_SURFACE, true, bhv_rev_ramp_init, bh
 
 ---@param o Object
 local function bhv_trampoline_init(o)
-    o.oFlags = OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
+    o.oFlags = OBJ_FLAG_COMPUTE_DIST_TO_MARIO | OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW | OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE
     o.collisionData = COL_TRAMPOLINE
     o.oBuoyancy = 10
 
     o.oHomeX = o.oPosX
     o.oHomeY = o.oPosY
     o.oHomeZ = o.oPosZ
+
+    bhv_platform_normals_init()
 end
 
 ---@param o Object
 local function bhv_trampoline_loop(o)
     o.oPosY = o.oHomeY + math.sin((get_global_timer()*0.25)/math.pi)*10
-
-    if visible_to_pacman(o) then
-        load_object_collision_model()
-    end
 
     if o.oDamageOrCoinValue == 1 then
         obj_mark_for_deletion(o)
@@ -75,7 +73,11 @@ local function bhv_trampoline_loop(o)
     end
 
     -- Inverted Pyramid Tilting
-    --bhv_tilting_inverted_pyramid_loop()
+    bhv_tilting_inverted_pyramid_loop()
+    -- Allow Interactions
+    if visible_to_pacman(o) then
+        load_object_collision_model()
+    end
 end
 
 function bhv_trampoline_switch(node, matStackIndex)
@@ -97,29 +99,32 @@ local revRampPlacements = {
     ["sm64"] = {
         [LEVEL_CASTLE_GROUNDS] = {
             [1] = {
-                {x = 0, y = 1000, z = 0, pitch = 0x2000, yaw = 0x8000}, -- Testing
-                {x = -4400, y = -500, z = -1200, pitch = 0x3000, yaw = -0x28C8}, -- Testing
+                --{obj = id_bhvRevRamp, x = 0, y = 1000, z = 0, pitch = 0x2000, yaw = 0x8000}, -- Testing
+                {id = id_bhvRevRamp, x = -4400, y = -500, z = -1200, pitch = 0x3000, yaw = -0x28C8}, -- Testing
+                {id = id_bhvTrampoline, x = -5000, y = 450, z = -4900, height = 800}, -- Roof Access 1
+                {id = id_bhvTrampoline, x = -4600, y = 950, z = -5600, height = 800}, -- Roof Access 2
+                {id = id_bhvTrampoline, x = -3790, y = 1450, z = -5820, height = 1200}, -- Roof Access 3
             },
         },
         [LEVEL_BBH] = {
             [1] = {
-                {x = 3133, y = 1024, z = 126, pitch = 0x3000, yaw = -0x4000}, -- Third Floor Access
+                {id = id_bhvRevRamp, x = 3133, y = 1024, z = 126, pitch = 0x3000, yaw = -0x4000}, -- Third Floor Access
             },
         },
         [LEVEL_HMC] = {
             [1] = {
-                {x = -6330, y = 1800, z = 3806, pitch = 0x1000, yaw = 0x8000}, -- Left Route Gap
-                {x = -6200, y = 1850, z = -7550, pitch = 0x3000, yaw = 0x3000}, -- Watch for Rolling Rocks
+                {id = id_bhvRevRamp, x = -6330, y = 1800, z = 3806, pitch = 0x1000, yaw = 0x8000}, -- Left Route Gap
+                {id = id_bhvRevRamp, x = -6200, y = 1850, z = -7550, pitch = 0x3000, yaw = 0x3000}, -- Watch for Rolling Rocks
             },
         },
         [LEVEL_CCM] = {
             [1] = {
-                {x = 310, y = -3100, z = -2750, pitch = 0x3000, yaw = -0x300}, -- Wall Kicks will work
+                {id = id_bhvRevRamp, x = 310, y = -3100, z = -2750, pitch = 0x3000, yaw = -0x300}, -- Wall Kicks will work
             },
         },
         [LEVEL_THI] = {
             [3] = {
-                {x = -1950, y = 1030, z = 100, pitch = 0x1A00, yaw = 0x8000}, -- Cave Red Coin
+                {id = id_bhvRevRamp, x = -1950, y = 1030, z = 100, pitch = 0x1A00, yaw = 0x8000}, -- Cave Red Coin
             },
         },
     }
@@ -182,12 +187,17 @@ local function on_sync()
         if not revRampPlacements[ROMHACK][np.currLevelNum][np.currAreaIndex] then return end
         local ramps = revRampPlacements[ROMHACK][np.currLevelNum][np.currAreaIndex]
         for i = 1, #ramps do
-            local currRamp = ramps[i]
-            log_to_console(tostring(currRamp))
-            spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, currRamp.x, currRamp.y, currRamp.z, function (o)
-                o.oFaceAngleYaw = currRamp.yaw
-                o.oFaceAnglePitch = -currRamp.pitch
-            end)
+            local currObj = ramps[i]
+            if currObj.id == id_bhvRevRamp then
+                spawn_non_sync_object(id_bhvRevRamp, E_MODEL_REV_RAMP, currObj.x, currObj.y, currObj.z, function (o)
+                    o.oFaceAngleYaw = currObj.yaw
+                    o.oFaceAnglePitch = -currObj.pitch
+                end)
+            elseif currObj.id == id_bhvTrampoline then
+                spawn_non_sync_object(id_bhvTrampoline, E_MODEL_TRAMPOLINE, currObj.x, currObj.y, currObj.z, function (o)
+                    o.oVelY = math.sqrt(2 * 4.5 * currObj.height)
+                end)
+            end
         end
     else -- Spawn Automatic ones
     clear_ray_visuals()
