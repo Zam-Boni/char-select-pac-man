@@ -1315,6 +1315,7 @@ local function bhv_trail_pellet_loop(o)
     else
         if vec3f_dist(m.pos, {x = o.oPosX, y = o.oPosY, z = o.oPosZ}) < 100 then
             audio_sample_play(wakaSound, gMarioStates[0].pos, 1)
+            e.eyeState = 5
             obj_mark_for_deletion(o)
         end
     end
