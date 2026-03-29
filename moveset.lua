@@ -303,8 +303,8 @@ local function act_pac_walking(m)
         end
     end
 
-    if m.forwardVel < 15 then
-        e.eyeState = 8
+    if m.forwardVel < 20 then
+        e.eyeState = 7
     end
 
     --check_ledge_climb_down(m);
@@ -361,11 +361,6 @@ local function act_pac_jump(m)
         end
     end
 
-    -- Fall Damage
-    if m.pos.y < m.peakHeight - 1000 then
-        return set_mario_action(m, ACT_PAC_FREEFALL, 1)
-    end
-
     if m.actionState == 0 then
         if m.actionArg ~= 1 then
             set_mario_y_vel_based_on_fspeed(m, math.max(65.0 + math.clamp(e.bounceCount, 0, 3)*2, m.vel.y), 0.0)
@@ -411,19 +406,11 @@ local function act_pac_freefall(m)
         anim = CHAR_ANIM_FALL_OVER_BACKWARDS
     end
 
-    -- Fall Damage
-    if m.pos.y < m.peakHeight - 1000 then
-        return set_mario_action(m, ACT_PAC_FREEFALL, 1)
-    end
 
-    local arg = m.actionArg
     pac_air_action_step(m, ACT_FREEFALL_LAND_STOP, anim, AIR_STEP_CHECK_LEDGE_GRAB | AIR_STEP_CHECK_HANG);
     if (m.action == ACT_FREEFALL_LAND_STOP) then
         if mario_floor_is_slippery(m) ~= 0 then
             return set_mario_action(m, ACT_PAC_ROLL, 0)
-        elseif arg == 1 then
-            m.hurtCounter = 4
-            return set_mario_action(m, ACT_BACKWARD_GROUND_KB, 0)
         end
         queue_rumble_data_mario(m, 5, 40);
     end
@@ -481,9 +468,13 @@ local function act_pac_ledge_grab(m)
     sidewaysSpeed = intendedMag * sins(intendedDYaw)
     local nextX = m.pos.x + sidewaysSpeed * sins(m.faceAngle.y + 0x4000) * 8
     local nextZ = m.pos.z + sidewaysSpeed * coss(m.faceAngle.y + 0x4000) * 8
-    if collision_find_surface_on_ray(nextX, m.pos.y + 100, nextZ, 0, -120, 0).hitPos.y > m.pos.y - 20 then
-        m.pos.x = nextX
-        m.pos.z = nextZ
+    local surfaceRay = collision_find_surface_on_ray(nextX, m.pos.y + 100, nextZ, 0, -120, 0)
+    local wallRay = collision_find_surface_on_ray(nextX - sins(m.faceAngle.y)*70, m.pos.y, nextZ - coss(m.faceAngle.y)*70, sins(m.faceAngle.y)*90, -20, coss(m.faceAngle.y)*90)
+    if surfaceRay.surface ~= nil and surfaceRay.hitPos.y > m.pos.y - 20 and math.abs(math.s16((atan2s(wallRay.surface.normal.z, wallRay.surface.normal.x) + 0x8000) - m.faceAngle.y)) < 0x3000 then
+        local wallAngle = atan2s(wallRay.surface.normal.z, wallRay.surface.normal.x) + 0x8000
+        m.pos.x = m.pos.x + sidewaysSpeed * sins(wallAngle + 0x4000) * 8
+        m.pos.z = m.pos.z + sidewaysSpeed * coss(wallAngle + 0x4000) * 8
+        m.faceAngle.y = wallAngle
     end
 
     if sidewaysSpeed > 0.1 then
@@ -943,8 +934,8 @@ hook_mario_action(ACT_PAC_JUMP, {every_frame = act_pac_jump, gravity = pac_gravi
 hook_mario_action(ACT_PAC_LEDGE_GRAB, act_pac_ledge_grab)
 hook_mario_action(ACT_PAC_FREEFALL, {every_frame = act_pac_freefall, gravity = pac_gravity})
 hook_mario_action(ACT_PAC_KICK, {every_frame = act_pac_kick, gravity = pac_gravity}, INT_KICK)
-hook_mario_action(ACT_PAC_ROLL, act_pac_roll, INT_FAST_ATTACK_OR_SHELL)
-hook_mario_action(ACT_PAC_ROLL_AIR, act_pac_roll_air, INT_FAST_ATTACK_OR_SHELL)
+hook_mario_action(ACT_PAC_ROLL, act_pac_roll, INT_PUNCH)
+hook_mario_action(ACT_PAC_ROLL_AIR, act_pac_roll_air, INT_PUNCH)
 hook_mario_action(ACT_PAC_REV_CHARGE, act_pac_rev_charge)
 hook_mario_action(ACT_PAC_REV_ROLL, act_pac_rev_roll, INT_KICK)
 hook_mario_action(ACT_PAC_REV_ROLL_AIR, {every_frame = act_pac_rev_roll_air, gravity = pac_gravity}, INT_KICK)
@@ -968,7 +959,7 @@ local function pac_update(m)
         e.burnTimer = e.burnTimer - 1
     end
 
-    --Update Health
+    -- Update Health
     if m.hurtCounter > 0 then
         if m.hurtCounter >= 30 then -- Full Kill
             m.health = 0
@@ -1104,6 +1095,11 @@ local function on_interact(m, o, type)
         set_mario_action(m, ACT_FREEFALL, 0)
     end
 
+    -- Eat yummy stuff
+    if type == INTERACT_COIN then
+        e.eyeState = 5
+    end
+
     -- Basic Bump Interactions
     if (o.oInteractStatus & INT_STATUS_WAS_ATTACKED ~= 0) and (determine_interaction(m,o) == INT_KICK) then --object was hit by a kick
         pac_bump_away_from_obj(m, o, 30)
@@ -1144,6 +1140,13 @@ local revRollInteractions = {
             o.oAction = UKIKI_ACT_GO_TO_CAGE
         end
     end,
+    [id_bhvSmallPenguin] = function(m, o, type)
+        m.usedObj = o
+        mario_grab_used_object(m)
+        m.marioBodyState.grabPos = GRAB_POS_LIGHT_OBJ
+        set_mario_action(m, ACT_HOLD_FREEFALL, 0)
+        return true
+    end,
 }
 
 ---@param m MarioState
@@ -1155,10 +1158,13 @@ local function allow_interact(m, o, type)
         return false
     end
     if m.action == ACT_PAC_REV_ROLL or m.action == ACT_PAC_REV_ROLL_AIR then
-        local func = revRollInteractions[get_id_from_vanilla_behavior(o.behavior)]
+        local func = revRollInteractions[get_id_from_behavior(o.behavior)]
         if func then
             local funcReturn = func(m, o, type)
-            pac_bump_away_from_obj(m, o, 30)
+            djui_chat_message_create(tostring(funcReturn))
+            if funcReturn ~= true then
+                pac_bump_away_from_obj(m, o, 30)
+            end
             if funcReturn ~= nil then
                 return funcReturn
             end
