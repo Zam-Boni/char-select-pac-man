@@ -809,6 +809,7 @@ local function act_pac_power_pellet(m)
             end
             set_character_animation(m, CHAR_ANIM_FIRST_PUNCH)
             if m.playerIndex == 0 then
+                -- Change to use statusForCamera
                 m.pos.x = o.oPosX
                 m.pos.y = o.oPosY
                 m.pos.z = o.oPosZ
