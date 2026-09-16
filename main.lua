@@ -452,6 +452,15 @@ CT_ZBCLYDE = _G.charSelect.character_add(
     1                  -- Camera Scale
 )
 
+local pacChars = {
+    [CT_ZBPACMAN] = true,
+    [CT_ZBMSPACMAN] = true,
+    [CT_ZBBLINKY] = true,
+    [CT_ZBINKY] = true,
+    [CT_ZBPINKY] = true,
+    [CT_ZBCLYDE] = true,
+}
+
 -- Adds cap models to your character
 -- (Models do not exist in template)
 -- _G.charSelect.character_add_caps(E_MODEL_CHAR, CAPTABLE_CHAR)
@@ -544,7 +553,10 @@ _G.charSelect.credit_add(TEXT_MOD_NAME, "Squishy6094", "Pac-Man Moveset")
 -- Update Model based on palette
 local prevPalette = 1
 local function update_model()
-    local palette = _G.charSelect.character_get_current_palette_number(0)
+    local palette = 1
+    if pacChars[_G.charSelect.character_get_current_number(0)] then
+        palette = _G.charSelect.character_get_current_palette_number(0) or 1
+    end
     if prevPalette ~= palette then
         _G.charSelect.character_edit_costume(CT_ZBPACMAN, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBPACMAN or E_MODEL_ZBPACMANR)
         _G.charSelect.character_edit_costume(CT_ZBMSPACMAN, 1, nil, nil, nil, nil, palette == 1 and E_MODEL_ZBMSPACMAN or E_MODEL_ZBMSPACMANR)
